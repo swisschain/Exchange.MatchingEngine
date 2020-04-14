@@ -1,0 +1,55 @@
+# IntelliJ project files
+.idea
+*.iml
+out
+generalsettings.json
+
+*.class
+
+*.jar
+*.war
+*.ear
+# grpc generated classes
+IncomingMessages.java
+IncomingApi.java
+CashServiceGrpc.java
+TradingServiceGrpc.java
+OrderBooksServiceGrpc.java
+OutgoingMessages.java
+ConfigServiceGrpc.java
+GrpcConfigLoader.java
+GrpcDictionaries.java
+AssetPairsGrpc.java
+AssetsGrpc.java
+GrpcCashOperations.java
+GrpcCashOperationsServiceGrpc.java
+GrpcMessageLog.java
+GrpcMessageLogServiceGrpc.java
+GrpcMonitoring.java
+GrpcMonitoringServiceGrpc.java
+GrpcReservedVolumeCorrection.java
+GrpcReservedVolumeCorrectionServiceGrpc.java
+GrpcSettings.java
+GrpcSettingsServiceGrpc.java
+GrpcSettingsHistory.java
+GrpcSettingsHistoryServiceGrpc.java
+GrpcAliveStatus.java
+GrpcAliveStatusServiceGrpc.java
+GrpcErrorsLog.java
+GrpcErrorsLogServiceGrpc.java
+GrpOutgoingEventsGrpc.java
+GrpOutgoingEventsServiceGrpc.java
+BalancesServiceGrpc.java
+BalancesMessages.java
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+replate_pid*
+
+### Gradle template
+.gradle
+build/
+
+
+# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
+!gradle-wrapper.jar

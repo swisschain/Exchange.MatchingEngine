@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package com.swisschain.grpc.monitoring;
+
+option java_package = "com.swisschain.matching.engine.database.grpc";
+option java_outer_classname = "GrpcMonitoring";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+service GrpcMonitoringService{
+    rpc saveMonitoringStats(MonitoringStats) returns (google.protobuf.Empty) {};
+    rpc savePerformanceStats(PerformanceStats) returns (google.protobuf.Empty) {};
+}
+
+message MonitoringStats {
+    google.protobuf.Timestamp timestamp = 1;
+    double vmCpuLoad = 2;
+    double totalCpuLoad = 3;
+    int64 totalMemory = 4;
+    int64 freeMemory = 5;
+    int64 maxHeap = 6;
+    int64 totalHeap = 7;
+    int64 freeHeap = 8;
+    int64 totalSwap = 9;
+    int64 freeSwap = 10;
+    int32 threadsCount = 11;
+}
+
+message PerformanceStats {
+    google.protobuf.Timestamp timestamp = 1;
+    string type = 2;
+    string appVersion = 3;
+    string inputQueueTime = 4;
+    string preProcessingTime = 5;
+    string preProcessedMessageQueueTime = 6;
+    string processingTime = 7;
+    string persistTime = 8;
+    string writeResponseTime = 9;
+    string totalTime = 10;
+    int64 count = 11;
+    int64 persistCount = 12;
+}

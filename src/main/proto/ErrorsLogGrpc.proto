@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package com.swisschain.grpc.errors;
+
+option java_package = "com.swisschain.matching.engine.database.grpc";
+option java_outer_classname = "GrpcErrorsLog";
+
+import "google/protobuf/empty.proto";
+
+service GrpcErrorsLogService{
+    rpc log(ErrorsLog) returns (google.protobuf.Empty) {};
+}
+
+message ErrorsLog {
+    string type = 1;
+    string sender = 2;
+    string message = 3;
+}

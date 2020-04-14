@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package com.swisschain.grpc.config;
+
+option java_package = "com.swisschain.matching.engine.config.grpc";
+option java_outer_classname = "GrpcConfigLoader";
+
+service ConfigService{
+    rpc GetConfig(GrpcConfigRequest) returns (GrpcConfigResponse) {}
+}
+
+message GrpcConfigRequest {
+    string component = 1;
+}
+
+message GrpcConfigResponse {
+    string payload = 1;
+}

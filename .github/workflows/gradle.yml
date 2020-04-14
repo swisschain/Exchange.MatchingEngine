@@ -1,0 +1,37 @@
+name: Continuous integration for Exchange.MatchingEngine
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up AdoptOpenJDK 1.8
+        uses: joschi/setup-jdk@v1
+        with:
+          java-version: 8
+          architecture: x64
+      - name: Build
+        uses: eskatos/gradle-command-action@v1
+        with:
+          gradle-version: 6.3
+          arguments: clean generateProto build printProperties
+      - name: Check dir
+        run: ls build/distributions
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v1
+        with:
+          name: Exchange.MatchingEngine.zip
+          path: build/distributions
+      - name: Publish to Registry
+        uses: swisschain/Publish-Docker-Github-Action@master
+        with:
+          name: swisschains/exchange-matching-engine
+          dockerfile: docker/dockerfile
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          # snapshot: true # use snapshot to push an additional image, which is tagged with {YEAR}{MONTH}{DAY}{HOUR}{MINUTE}{SECOND}{first 6 digits of the git sha}
+          tag_names: true

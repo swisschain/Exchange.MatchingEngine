@@ -1,0 +1,26 @@
+package com.swisschain.matching.engine.web.common
+
+import com.swisschain.utils.logging.MetricsLogger
+import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.ControllerAdvice
+import org.springframework.web.bind.annotation.ExceptionHandler
+
+@ControllerAdvice
+class GlobalControllerAdvice {
+
+    private companion object {
+        val METRICS_LOGGER = MetricsLogger.getLogger()
+        val LOGGER = LoggerFactory.getLogger(GlobalControllerAdvice::class.java)
+    }
+
+    @ExceptionHandler
+    fun handleException(e: Exception): ResponseEntity<*> {
+        val message = "Unhandled exception occurred in web component:\n${e.message}"
+        METRICS_LOGGER.logError(message, e)
+        LOGGER.error(message, e)
+
+        return ResponseEntity(message, HttpStatus.INTERNAL_SERVER_ERROR)
+    }
+}

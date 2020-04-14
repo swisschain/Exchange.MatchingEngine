@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package com.swisschain.grpc.cash.operations;
+
+option java_package = "com.swisschain.matching.engine.database.grpc";
+option java_outer_classname = "GrpcCashOperations";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+service GrpcCashOperationsService{
+    rpc saveTransferOperation(TransferOperation) returns (google.protobuf.Empty) {};
+}
+
+message TransferOperation {
+    string externalId = 1;
+    string assetId = 2;
+    string fromWalletId = 3;
+    string toWalletId = 4;
+    google.protobuf.Timestamp timestamp = 5;
+    string amount = 6;
+}

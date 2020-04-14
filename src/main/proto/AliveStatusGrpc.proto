@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package com.swisschain.grpc.alive;
+
+option java_package = "com.swisschain.matching.engine.database.grpc";
+option java_outer_classname = "GrpcAliveStatus";
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
+
+service GrpcAliveStatusService{
+    rpc checkAndLock(CheckRequest) returns (CheckAndLockResponse) {};
+    rpc keepAlive(CheckRequest) returns (google.protobuf.Empty) {};
+    rpc unlock(CheckRequest) returns (google.protobuf.Empty) {};
+}
+
+message CheckRequest {
+    string ip = 1;
+    string appName = 2;
+}
+
+message CheckAndLockResponse {
+    bool success = 1;
+    google.protobuf.StringValue reason = 2;
+}

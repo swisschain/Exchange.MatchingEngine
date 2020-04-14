@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package com.swisschain.grpc.settings;
+
+option java_package = "com.swisschain.matching.engine.database.grpc";
+option java_outer_classname = "GrpcSettings";
+
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
+
+service GrpcSettingsService{
+    rpc getSetting(SettingRequest) returns (Setting){};
+    rpc getSettingsGroup(SettingsGroupRequest) returns (SettingsGroup){};
+    rpc getAllSettingsGroups(AllSettingsGroupsRequest) returns (AllSettingsGroups){};
+
+    rpc createOrUpdateSetting(Setting) returns (google.protobuf.Empty){};
+
+    rpc deleteSetting(SettingDeleteRequest) returns (google.protobuf.Empty){};
+    rpc deleteSettingsGroup(SettingsGroupDeleteRequest) returns (google.protobuf.Empty){};
+}
+
+message SettingRequest {
+    string group = 1;
+    string name = 2;
+    google.protobuf.BoolValue enabled = 3;
+}
+
+message Setting {
+    string group = 1;
+    string name = 2;
+    string value = 3;
+    bool enabled = 4;
+}
+
+message SettingsGroupRequest {
+    string group = 1;
+    google.protobuf.BoolValue enabled = 2;
+}
+
+message SettingsGroup {
+    string group = 1;
+    repeated Setting settings = 2;
+}
+
+message AllSettingsGroupsRequest {
+    google.protobuf.BoolValue enabled = 1;
+}
+
+message AllSettingsGroups {
+    repeated SettingsGroup groups = 1;
+}
+
+message SettingDeleteRequest {
+    string group = 1;
+    string name = 2;
+}
+
+message SettingsGroupDeleteRequest {
+    string group = 1;
+}

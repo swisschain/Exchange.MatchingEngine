@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package com.swisschain.grpc.reserved;
+
+option java_package = "com.swisschain.matching.engine.database.grpc";
+option java_outer_classname = "GrpcReservedVolumeCorrection";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+service GrpcReservedVolumeCorrectionService{
+    rpc saveReservedVolumeCorrection(ReservedVolumeCorrectionRequest) returns (google.protobuf.Empty) {};
+}
+
+message ReservedVolumeCorrectionRequest {
+    repeated ReservedVolumeCorrection infos = 1;
+}
+
+message ReservedVolumeCorrection {
+    google.protobuf.Timestamp timestamp = 1;
+    string walletId = 2;
+    string assetId = 3;
+    string orderIds = 4;
+    string oldReserved = 5;
+    string newReserved = 6;
+}

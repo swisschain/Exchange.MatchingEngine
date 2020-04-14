@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package com.swisschain.grpc.history;
+
+option java_package = "com.swisschain.matching.engine.database.grpc";
+option java_outer_classname = "GrpcSettingsHistory";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+service GrpcSettingsHistoryService{
+    rpc get(SettingHistoryRequest) returns (AllSettingHistory){};
+    rpc getAll(AllSettingHistoryRequest) returns (AllSettingHistory){};
+
+    rpc save(SettingHistory) returns (google.protobuf.Empty){};
+}
+
+message SettingHistoryRequest {
+    string group = 1;
+    string name = 2;
+}
+
+message SettingHistory {
+    string group = 1;
+    string name = 2;
+    string value = 3;
+    bool enabled = 4;
+    string comment = 5;
+    string user = 6;
+    google.protobuf.Timestamp timestamp = 7;
+}
+
+message AllSettingHistoryRequest {
+    string group = 1;
+}
+
+message AllSettingHistory {
+    repeated SettingHistory groups = 1;
+}

@@ -1,0 +1,87 @@
+package com.swisschain.matching.engine.utils.order
+
+import com.swisschain.matching.engine.daos.LimitOrder
+import com.swisschain.matching.engine.messages.MessageType
+import com.swisschain.matching.engine.order.process.common.CancelRequest
+import com.swisschain.matching.engine.order.process.common.LimitOrdersCancelExecutor
+import com.swisschain.matching.engine.services.GenericLimitOrderService
+import com.swisschain.matching.engine.services.GenericStopLimitOrderService
+import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.ApplicationArguments
+import org.springframework.boot.ApplicationRunner
+import org.springframework.core.annotation.Order
+import org.springframework.stereotype.Component
+import java.util.ArrayList
+import java.util.Date
+import java.util.UUID
+import java.util.stream.Collectors
+import java.util.stream.Stream
+
+@Component
+@Order(4)
+class AllOrdersCanceller @Autowired constructor(private val genericLimitOrderService: GenericLimitOrderService,
+                                                private val genericStopLimitOrderService: GenericStopLimitOrderService,
+                                                private val limitOrdersCancelExecutor: LimitOrdersCancelExecutor,
+                                                @Value("#{Config.me.cancelAllOrders}") private val cancelAllOrders: Boolean) : ApplicationRunner {
+
+    companion object {
+        private val LOGGER = LoggerFactory.getLogger(AllOrdersCanceller::class.java.name)
+    }
+
+    override fun run(args: ApplicationArguments?) {
+        if (cancelAllOrders) {
+            cancelAllOrders()
+        }
+    }
+
+    fun cancelAllOrders() {
+        val operationId = generateOperationId()
+        LOGGER.info("Starting cancel all orders in all order books, operation Id: ($operationId)")
+
+        val limitOrdersToCancel = getLimitOrders()
+        val stopLimitOrdersToCancel = getStopLimitOrders()
+
+        LOGGER.info("Limit orders count: ${limitOrdersToCancel.size}, " +
+                "stop limit orders count: ${stopLimitOrdersToCancel.size}")
+
+        limitOrdersCancelExecutor.cancelOrdersAndApply(CancelRequest(limitOrdersToCancel,
+                stopLimitOrdersToCancel,
+                operationId,
+                operationId,
+                MessageType.LIMIT_ORDER,
+                Date(),
+                null,
+                null,
+                LOGGER))
+
+        LOGGER.info("Completed to cancel all orders")
+    }
+
+    private fun getLimitOrders(): List<LimitOrder> {
+        val result = ArrayList<LimitOrder>()
+        genericLimitOrderService.getAllOrderBooks()
+                .values.forEach { brokerOrders ->
+                    result.addAll(brokerOrders.values.stream()
+                        .map { it.copy() }
+                        .flatMap { Stream.concat(it.getSellOrderBook().stream(), it.getBuyOrderBook().stream()) }
+                        .collect(Collectors.toList()))
+                }
+        return result
+    }
+
+    private fun getStopLimitOrders(): List<LimitOrder> {
+        val result = ArrayList<LimitOrder>()
+        genericStopLimitOrderService.getAllOrderBooks()
+                .values.forEach { brokerOrders ->
+                    result.addAll(brokerOrders.values.stream()
+                        .map { it.copy() }
+                        .flatMap { Stream.concat(it.getSellOrderBook().stream(), it.getBuyOrderBook().stream()) }
+                        .collect(Collectors.toList()))
+                }
+        return result
+    }
+
+    private fun generateOperationId() = UUID.randomUUID().toString()
+}

@@ -1,0 +1,65 @@
+syntax = "proto3";
+
+package com.swisschain.dictionaries.grpc;
+
+option java_package = "com.swisschain.matching.engine.database.grpc";
+option java_outer_classname = "GrpcDictionaries";
+
+import "google/protobuf/empty.proto";
+
+service Assets {
+    rpc GetAll (google.protobuf.Empty) returns (GetAllAssetsResponse);
+    rpc GetById (GetAssetByIdRequest) returns (GetAssetByIdResponse);
+}
+
+service AssetPairs {
+    rpc GetAll (google.protobuf.Empty) returns (GetAllAssetPairsResponse);
+    rpc GetById (GetAssetPairByIdRequest) returns (GetAssetPairByIdResponse);
+}
+
+message GetAllAssetsResponse {
+    repeated Asset assets = 1;
+}
+
+message GetAssetByIdRequest {
+    string assetId = 1;
+    string brokerId = 2;
+}
+
+message GetAssetByIdResponse {
+    Asset asset = 1;
+}
+
+message Asset {
+    string id = 1;
+    string name = 2;
+    string description = 3;
+    int32 accuracy = 4;
+    string brokerId = 8;
+}
+
+message GetAllAssetPairsResponse {
+    repeated AssetPair assetPairs = 1;
+}
+
+message GetAssetPairByIdRequest {
+    string assetPairId = 1;
+    string brokerId = 2;
+}
+
+message GetAssetPairByIdResponse {
+    AssetPair assetPair = 1;
+}
+
+message AssetPair {
+    string id = 1;
+    string name = 2;
+    string baseAssetId = 3;
+    string quotingAssetId = 4;
+    int32 accuracy = 5;
+    string minVolume = 6;
+    string maxVolume = 7;
+    string maxOppositeVolume = 8;
+    string marketOrderPriceThreshold = 9;
+    string brokerId = 13;
+}

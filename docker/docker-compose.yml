@@ -1,0 +1,16 @@
+version: "2"
+services:
+  me:
+    image: swisschainx/matchingengine
+    environment:
+        - GRPC_CONFIG=ME_GRPC_CONFIG
+        - INSTANCE_NAME=ME_INSTANCE_NAME
+        - JAVA_OPTS=ME_JAVA_OPTS
+    ports:
+      - "8886:8886"
+      - "8887:8887"
+      - "8888:8888"
+      - "8889:8889"
+    volumes:
+          - LOGS_DIR:/matching-engine/log
+          - ORDERS_DIR:/matching-engine/orders

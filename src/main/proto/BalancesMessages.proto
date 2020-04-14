@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package com.swisschain.grpc.balances;
+
+option java_package = "com.swisschain.matching.engine.incoming";
+option java_outer_classname = "BalancesMessages";
+
+import "google/protobuf/timestamp.proto";
+
+message BalancesGetAllRequest {
+    string walletId = 1;
+    string brokerId = 2;
+}
+
+message BalancesGetByAssetIdRequest {
+    string walletId = 1;
+    string assetId = 2;
+    string brokerId = 3;
+}
+
+message BalancesGetAllResponse {
+    string walletId = 1;
+    repeated Balance balances = 2;
+    google.protobuf.Timestamp timestamp = 3;
+}
+
+message BalancesGetByAssetIdResponse {
+    string walletId = 1;
+    Balance balance = 2;
+    google.protobuf.Timestamp timestamp = 3;
+}
+
+message Balance {
+    string assetId = 1;
+    string amount = 2;
+    string reserved = 3;
+}
