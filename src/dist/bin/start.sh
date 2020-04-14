@@ -29,7 +29,7 @@ EXECSTR="$JAVACMD \
     -Dapp.pid="$$" \
     -Dapp.home="$BASEDIR" \
     -Dbasedir="$BASEDIR" \
-    -jar $BASEDIR/lib/matching-engine-1.0.jar \
+    -jar $BASEDIR/lib/Exchange.MatchingEngine-1.0.jar \
     $GRPC_CONFIG $INSTANCE_NAME"
 
 
