@@ -1,5 +1,6 @@
 package com.swisschain.matching.engine.outgoing.messages.v2.events
 
+import com.swisschain.matching.engine.AbstractTest.Companion.DEFAULT_BROKER
 import com.swisschain.matching.engine.messages.outgoing.OutgoingMessages
 import com.swisschain.matching.engine.outgoing.messages.v2.enums.MessageType
 import com.swisschain.matching.engine.outgoing.messages.v2.events.common.BalanceUpdate
@@ -15,9 +16,9 @@ class ReservedBalanceUpdateEventTest {
     @Test
     fun buildGeneratedMessage() {
         val header = Header(MessageType.RESERVED_BALANCE_UPDATE, 1L, "messageUID", "requestUID", "version", Date(), "EVENT_TYPE")
-        val balanceUpdates = listOf(BalanceUpdate("Wallet1", "Asset1", "1", "2", "3", "4"),
-                BalanceUpdate("Wallet2", "Asset2", "21", "22", "23", "24"))
-        val reservedBalanceUpdate = ReservedBalanceUpdate("Wallet3", "Asset3", "-7")
+        val balanceUpdates = listOf(BalanceUpdate(DEFAULT_BROKER,"Wallet1", "Asset1", "1", "2", "3", "4"),
+                BalanceUpdate(DEFAULT_BROKER,"Wallet2", "Asset2", "21", "22", "23", "24"))
+        val reservedBalanceUpdate = ReservedBalanceUpdate(DEFAULT_BROKER,"Wallet3", "Asset3", "-7")
         val serializedEvent = ReservedBalanceUpdateEvent(header, balanceUpdates, reservedBalanceUpdate).buildGeneratedMessage()
 
         val event = serializedEvent.message.unpack(OutgoingMessages.ReservedBalanceUpdateEvent::class.java)

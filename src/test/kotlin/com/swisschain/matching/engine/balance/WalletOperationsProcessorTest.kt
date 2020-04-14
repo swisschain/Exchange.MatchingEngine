@@ -151,7 +151,7 @@ class WalletOperationsProcessorTest : AbstractTest() {
         val clientBalanceUpdates = walletOperationsProcessor.getClientBalanceUpdates()
         assertEquals(1, clientBalanceUpdates.size)
         assertEquals("ETH", clientBalanceUpdates.single().asset)
-        assertEquals("TrustedClient2", clientBalanceUpdates.single().id)
+        assertEquals("TrustedClient2", clientBalanceUpdates.single().walletId)
         assertEquals(BigDecimal.valueOf(0.1), clientBalanceUpdates.single().newBalance)
         assertEquals(BigDecimal.ZERO, clientBalanceUpdates.single().newReserved)
 
@@ -183,7 +183,7 @@ class WalletOperationsProcessorTest : AbstractTest() {
         val clientBalanceUpdates = walletOperationsProcessor.getClientBalanceUpdates()
         assertEquals(1, clientBalanceUpdates.size)
         assertEquals("BTC", clientBalanceUpdates.single().asset)
-        assertEquals("Client1", clientBalanceUpdates.single().id)
+        assertEquals("Client1", clientBalanceUpdates.single().walletId)
         assertEquals(BigDecimal.ZERO, clientBalanceUpdates.single().oldBalance)
         assertEquals(BigDecimal.ZERO, clientBalanceUpdates.single().oldReserved)
         assertEquals(BigDecimal.valueOf(0.2), clientBalanceUpdates.single().newBalance)

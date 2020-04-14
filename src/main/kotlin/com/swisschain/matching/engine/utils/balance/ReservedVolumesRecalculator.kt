@@ -174,7 +174,7 @@ class ReservedVolumesRecalculator @Autowired constructor(private val orderBookDa
             balanceUpdates.forEach { clientBalanceUpdate ->
                 sequenceNumber = messageSequenceNumberHolder.getNewValue()
                 val walletOperation = WalletOperation(clientBalanceUpdate.brokerId,
-                        clientBalanceUpdate.id,
+                        clientBalanceUpdate.walletId,
                         clientBalanceUpdate.asset,
                         BigDecimal.ZERO,
                         clientBalanceUpdate.newReserved - clientBalanceUpdate.oldReserved

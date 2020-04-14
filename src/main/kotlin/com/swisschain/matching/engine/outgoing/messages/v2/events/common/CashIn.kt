@@ -2,14 +2,16 @@ package com.swisschain.matching.engine.outgoing.messages.v2.events.common
 
 import com.swisschain.matching.engine.messages.outgoing.OutgoingMessages
 
-class CashIn(val walletId: String,
+class CashIn(val brokerId: String,
+             val walletId: String,
              val assetId: String,
              val volume: String,
              val fees: List<Fee>?) : EventPart<OutgoingMessages.CashInEvent.CashIn.Builder> {
 
     override fun createGeneratedMessageBuilder(): OutgoingMessages.CashInEvent.CashIn.Builder {
         val builder = OutgoingMessages.CashInEvent.CashIn.newBuilder()
-        builder.setWalletId(walletId)
+        builder.setBrokerId(brokerId)
+                .setWalletId(walletId)
                 .setAssetId(assetId)
                 .volume = volume
         fees?.forEach { fee ->

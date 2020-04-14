@@ -2,7 +2,8 @@ package com.swisschain.matching.engine.outgoing.messages.v2.events.common
 
 import com.swisschain.matching.engine.messages.outgoing.OutgoingMessages
 
-class CashTransfer(val fromWalletId: String,
+class CashTransfer(val brokerId: String,
+                   val fromWalletId: String,
                    val toWalletId: String,
                    val volume: String,
                    val overdraftLimit: String?,
@@ -11,7 +12,8 @@ class CashTransfer(val fromWalletId: String,
 
     override fun createGeneratedMessageBuilder(): OutgoingMessages.CashTransferEvent.CashTransfer.Builder {
         val builder = OutgoingMessages.CashTransferEvent.CashTransfer.newBuilder()
-        builder.setFromWalletId(fromWalletId)
+        builder.setBrokerId(brokerId)
+                .setFromWalletId(fromWalletId)
                 .setToWalletId(toWalletId)
                 .setVolume(volume)
                 .setOverdraftLimit(overdraftLimit)

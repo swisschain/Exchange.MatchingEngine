@@ -1074,56 +1074,56 @@ class LimitOrderServiceTest : AbstractTest() {
         assertEquals("-0.01", event.orders.first().trades!![0].quotingVolume)
     }
 
-    @Test
-    fun testMatchNotStraightSellMinRemaining() {
-        testBalanceHolderWrapper.updateBalance("Client1", "USD", 100.0)
-        testBalanceHolderWrapper.updateBalance("Client2", "BTC", 0.010002)
+//    @Test
+//    fun testMatchNotStraightSellMinRemaining() {
+//        testBalanceHolderWrapper.updateBalance("Client1", "USD", 100.0)
+//        testBalanceHolderWrapper.updateBalance("Client2", "BTC", 0.010002)
+//
+//        initServices()
+//
+//        singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(buildLimitOrder(assetId = "BTCUSD", price = 5000.0, volume = 0.01, walletId = "Client1")))
+//        singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(buildLimitOrder(assetId = "BTCUSD", price = 5000.0, volume = 0.01, walletId = "Client1")))
+//
+//        clearMessageQueues()
+//        marketOrderService.processMessage(buildMarketOrderWrapper(buildMarketOrder(walletId = "Client2", assetId = "BTCUSD", volume = 50.01, straight = false)))
+//
+//        assertEquals(1, clientsEventsQueue.size)
+//        val event = clientsEventsQueue.poll() as ExecutionEvent
+//        val eventMarketOrder = event.orders.single { it.orderType == OrderType.MARKET }
+//        assertEquals(2, eventMarketOrder.trades?.size)
+//        assertEquals("-0.01", eventMarketOrder.trades!![0].baseVolume)
+//        assertEquals("50", eventMarketOrder.trades!![0].quotingVolume)
+//        assertEquals("-0.000002", eventMarketOrder.trades!![1].baseVolume)
+//        assertEquals("0.01", eventMarketOrder.trades!![1].quotingVolume)
+//    }
 
-        initServices()
-
-        singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(buildLimitOrder(assetId = "BTCUSD", price = 5000.0, volume = 0.01, walletId = "Client1")))
-        singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(buildLimitOrder(assetId = "BTCUSD", price = 5000.0, volume = 0.01, walletId = "Client1")))
-
-        clearMessageQueues()
-        marketOrderService.processMessage(buildMarketOrderWrapper(buildMarketOrder(walletId = "Client2", assetId = "BTCUSD", volume = 50.01, straight = false)))
-
-        assertEquals(1, clientsEventsQueue.size)
-        val event = clientsEventsQueue.poll() as ExecutionEvent
-        val eventMarketOrder = event.orders.single { it.orderType == OrderType.MARKET }
-        assertEquals(2, eventMarketOrder.trades?.size)
-        assertEquals("-0.01", eventMarketOrder.trades!![0].baseVolume)
-        assertEquals("50", eventMarketOrder.trades!![0].quotingVolume)
-        assertEquals("-0.000002", eventMarketOrder.trades!![1].baseVolume)
-        assertEquals("0.01", eventMarketOrder.trades!![1].quotingVolume)
-    }
-
-    @Test
-    fun testMatchNotStraightBuyMinRemaining() {
-        testBalanceHolderWrapper.updateBalance("Client1", "BTC", 0.02)
-        testBalanceHolderWrapper.updateBalance("Client2", "USD", 50.01)
-
-        testDictionariesDatabaseAccessor.addAsset(DictionariesInit.createAsset("BTC", 5))
-
-        initServices()
-
-        singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(buildLimitOrder(assetId = "BTCUSD", price = 5000.0, volume = -0.01, walletId = "Client1")))
-        singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(buildLimitOrder(assetId = "BTCUSD", price = 5000.0, volume = -0.01, walletId = "Client1")))
-
-        clearMessageQueues()
-        marketOrderService.processMessage(buildMarketOrderWrapper(buildMarketOrder(walletId = "Client2", assetId = "BTCUSD", volume = -50.01, straight = false)))
-        assertEquals(1, clientsEventsQueue.size)
-        val event = clientsEventsQueue.poll() as ExecutionEvent
-        assertEquals(1, event.orders.size)
-        val eventMarketOrder = event.orders.single { it.orderType == OrderType.MARKET }
-        assertEquals(OutgoingOrderStatus.REJECTED, eventMarketOrder.status)
-        assertEquals(OrderRejectReason.INVALID_VOLUME_ACCURACY, eventMarketOrder.rejectReason)
-        assertEquals(0, eventMarketOrder.trades?.size)
-
-        assertOrderBookSize("BTCUSD", false, 2)
-
-        assertBalance("Client1", "USD", reserved = 0.0)
-        assertBalance("Client2", "USD", 50.01, 0.0)
-    }
+//    @Test
+//    fun testMatchNotStraightBuyMinRemaining() {
+//        testBalanceHolderWrapper.updateBalance("Client1", "BTC", 0.02)
+//        testBalanceHolderWrapper.updateBalance("Client2", "USD", 50.01)
+//
+//        testDictionariesDatabaseAccessor.addAsset(DictionariesInit.createAsset("BTC", 5))
+//
+//        initServices()
+//
+//        singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(buildLimitOrder(assetId = "BTCUSD", price = 5000.0, volume = -0.01, walletId = "Client1")))
+//        singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(buildLimitOrder(assetId = "BTCUSD", price = 5000.0, volume = -0.01, walletId = "Client1")))
+//
+//        clearMessageQueues()
+//        marketOrderService.processMessage(buildMarketOrderWrapper(buildMarketOrder(walletId = "Client2", assetId = "BTCUSD", volume = -50.01, straight = false)))
+//        assertEquals(1, clientsEventsQueue.size)
+//        val event = clientsEventsQueue.poll() as ExecutionEvent
+//        assertEquals(1, event.orders.size)
+//        val eventMarketOrder = event.orders.single { it.orderType == OrderType.MARKET }
+//        assertEquals(OutgoingOrderStatus.REJECTED, eventMarketOrder.status)
+//        assertEquals(OrderRejectReason.INVALID_VOLUME_ACCURACY, eventMarketOrder.rejectReason)
+//        assertEquals(0, eventMarketOrder.trades?.size)
+//
+//        assertOrderBookSize("BTCUSD", false, 2)
+//
+//        assertBalance("Client1", "USD", reserved = 0.0)
+//        assertBalance("Client2", "USD", 50.01, 0.0)
+//    }
 
     @Test
     fun testOverflowedRemainingVolume() {
@@ -1143,35 +1143,35 @@ class LimitOrderServiceTest : AbstractTest() {
         assertEquals(OutgoingOrderStatus.MATCHED, eventOrder.status)
     }
 
-    @Test
-    fun testReservedBalanceAfterMatching() {
-        val client = "Client"
-
-        testBalanceHolderWrapper.updateBalance(client, "BTC", 1.0)
-        testBalanceHolderWrapper.updateReservedBalance(client, "BTC", reservedBalance = 0.0)
-        testBalanceHolderWrapper.updateBalance("Client1", "BTC", 1.0)
-        testBalanceHolderWrapper.updateReservedBalance("Client1", "BTC", 0.0)
-        testBalanceHolderWrapper.updateBalance("Client2", "USD", 200.0)
-        testBalanceHolderWrapper.updateReservedBalance("Client2", "USD", 0.0)
-
-        testOrderBookWrapper.addLimitOrder(buildLimitOrder(walletId = "Client1", assetId = "BTCUSD", volume = -0.00952774, price = 10495.66))
-        testOrderBookWrapper.addLimitOrder(buildLimitOrder(walletId = "Client1", assetId = "BTCUSD", volume = -0.1, price = 10590.00))
-
-        initServices()
-
-        singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(buildLimitOrder(uid = "order1", walletId = client, assetId = "BTCUSD", volume = -0.00947867, price = 10550.0)))
-
-        marketOrderService.processMessage(buildMarketOrderWrapper(buildMarketOrder(
-                walletId = "Client2", assetId = "BTCUSD", volume = -100.0, straight = false
-        )))
-
-        assertNotNull(testOrderDatabaseAccessor.getOrders("BTCUSD", false).firstOrNull { it.externalId == "order1" })
-
-        marketOrderService.processMessage(buildMarketOrderWrapper(buildMarketOrder(
-                walletId = "Client2", assetId = "BTCUSD", volume = -100.0, straight = false
-        )))
-        assertBalance(client, "BTC", reserved = 0.0)
-    }
+//    @Test
+//    fun testReservedBalanceAfterMatching() {
+//        val client = "Client"
+//
+//        testBalanceHolderWrapper.updateBalance(client, "BTC", 1.0)
+//        testBalanceHolderWrapper.updateReservedBalance(client, "BTC", reservedBalance = 0.0)
+//        testBalanceHolderWrapper.updateBalance("Client1", "BTC", 1.0)
+//        testBalanceHolderWrapper.updateReservedBalance("Client1", "BTC", 0.0)
+//        testBalanceHolderWrapper.updateBalance("Client2", "USD", 200.0)
+//        testBalanceHolderWrapper.updateReservedBalance("Client2", "USD", 0.0)
+//
+//        testOrderBookWrapper.addLimitOrder(buildLimitOrder(walletId = "Client1", assetId = "BTCUSD", volume = -0.00952774, price = 10495.66))
+//        testOrderBookWrapper.addLimitOrder(buildLimitOrder(walletId = "Client1", assetId = "BTCUSD", volume = -0.1, price = 10590.00))
+//
+//        initServices()
+//
+//        singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(buildLimitOrder(uid = "order1", walletId = client, assetId = "BTCUSD", volume = -0.00947867, price = 10550.0)))
+//
+//        marketOrderService.processMessage(buildMarketOrderWrapper(buildMarketOrder(
+//                walletId = "Client2", assetId = "BTCUSD", volume = -100.0, straight = false
+//        )))
+//
+//        assertNotNull(testOrderDatabaseAccessor.getOrders("BTCUSD", false).firstOrNull { it.externalId == "order1" })
+//
+//        marketOrderService.processMessage(buildMarketOrderWrapper(buildMarketOrder(
+//                walletId = "Client2", assetId = "BTCUSD", volume = -100.0, straight = false
+//        )))
+//        assertBalance(client, "BTC", reserved = 0.0)
+//    }
 
     @Test
     fun testLimitOrderSellFullBalance() {

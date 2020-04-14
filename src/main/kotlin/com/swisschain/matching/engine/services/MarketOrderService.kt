@@ -92,12 +92,11 @@ class MarketOrderService @Autowired constructor(
         LOGGER.debug("Got market order messageId: ${messageWrapper.messageId}, " +
                 "id: ${parsedMessage.uid}, client: ${parsedMessage.walletId}, " +
                 "asset: ${parsedMessage.assetPairId}, volume: ${parsedMessage.volume}, " +
-                "straight: ${parsedMessage.straight}, fees: $feeInstructions")
+                "fees: $feeInstructions")
 
         val order = MarketOrder(uuidHolder.getNextValue(), parsedMessage.uid, parsedMessage.assetPairId, brokerId, parsedMessage.walletId, BigDecimal(parsedMessage.volume), null,
-                Processing.name, now, if (parsedMessage.hasTimestamp()) parsedMessage.timestamp.toDate() else now, now, null, parsedMessage.straight,
-                if (parsedMessage.hasReservedLimitVolume()) BigDecimal(parsedMessage.reservedLimitVolume.value) else null,
-                feeInstructions)
+                Processing.name, now, if (parsedMessage.hasTimestamp()) parsedMessage.timestamp.toDate() else now, now, null, true,
+                null, feeInstructions)
 
         try {
             marketOrderValidator.performValidation(order, getOrderBook(brokerId, order), feeInstructions)

@@ -146,7 +146,7 @@ class EventFactory {
             return createEvent {
                 CashTransferEventBuilder()
                         .setHeaderData(sequenceNumber, messageId, requestId, date, messageType)
-                        .setEventData(CashTransferData(clientBalanceUpdates, transferOperation, internalFees))
+                        .setEventData(CashTransferEventData(clientBalanceUpdates, transferOperation, internalFees))
                         .build()
             }
         }
@@ -161,7 +161,7 @@ class EventFactory {
             return createEvent {
                 ReservedBalanceUpdateEventBuilder()
                         .setHeaderData(sequenceNumber, messageId, requestId, date, messageType)
-                        .setEventData(ReservedBalanceUpdateData(clientBalanceUpdates, reservedBalanceUpdateOperation))
+                        .setEventData(ReservedBalanceUpdateEventData(clientBalanceUpdates, reservedBalanceUpdateOperation))
                         .build()
             }
         }

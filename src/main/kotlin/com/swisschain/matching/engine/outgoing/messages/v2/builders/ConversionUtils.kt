@@ -36,7 +36,8 @@ fun convertBalanceUpdates(clientBalanceUpdates: List<ClientBalanceUpdate>): List
     return clientBalanceUpdates.filter{
         it.newBalance.compareTo(it.oldBalance) != 0 || it.newReserved.compareTo(it.oldReserved) != 0
     }.map { balanceUpdate ->
-        BalanceUpdate(balanceUpdate.id,
+        BalanceUpdate(balanceUpdate.brokerId,
+                balanceUpdate.walletId,
                 balanceUpdate.asset,
                 bigDecimalToString(balanceUpdate.oldBalance)!!,
                 bigDecimalToString(balanceUpdate.newBalance)!!,
@@ -64,6 +65,7 @@ private fun convertLimitOrder(limitOrderWithTrades: LimitOrderWithTrades): Order
             limitOrder.id,
             limitOrder.externalId,
             limitOrder.assetPairId,
+            limitOrder.brokerId,
             limitOrder.walletId,
             orderSide(limitOrder),
             bigDecimalToString(limitOrder.volume)!!,
@@ -96,6 +98,7 @@ private fun convertMarketOrder(marketOrderWithTrades: MarketOrderWithTrades): Or
             marketOrder.id,
             marketOrder.externalId,
             marketOrder.assetPairId,
+            marketOrder.brokerId,
             marketOrder.walletId,
             orderSide(marketOrder),
             bigDecimalToString(marketOrder.volume)!!,

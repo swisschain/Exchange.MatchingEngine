@@ -80,7 +80,6 @@ companion object {
                     .setWalletId(order.walletId)
                     .setAssetPairId(order.assetPairId)
                     .setVolume(order.volume.toPlainString())
-                    .setStraight(order.straight)
             order.fees?.forEach {
                 builder.addFees(buildFee(it))
             }

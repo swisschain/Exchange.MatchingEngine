@@ -6,16 +6,17 @@ import com.swisschain.matching.engine.outgoing.messages.v2.events.common.Balance
 import com.swisschain.matching.engine.outgoing.messages.v2.events.common.CashTransfer
 import com.swisschain.matching.engine.outgoing.messages.v2.events.common.Header
 
-class CashTransferEventBuilder : EventBuilder<CashTransferData, CashTransferEvent>() {
+class CashTransferEventBuilder : EventBuilder<CashTransferEventData, CashTransferEvent>() {
 
     private var balanceUpdates: List<BalanceUpdate>? = null
     private var cashTransfer: CashTransfer? = null
 
     override fun getMessageType() = MessageType.CASH_TRANSFER
 
-    override fun setEventData(eventData: CashTransferData): EventBuilder<CashTransferData, CashTransferEvent> {
+    override fun setEventData(eventData: CashTransferEventData): EventBuilder<CashTransferEventData, CashTransferEvent> {
         balanceUpdates = convertBalanceUpdates(eventData.clientBalanceUpdates)
-        cashTransfer = CashTransfer(eventData.transferOperation.fromWalletId,
+        cashTransfer = CashTransfer(eventData.transferOperation.brokerId,
+                eventData.transferOperation.fromWalletId,
                 eventData.transferOperation.toWalletId,
                 bigDecimalToString(eventData.transferOperation.volume)!!,
                 bigDecimalToString(eventData.transferOperation.overdraftLimit),

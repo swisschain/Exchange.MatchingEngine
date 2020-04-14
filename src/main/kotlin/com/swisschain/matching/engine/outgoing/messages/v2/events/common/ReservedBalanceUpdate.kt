@@ -2,7 +2,8 @@ package com.swisschain.matching.engine.outgoing.messages.v2.events.common
 
 import com.swisschain.matching.engine.messages.outgoing.OutgoingMessages
 
-class ReservedBalanceUpdate(val walletId: String,
+class ReservedBalanceUpdate(val brokerId: String,
+                            val walletId: String,
                             val assetId: String,
                             val volume: String) : EventPart<OutgoingMessages.ReservedBalanceUpdateEvent.ReservedBalanceUpdate.Builder> {
 

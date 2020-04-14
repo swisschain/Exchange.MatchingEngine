@@ -198,9 +198,8 @@ class MarketOrderValidatorTest {
     private fun toMarketOrder(message: IncomingMessages.MarketOrder): MarketOrder {
         val now = Date()
         return MarketOrder(UUID.randomUUID().toString(), message.uid, message.assetPairId, DEFAULT_BROKER, message.walletId, BigDecimal(message.volume), null,
-                OrderStatus.Processing.name, now, Date(message.timestamp.seconds), now, null, message.straight,
-                if (message.hasReservedLimitVolume()) BigDecimal(message.reservedLimitVolume.value) else null,
-                listOf(NewFeeInstruction.create(message.feesList.first())))
+                OrderStatus.Processing.name, now, Date(message.timestamp.seconds), now, null, true,
+                null, listOf(NewFeeInstruction.create(message.feesList.first())))
     }
 
     private fun getOrderBook(isBuy: Boolean): PriorityBlockingQueue<LimitOrder> {
@@ -222,7 +221,6 @@ class MarketOrderValidatorTest {
                 .setTimestamp(Date().createProtobufTimestampBuilder())
                 .setWalletId(CLIENT_NAME)
                 .setVolume("1.0")
-                .setStraight(true)
                 .addFees(getFeeInstruction())
     }
 

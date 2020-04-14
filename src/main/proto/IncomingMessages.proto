@@ -134,11 +134,9 @@ message MarketOrder {
     string walletId = 3;
     string assetPairId = 4;
     string volume = 5;
-    bool straight = 6;
-    google.protobuf.StringValue reservedLimitVolume = 7;
-    repeated Fee fees = 8;
-    google.protobuf.StringValue messageId = 9;
-    string brokerId = 10;
+    repeated Fee fees = 6;
+    google.protobuf.StringValue messageId = 7;
+    string brokerId = 8;
 }
 
 message LimitOrderCancel {

@@ -11,7 +11,7 @@ class OrderBookEvent(header: Header,
                      val orderBook: OrderBook) : Event(header) {
 
     override fun buildGeneratedMessage(): OutgoingMessages.MessageWrapper {
-        val builder = OutgoingMessages.OrderBookSnapshot.newBuilder()
+        val builder = OutgoingMessages.OrderBookSnapshot.newBuilder().setBrokerId(orderBook.brokerId)
                 .setAsset(orderBook.assetPair).setIsBuy(orderBook.isBuy).setTimestamp(orderBook.timestamp.createProtobufTimestampBuilder())
         orderBook.prices.forEach { orderBookPrice ->
             builder.addLevels(OutgoingMessages.OrderBookSnapshot.OrderBookLevel.newBuilder()

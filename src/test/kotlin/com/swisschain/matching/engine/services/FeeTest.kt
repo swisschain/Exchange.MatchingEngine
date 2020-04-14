@@ -412,36 +412,36 @@ class FeeTest: AbstractTest() {
         assertEquals(5, testOrderDatabaseAccessor.getOrders("BTCUSD", false).size)
     }
 
-    @Test
-    fun testMarketNotEnoughFundsForFee3() {
-        testBalanceHolderWrapper.updateBalance(walletId = "Client1", assetId = "USD", balance = 764.99)
-        testBalanceHolderWrapper.updateBalance(walletId = "Client2", assetId = "BTC", balance = 0.05)
-
-        initServices()
-
-        for (i in 1..5) {
-            singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(buildLimitOrder(
-                    walletId = "Client2", assetId = "BTCUSD", price = 15000.0, volume = -0.01
-            )))
-        }
-
-        clientsEventsQueue.clear()
-
-        marketOrderService.processMessage(buildMarketOrderWrapper(buildMarketOrder(
-                walletId = "Client1", assetId = "BTCUSD", volume = -750.0, straight = false,
-                fees = listOf(buildLimitOrderFeeInstruction(
-                        type = FeeType.CLIENT_FEE,
-                        takerSizeType = FeeSizeType.PERCENTAGE,
-                        takerSize = BigDecimal.valueOf(0.02),
-                        targetWalletId = "Client3",
-                        assetIds = listOf("USD"))!!))))
-
-        val result = clientsEventsQueue.poll() as ExecutionEvent
-        assertEquals(OutgoingOrderStatus.REJECTED, result.orders.first().status)
-        assertEquals(OrderRejectReason.NOT_ENOUGH_FUNDS, result.orders.first().rejectReason)
-        assertEquals(0, testOrderDatabaseAccessor.getOrders("BTCUSD", true).size)
-        assertEquals(5, testOrderDatabaseAccessor.getOrders("BTCUSD", false).size)
-    }
+//    @Test
+//    fun testMarketNotEnoughFundsForFee3() {
+//        testBalanceHolderWrapper.updateBalance(walletId = "Client1", assetId = "USD", balance = 764.99)
+//        testBalanceHolderWrapper.updateBalance(walletId = "Client2", assetId = "BTC", balance = 0.05)
+//
+//        initServices()
+//
+//        for (i in 1..5) {
+//            singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(buildLimitOrder(
+//                    walletId = "Client2", assetId = "BTCUSD", price = 15000.0, volume = -0.01
+//            )))
+//        }
+//
+//        clientsEventsQueue.clear()
+//
+//        marketOrderService.processMessage(buildMarketOrderWrapper(buildMarketOrder(
+//                walletId = "Client1", assetId = "BTCUSD", volume = -750.0, straight = false,
+//                fees = listOf(buildLimitOrderFeeInstruction(
+//                        type = FeeType.CLIENT_FEE,
+//                        takerSizeType = FeeSizeType.PERCENTAGE,
+//                        takerSize = BigDecimal.valueOf(0.02),
+//                        targetWalletId = "Client3",
+//                        assetIds = listOf("USD"))!!))))
+//
+//        val result = clientsEventsQueue.poll() as ExecutionEvent
+//        assertEquals(OutgoingOrderStatus.REJECTED, result.orders.first().status)
+//        assertEquals(OrderRejectReason.NOT_ENOUGH_FUNDS, result.orders.first().rejectReason)
+//        assertEquals(0, testOrderDatabaseAccessor.getOrders("BTCUSD", true).size)
+//        assertEquals(5, testOrderDatabaseAccessor.getOrders("BTCUSD", false).size)
+//    }
 
     @Test
     fun testNotEnoughFundsForFeeOppositeAsset() {
