@@ -178,7 +178,7 @@ class MatchingEngine(private val genericLimitOrderService: GenericLimitOrderServ
                             if (isBuy) limitQuotingAssetOperation else limitBaseAssetOperation,
                             oppositeCashMovements,
                             relativeSpread,
-                            mapOf(Pair(assetPair.assetPairId, limitOrder.price)),
+                            mapOf(Pair(assetPair.symbol, limitOrder.price)),
                             availableBalances,
                             balancesGetter)
                 } catch (e: FeeException) {
@@ -191,7 +191,7 @@ class MatchingEngine(private val genericLimitOrderService: GenericLimitOrderServ
                     feeProcessor.processFee(order.brokerId, order.fees ?: emptyList(),
                             if (isBuy) baseAssetOperation else quotingAssetOperation,
                             ownCashMovements,
-                            mapOf(Pair(assetPair.assetPairId, limitOrder.price)),
+                            mapOf(Pair(assetPair.symbol, limitOrder.price)),
                             availableBalances,
                             balancesGetter)
                 } catch (e: NotEnoughFundsFeeException) {
@@ -263,10 +263,10 @@ class MatchingEngine(private val genericLimitOrderService: GenericLimitOrderServ
                 marketOrderTrades.add(TradeInfo(tradeId,
                         order.walletId,
                         NumberUtils.setScaleRoundHalfUp((if (isBuy) oppositeRoundedVolume else marketRoundedVolume).abs(), asset.accuracy).toPlainString(),
-                        asset.assetId,
+                        asset.symbol,
                         limitOrder.walletId,
                         NumberUtils.setScaleRoundHalfUp((if (isBuy) marketRoundedVolume else oppositeRoundedVolume).abs(), limitAsset.accuracy).toPlainString(),
-                        limitAsset.assetId,
+                        limitAsset.symbol,
                         limitOrder.price,
                         limitOrder.id,
                         limitOrder.externalId,
@@ -277,9 +277,9 @@ class MatchingEngine(private val genericLimitOrderService: GenericLimitOrderServ
                         takerFees,
                         roundedAbsoluteSpread,
                         roundedRelativeSpread,
-                        baseAsset.assetId,
+                        baseAsset.symbol,
                         baseMarketVolume,
-                        quotingAsset.assetId,
+                        quotingAsset.symbol,
                         quotingMarketVolume))
 
                 val limitOrderFee = if (limitOrder.fees == null || limitOrder.fees.isEmpty()) null else limitOrder.fees.first()
@@ -287,13 +287,13 @@ class MatchingEngine(private val genericLimitOrderService: GenericLimitOrderServ
                 limitOrdersReport.orders.add(LimitOrderWithTrades(limitOrder,
                         mutableListOf(LimitTradeInfo(tradeId,
                                 limitOrder.walletId,
-                                limitAsset.assetId,
+                                limitAsset.symbol,
                                 NumberUtils.setScaleRoundHalfUp((if (isBuy) marketRoundedVolume else oppositeRoundedVolume).abs(), limitAsset.accuracy).toPlainString(),
                                 limitOrder.price,
                                 now,
                                 order.id,
                                 order.externalId,
-                                asset.assetId,
+                                asset.symbol,
                                 order.walletId,
                                 NumberUtils.setScaleRoundHalfUp((if (isBuy) oppositeRoundedVolume else marketRoundedVolume).abs(), asset.accuracy).toPlainString(),
                                 executionContext.tradeIndex,
@@ -303,9 +303,9 @@ class MatchingEngine(private val genericLimitOrderService: GenericLimitOrderServ
                                 roundedAbsoluteSpread,
                                 roundedRelativeSpread,
                                 TradeRole.MAKER,
-                                baseAsset.assetId,
+                                baseAsset.symbol,
                                 baseLimitVolume,
-                                quotingAsset.assetId,
+                                quotingAsset.symbol,
                                 quotingLimitVolume))))
                 executionContext.tradeIndex++
 
@@ -408,11 +408,11 @@ class MatchingEngine(private val genericLimitOrderService: GenericLimitOrderServ
     }
 
     private fun getMarketBalance(availableBalances: MutableMap<String, MutableMap<String, BigDecimal>>, order: Order, asset: Asset): BigDecimal {
-        return availableBalances.getOrPut(order.walletId) { HashMap() }[asset.assetId]!!
+        return availableBalances.getOrPut(order.walletId) { HashMap() }[asset.symbol]!!
     }
 
     private fun setMarketBalance(availableBalances: MutableMap<String, MutableMap<String, BigDecimal>>, order: Order, asset: Asset, value: BigDecimal) {
-        availableBalances.getOrPut(order.walletId) { HashMap() }[asset.assetId] = value
+        availableBalances.getOrPut(order.walletId) { HashMap() }[asset.symbol] = value
     }
 
     private fun calculateExecutionPrice(order: Order,

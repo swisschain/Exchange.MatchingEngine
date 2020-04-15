@@ -47,11 +47,11 @@ class SingleLimitOrderService(private val executionContextFactory: ExecutionCont
                 messageWrapper.id!!,
                 MessageType.LIMIT_ORDER,
                 messageWrapper.processedMessage,
-                mapOf(Pair(context.assetPair!!.assetPairId, context.assetPair)),
+                mapOf(Pair(context.assetPair!!.symbol, context.assetPair)),
                 now,
                 LOGGER,
-                mapOf(Pair(context.baseAsset!!.assetId, context.baseAsset),
-                        Pair(context.quotingAsset!!.assetId, context.quotingAsset)),
+                mapOf(Pair(context.baseAsset!!.symbol, context.baseAsset),
+                        Pair(context.quotingAsset!!.symbol, context.quotingAsset)),
                 context.validationResult?.let { mapOf(Pair(order.id, it)) } ?: emptyMap())
 
         previousLimitOrdersProcessor.cancelAndReplaceOrders(order.brokerId,

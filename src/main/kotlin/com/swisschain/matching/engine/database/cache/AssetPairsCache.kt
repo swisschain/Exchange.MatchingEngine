@@ -32,7 +32,7 @@ class AssetPairsCache @Autowired constructor(
         assetPairsById.forEach {
             val brokerPairs = knownAssetPairs.getOrPut(it.key) { HashSet() }
             it.value.values.forEach{
-                brokerPairs.add(it.assetPairId)
+                brokerPairs.add(it.symbol)
             }
         }
         LOGGER.info("Loaded ${assetPairsById.values.sumBy { it.size }} assets pairs")

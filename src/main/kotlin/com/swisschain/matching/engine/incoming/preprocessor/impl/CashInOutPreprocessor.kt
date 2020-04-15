@@ -119,7 +119,7 @@ class CashInOutPreprocessor(cashInOutContextParser: CashInOutContextParser,
                 .setStatus(IncomingMessages.Status.forNumber(status.type))
                 .setStatusReason(StringValue.of(errorMessage)))
         logger.info("Cash in/out operation (${context.cashInOutOperation.externalId}), messageId: ${messageWrapper.messageId} for client ${context.cashInOutOperation.walletId}, " +
-                "asset ${context.cashInOutOperation.asset!!.assetId}, amount: ${NumberUtils.roundForPrint(context.cashInOutOperation.amount)}: $errorMessage")
+                "asset ${context.cashInOutOperation.asset!!.symbol}, amount: ${NumberUtils.roundForPrint(context.cashInOutOperation.amount)}: $errorMessage")
     }
 
     private fun isCashIn(amount: BigDecimal): Boolean {

@@ -149,13 +149,13 @@ class FeeProcessor(private val assetsHolder: AssetsHolder,
         val receiptOperation = receiptOperationWrapper.baseReceiptOperation
         val operationAsset = assetsHolder.getAsset(receiptOperation.brokerId, receiptOperation.assetId)
         val feeAsset = getFeeAsset(brokerId, feeInstruction, operationAsset)
-        val isAnotherAsset = operationAsset.assetId != feeAsset.assetId
+        val isAnotherAsset = operationAsset.symbol != feeAsset.symbol
 
         val absFeeAmount = NumberUtils.setScaleRoundUp(when (feeSizeType) {
             FeeSizeType.PERCENTAGE -> {
                 // In case of cash out receipt operation has a negative amount, but fee amount should be positive
                 val absBaseAssetFeeAmount = receiptOperation.amount.abs() * feeSize
-                (if (isAnotherAsset) absBaseAssetFeeAmount * computeInvertCoef(brokerId, operationAsset.assetId, feeAsset.assetId, convertPrices) else absBaseAssetFeeAmount) * (feeCoef ?: BigDecimal.ONE)
+                (if (isAnotherAsset) absBaseAssetFeeAmount * computeInvertCoef(brokerId, operationAsset.symbol, feeAsset.symbol, convertPrices) else absBaseAssetFeeAmount) * (feeCoef ?: BigDecimal.ONE)
             }
             FeeSizeType.ABSOLUTE -> feeSize * (feeCoef ?: BigDecimal.ONE)
         }, feeAsset.accuracy)
@@ -182,15 +182,15 @@ class FeeProcessor(private val assetsHolder: AssetsHolder,
             throw FeeException("Source client is null for external fee")
         }
         val clientBalances = balances.getOrPut(feeInstruction.sourceWalletId) { HashMap() }
-        val balance = clientBalances.getOrPut(feeAsset.assetId) { balancesGetter.getAvailableBalance(brokerId, feeInstruction.sourceWalletId, feeAsset.assetId) }
+        val balance = clientBalances.getOrPut(feeAsset.symbol) { balancesGetter.getAvailableBalance(brokerId, feeInstruction.sourceWalletId, feeAsset.symbol) }
         if (balance < absFeeAmount) {
-            throw NotEnoughFundsFeeException("Not enough funds for fee (asset: ${feeAsset.assetId}, available balance: $balance, feeAmount: $absFeeAmount)")
+            throw NotEnoughFundsFeeException("Not enough funds for fee (asset: ${feeAsset.symbol}, available balance: $balance, feeAmount: $absFeeAmount)")
         }
-        clientBalances[feeAsset.assetId] = NumberUtils.setScaleRoundHalfUp(balance - absFeeAmount, feeAsset.accuracy)
-        operations.add(WalletOperation(brokerId, feeInstruction.sourceWalletId, feeAsset.assetId, -absFeeAmount))
-        operations.add(WalletOperation(brokerId, feeInstruction.targetWalletId!!, feeAsset.assetId, absFeeAmount))
+        clientBalances[feeAsset.symbol] = NumberUtils.setScaleRoundHalfUp(balance - absFeeAmount, feeAsset.accuracy)
+        operations.add(WalletOperation(brokerId, feeInstruction.sourceWalletId, feeAsset.symbol, -absFeeAmount))
+        operations.add(WalletOperation(brokerId, feeInstruction.targetWalletId!!, feeAsset.symbol, absFeeAmount))
         return FeeTransfer(feeInstruction.sourceWalletId, feeInstruction.targetWalletId,
-                absFeeAmount, feeAsset.assetId, if (feeCoef != null) NumberUtils.setScaleRoundHalfUp(feeCoef, FEE_COEF_ACCURACY) else null)
+                absFeeAmount, feeAsset.symbol, if (feeCoef != null) NumberUtils.setScaleRoundHalfUp(feeCoef, FEE_COEF_ACCURACY) else null)
     }
 
     private fun processClientFee(brokerId: String,
@@ -205,14 +205,14 @@ class FeeProcessor(private val assetsHolder: AssetsHolder,
                                  balancesGetter: BalancesGetter): FeeTransfer? {
         val receiptOperation = receiptOperationWrapper.currentReceiptOperation
         val clientBalances = balances.getOrPut(receiptOperation.walletId) { HashMap() }
-        val balance = clientBalances.getOrPut(feeAsset.assetId) { balancesGetter.getAvailableBalance(brokerId, receiptOperation.walletId, feeAsset.assetId) }
+        val balance = clientBalances.getOrPut(feeAsset.symbol) { balancesGetter.getAvailableBalance(brokerId, receiptOperation.walletId, feeAsset.symbol) }
 
         if (isAnotherAsset) {
             if (balance < absFeeAmount) {
-                throw NotEnoughFundsFeeException("Not enough funds for fee (asset: ${feeAsset.assetId}, available balance: $balance, feeAmount: $absFeeAmount)")
+                throw NotEnoughFundsFeeException("Not enough funds for fee (asset: ${feeAsset.symbol}, available balance: $balance, feeAmount: $absFeeAmount)")
             }
-            clientBalances[feeAsset.assetId] = NumberUtils.setScaleRoundHalfUp(balance - absFeeAmount, feeAsset.accuracy)
-            operations.add(WalletOperation(brokerId, receiptOperation.walletId, feeAsset.assetId, -absFeeAmount))
+            clientBalances[feeAsset.symbol] = NumberUtils.setScaleRoundHalfUp(balance - absFeeAmount, feeAsset.accuracy)
+            operations.add(WalletOperation(brokerId, receiptOperation.walletId, feeAsset.symbol, -absFeeAmount))
         } else {
             val baseReceiptOperationAmount = receiptOperationWrapper.baseReceiptOperation.amount
             if (absFeeAmount > baseReceiptOperationAmount.abs()) {
@@ -227,10 +227,10 @@ class FeeProcessor(private val assetsHolder: AssetsHolder,
         }
 
         operations.add(WalletOperation(brokerId, feeInstruction.targetWalletId!!,
-                feeAsset.assetId, absFeeAmount))
+                feeAsset.symbol, absFeeAmount))
 
         return FeeTransfer(receiptOperation.walletId, feeInstruction.targetWalletId, absFeeAmount,
-                feeAsset.assetId, if (feeCoef != null) NumberUtils.setScaleRoundHalfUp(feeCoef, FEE_COEF_ACCURACY) else null)
+                feeAsset.symbol, if (feeCoef != null) NumberUtils.setScaleRoundHalfUp(feeCoef, FEE_COEF_ACCURACY) else null)
     }
 
     private fun getFeeAsset(brokerId: String, feeInstruction: FeeInstruction, operationAsset: Asset): Asset {
@@ -247,10 +247,10 @@ class FeeProcessor(private val assetsHolder: AssetsHolder,
         } catch (e: Exception) {
             throw FeeException(e.message ?: "Unable to get asset pair for ($operationAssetId, $feeAssetId})")
         }
-        val price = if (convertPrices.containsKey(assetPair.assetPairId)) {
-            convertPrices[assetPair.assetPairId]!!
+        val price = if (convertPrices.containsKey(assetPair.symbol)) {
+            convertPrices[assetPair.symbol]!!
         } else {
-            val orderBook = genericLimitOrderService.getOrderBook(brokerId, assetPair.assetPairId)
+            val orderBook = genericLimitOrderService.getOrderBook(brokerId, assetPair.symbol)
             val askPrice = orderBook.getAskPrice()
             val bidPrice = orderBook.getBidPrice()
             if (askPrice > BigDecimal.ZERO && bidPrice > BigDecimal.ZERO) NumberUtils.divideWithMaxScale((askPrice + bidPrice), BigDecimal.valueOf(2)) else BigDecimal.ZERO

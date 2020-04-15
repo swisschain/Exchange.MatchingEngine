@@ -49,7 +49,7 @@ class ExecutionContextFactory(private val balancesHolder: BalancesHolder,
                 }
                 .asSequence()
                 .map { assetsHolder.getAsset(it.first, it.second) }
-                .groupBy { it.assetId }
+                .groupBy { it.symbol }
                 .mapValues { it.value.single() }
     }
 }

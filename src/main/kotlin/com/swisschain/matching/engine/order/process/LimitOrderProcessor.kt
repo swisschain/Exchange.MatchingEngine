@@ -257,7 +257,7 @@ class LimitOrderProcessor(private val limitOrderInputValidator: LimitOrderInputV
                 if (!applicationSettingsHolder.isTrustedClient(orderCopy.walletId)) {
                     val newReservedBalance = NumberUtils.setScaleRoundHalfUp(orderCopy.reservedLimitVolume!!, limitAsset.accuracy)
                     orderContext.ownWalletOperations!!.add(WalletOperation(orderCopy.brokerId, orderCopy.walletId,
-                            limitAsset.assetId,
+                            limitAsset.symbol,
                             BigDecimal.ZERO,
                             newReservedBalance))
                 }
@@ -323,7 +323,7 @@ class LimitOrderProcessor(private val limitOrderInputValidator: LimitOrderInputV
         val limitVolume = orderContext.limitVolume!!
 
         val walletOperation = WalletOperation(order.brokerId, order.walletId,
-                orderContext.limitAsset!!.assetId,
+                orderContext.limitAsset!!.symbol,
                 BigDecimal.ZERO,
                 limitVolume)
 
@@ -349,7 +349,7 @@ class LimitOrderProcessor(private val limitOrderInputValidator: LimitOrderInputV
     private fun calculateAvailableBalance(orderContext: LimitOrderExecutionContext): BigDecimal? {
         val balancesGetter = orderContext.executionContext.walletOperationsProcessor
         val limitAsset = orderContext.limitAsset ?: return null
-        return NumberUtils.setScaleRoundHalfUp(balancesGetter.getAvailableBalance(orderContext.order.brokerId, orderContext.order.walletId, limitAsset.assetId), limitAsset.accuracy)
+        return NumberUtils.setScaleRoundHalfUp(balancesGetter.getAvailableBalance(orderContext.order.brokerId, orderContext.order.walletId, limitAsset.symbol), limitAsset.accuracy)
     }
 
     private fun getOrderInfo(order: LimitOrder) = "Limit order (id: ${order.externalId})"

@@ -47,7 +47,7 @@ class StopOrderBookProcessor(private val limitOrderProcessor: LimitOrderProcesso
 
     private fun getStopOrderToExecute(executionContext: ExecutionContext): LimitOrder? {
         executionContext.assetPairsById.values.forEach { assetPair ->
-            getStopOrderToExecuteByAssetPair(assetPair.brokerId, assetPair.assetPairId, executionContext)?.let { stopOrderToExecute ->
+            getStopOrderToExecuteByAssetPair(assetPair.brokerId, assetPair.symbol, executionContext)?.let { stopOrderToExecute ->
                 return stopOrderToExecute
             }
         }

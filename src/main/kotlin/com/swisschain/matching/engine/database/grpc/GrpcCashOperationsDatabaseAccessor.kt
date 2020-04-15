@@ -29,7 +29,7 @@ class GrpcCashOperationsDatabaseAccessor(private val grpcConnectionString: Strin
     private fun convertToTransferOperation(operation: TransferOperation): GrpcCashOperations.TransferOperation {
         with (operation) {
             return GrpcCashOperations.TransferOperation.newBuilder().setExternalId(externalId)
-                    .setAssetId(asset.assetId).setFromWalletId(fromWalletId).setToWalletId(toWalletId)
+                    .setAssetId(asset.symbol).setFromWalletId(fromWalletId).setToWalletId(toWalletId)
                     .setTimestamp(dateTime.createProtobufTimestampBuilder()).setAmount(volume.toString()).build()
         }
     }

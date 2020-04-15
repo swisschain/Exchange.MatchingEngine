@@ -43,7 +43,7 @@ class CashTransferOperationInputValidatorImpl @Autowired constructor(private val
     private fun isAssetEnabled(cashTransferParsedData: CashTransferParsedData) {
         val cashTransferContext = getCashTransferContext(cashTransferParsedData)
 
-        if (applicationSettingsHolder.isAssetDisabled(cashTransferContext.transferOperation.asset!!.assetId)) {
+        if (applicationSettingsHolder.isAssetDisabled(cashTransferContext.transferOperation.asset!!.symbol)) {
             val transferOperation = cashTransferContext.transferOperation
             LOGGER.info("Cash transfer operation (${transferOperation.externalId}) from client ${transferOperation.fromWalletId} " +
                     "to client ${transferOperation.toWalletId}, asset ${cashTransferParsedData.assetId}, " +

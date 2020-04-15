@@ -99,7 +99,7 @@ class ReservedVolumesRecalculator @Autowired constructor(private val orderBookDa
                     }
 
                     val clientAssets = reservedBalances.getOrPut(order.walletId) { HashMap() }
-                    val balance = clientAssets.getOrPut(asset.assetId) { ClientOrdersReservedVolume() }
+                    val balance = clientAssets.getOrPut(asset.symbol) { ClientOrdersReservedVolume() }
                     val newBalance = NumberUtils.setScaleRoundHalfUp(balance.volume + reservedVolume, asset.accuracy)
                     balance.volume = newBalance
                     balance.orderIds.add(order.externalId)

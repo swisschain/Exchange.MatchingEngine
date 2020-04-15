@@ -75,7 +75,7 @@ class MultiLimitOrderService(private val executionContextFactory: ExecutionConte
                 messageWrapper.id!!,
                 MessageType.MULTI_LIMIT_ORDER,
                 messageWrapper.processedMessage,
-                mapOf(Pair(assetPair.assetPairId, assetPair)),
+                mapOf(Pair(assetPair.symbol, assetPair)),
                 now,
                 LOGGER)
 

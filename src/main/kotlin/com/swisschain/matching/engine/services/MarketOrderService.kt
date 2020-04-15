@@ -121,7 +121,7 @@ class MarketOrderService @Autowired constructor(
                 messageWrapper.id!!,
                 MessageType.MARKET_ORDER,
                 messageWrapper.processedMessage,
-                mapOf(Pair(assetPair!!.assetPairId, assetPair)),
+                mapOf(Pair(assetPair!!.symbol, assetPair)),
                 now,
                 LOGGER)
 
@@ -130,7 +130,7 @@ class MarketOrderService @Autowired constructor(
         val matchingResult = matchingEngine.match(order,
                 getOrderBook(order),
                 messageWrapper.messageId!!,
-                priceDeviationThreshold = if (assetPair.marketOrderPriceDeviationThreshold >= BigDecimal.ZERO) assetPair.marketOrderPriceDeviationThreshold else applicationSettingsHolder.marketOrderPriceDeviationThreshold(assetPair.assetPairId),
+                priceDeviationThreshold = if (assetPair.marketOrderPriceDeviationThreshold >= BigDecimal.ZERO) assetPair.marketOrderPriceDeviationThreshold else applicationSettingsHolder.marketOrderPriceDeviationThreshold(assetPair.symbol),
                 executionContext = executionContext)
         marketOrderExecutionContext.matchingResult = matchingResult
 

@@ -43,7 +43,7 @@ class CashInOutOperationService(private val balancesHolder: BalancesHolder,
 
         val asset = cashInOutOperation.asset!!
         LOGGER.debug("Processing cash in/out messageId: ${cashInOutContext.messageId} operation (${cashInOutOperation.externalId})" +
-                " for client ${cashInOutContext.cashInOutOperation.walletId}, asset ${asset.assetId}," +
+                " for client ${cashInOutContext.cashInOutOperation.walletId}, asset ${asset.symbol}," +
                 " amount: ${NumberUtils.roundForPrint(walletOperation.amount)}, feeInstructions: $feeInstructions")
 
 
@@ -102,7 +102,7 @@ class CashInOutOperationService(private val balancesHolder: BalancesHolder,
 
 
         LOGGER.info("Cash in/out walletOperation (${cashInOutOperation.externalId}) for client ${cashInOutContext.cashInOutOperation.walletId}, " +
-                "asset ${cashInOutOperation.asset.assetId}, " +
+                "asset ${cashInOutOperation.asset.symbol}, " +
                 "amount: ${NumberUtils.roundForPrint(walletOperation.amount)} processed")
     }
 
@@ -127,6 +127,6 @@ class CashInOutOperationService(private val balancesHolder: BalancesHolder,
                 .setStatus(IncomingMessages.Status.forNumber(status.type))
                 .setStatusReason(StringValue.of(errorMessage)))
         LOGGER.info("Cash in/out operation (${context.cashInOutOperation.externalId}), messageId: ${messageWrapper.messageId} for client ${context.cashInOutOperation.walletId}, " +
-                "asset ${context.cashInOutOperation.asset!!.assetId}, amount: ${NumberUtils.roundForPrint(context.cashInOutOperation.amount)}: $errorMessage")
+                "asset ${context.cashInOutOperation.asset!!.symbol}, amount: ${NumberUtils.roundForPrint(context.cashInOutOperation.amount)}: $errorMessage")
     }
 }

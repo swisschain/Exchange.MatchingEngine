@@ -36,7 +36,7 @@ class DisabledFunctionalityRulesHolder(val applicationSettingsCache: Application
         }
 
         return disabledFunctionalityDataToCheck.disabledOperations.contains(OperationType.TRADE)
-                || disabledFunctionalityDataToCheck.disabledAssetPairIds.contains(assetPair.assetPairId)
+                || disabledFunctionalityDataToCheck.disabledAssetPairIds.contains(assetPair.symbol)
     }
 
     fun isCashInDisabled(asset: Asset?): Boolean {
@@ -47,9 +47,9 @@ class DisabledFunctionalityRulesHolder(val applicationSettingsCache: Application
         }
 
         return disabledFunctionalityDataToCheck.disabledOperations.contains(OperationType.CASH_IN)
-                || (disabledFunctionalityDataToCheck.disabledOperationsByAsset[asset.assetId]?.contains(OperationType.CASH_IN)
+                || (disabledFunctionalityDataToCheck.disabledOperationsByAsset[asset.symbol]?.contains(OperationType.CASH_IN)
                 ?: false)
-                || disabledFunctionalityDataToCheck.disabledAssetIds.contains(asset.assetId)
+                || disabledFunctionalityDataToCheck.disabledAssetIds.contains(asset.symbol)
 
     }
 
@@ -61,9 +61,9 @@ class DisabledFunctionalityRulesHolder(val applicationSettingsCache: Application
         }
 
         return disabledFunctionalityDataToCheck.disabledOperations.contains(OperationType.CASH_OUT)
-                || (disabledFunctionalityDataToCheck.disabledOperationsByAsset[asset.assetId]?.contains(OperationType.CASH_OUT)
+                || (disabledFunctionalityDataToCheck.disabledOperationsByAsset[asset.symbol]?.contains(OperationType.CASH_OUT)
                 ?: false)
-                || disabledFunctionalityDataToCheck.disabledAssetIds.contains(asset.assetId)
+                || disabledFunctionalityDataToCheck.disabledAssetIds.contains(asset.symbol)
     }
 
     fun isCashTransferDisabled(asset: Asset?): Boolean {
@@ -74,9 +74,9 @@ class DisabledFunctionalityRulesHolder(val applicationSettingsCache: Application
         }
 
         return disabledFunctionalityDataToCheck.disabledOperations.contains(OperationType.CASH_TRANSFER)
-                || (disabledFunctionalityDataToCheck.disabledOperationsByAsset[asset.assetId]?.contains(OperationType.CASH_TRANSFER)
+                || (disabledFunctionalityDataToCheck.disabledOperationsByAsset[asset.symbol]?.contains(OperationType.CASH_TRANSFER)
                 ?: false)
-                || disabledFunctionalityDataToCheck.disabledAssetIds.contains(asset.assetId)
+                || disabledFunctionalityDataToCheck.disabledAssetIds.contains(asset.symbol)
     }
 
     @PostConstruct
@@ -95,12 +95,12 @@ class DisabledFunctionalityRulesHolder(val applicationSettingsCache: Application
 
             if (disabledRule.assetId != null) {
                 if (disabledRule.operationType == OperationType.TRADE) {
-                    disabledAssetPairIds.addAll(assetsPairsHolder.getAssetPairsByAssetId(disabledRule.brokerId, disabledRule.assetId).map { it.assetPairId })
+                    disabledAssetPairIds.addAll(assetsPairsHolder.getAssetPairsByAssetId(disabledRule.brokerId, disabledRule.assetId).map { it.symbol })
                     return@forEach
                 }
 
                 if (disabledRule.operationType == null) {
-                    disabledAssetPairIds.addAll(assetsPairsHolder.getAssetPairsByAssetId(disabledRule.brokerId, disabledRule.assetId).map { it.assetPairId })
+                    disabledAssetPairIds.addAll(assetsPairsHolder.getAssetPairsByAssetId(disabledRule.brokerId, disabledRule.assetId).map { it.symbol })
                     disabledAssetIds.add(disabledRule.assetId)
                     return@forEach
                 } else {

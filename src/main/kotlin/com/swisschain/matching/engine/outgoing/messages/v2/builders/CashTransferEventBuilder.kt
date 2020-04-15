@@ -20,7 +20,7 @@ class CashTransferEventBuilder : EventBuilder<CashTransferEventData, CashTransfe
                 eventData.transferOperation.toWalletId,
                 bigDecimalToString(eventData.transferOperation.volume)!!,
                 bigDecimalToString(eventData.transferOperation.overdraftLimit),
-                eventData.transferOperation.asset!!.assetId,
+                eventData.transferOperation.asset!!.symbol,
                 convertFees(eventData.internalFees))
         return this
     }

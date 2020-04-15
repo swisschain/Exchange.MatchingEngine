@@ -23,11 +23,11 @@ class CashInOutOperationBusinessValidatorImpl(private val balancesHolder: Balanc
         val amount = cashInOutContext.cashInOutOperation.amount
         if (amount < BigDecimal.ZERO) {
             val asset = cashInOutContext.cashInOutOperation.asset!!
-            val balance = balancesHolder.getBalance(cashInOutContext.cashInOutOperation.brokerId, cashInOutContext.cashInOutOperation.walletId, asset.assetId)
-            val reservedBalance = balancesHolder.getReservedBalance(cashInOutContext.cashInOutOperation.brokerId, cashInOutContext.cashInOutOperation.walletId, asset.assetId)
+            val balance = balancesHolder.getBalance(cashInOutContext.cashInOutOperation.brokerId, cashInOutContext.cashInOutOperation.walletId, asset.symbol)
+            val reservedBalance = balancesHolder.getReservedBalance(cashInOutContext.cashInOutOperation.brokerId, cashInOutContext.cashInOutOperation.walletId, asset.symbol)
             if (NumberUtils.setScaleRoundHalfUp(balance - reservedBalance + amount, asset.accuracy) < BigDecimal.ZERO) {
                 LOGGER.info("Cash out operation (${cashInOutContext.cashInOutOperation.externalId}) " +
-                        "for client ${cashInOutContext.cashInOutOperation.walletId} asset ${asset.assetId}, " +
+                        "for client ${cashInOutContext.cashInOutOperation.walletId} asset ${asset.symbol}, " +
                         "volume: ${NumberUtils.roundForPrint(amount)}: low balance $balance, " +
                         "reserved balance $reservedBalance")
                 throw ValidationException(ValidationException.Validation.LOW_BALANCE)

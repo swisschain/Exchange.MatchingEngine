@@ -44,7 +44,7 @@ class LimitOrdersCancelExecutorImpl(private val assetsPairsHolder: AssetsPairsHo
                 .map { Pair(it.brokerId, it.assetPairId) }
                 .toSet()
                 .mapNotNull { assetsPairsHolder.getAssetPairAllowNulls(it.first, it.second) }
-                .groupBy { it.assetPairId }
+                .groupBy { it.symbol }
                 .mapValues { it.value.single() }
     }
 }

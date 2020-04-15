@@ -24,7 +24,7 @@ class GrpcDictionariesDatabaseAccessor(private val grpcConnectionString: String)
             val response = assetGrpcStub.getAll(Empty.getDefaultInstance())
             response.assetsList.forEach { asset ->
                 val convertedAsset = convertToAsset(asset)
-                result.getOrPut(convertedAsset.assetId) { HashMap<String, Asset>() } [convertedAsset.assetId] = convertedAsset
+                result.getOrPut(convertedAsset.symbol) { HashMap<String, Asset>() } [convertedAsset.symbol] = convertedAsset
             }
         } catch (e: Exception) {
             LOGGER.error("Unable to load assets: ${e.message}", e)
@@ -36,8 +36,8 @@ class GrpcDictionariesDatabaseAccessor(private val grpcConnectionString: String)
 
     override fun loadAsset(brokerId: String, assetId: String): Asset? {
         try {
-            val response = assetGrpcStub.getById(
-                    GrpcDictionaries.GetAssetByIdRequest.newBuilder().setBrokerId(brokerId).setAssetId(assetId).build())
+            val response = assetGrpcStub.getBySymbol(
+                    GrpcDictionaries.GetAssetBySymbolRequest.newBuilder().setBrokerId(brokerId).setSymbol(assetId).build())
             return if (response != null) {
                 convertToAsset(response.asset)
             } else {
@@ -66,7 +66,7 @@ class GrpcDictionariesDatabaseAccessor(private val grpcConnectionString: String)
             val response = assetPairGrpcStub.getAll(Empty.getDefaultInstance())
             response.assetPairsList.forEach { assetPair ->
                 val convertedAssetPair = convertToAssetPair(assetPair)
-                result.getOrPut(convertedAssetPair.brokerId) { HashMap<String, AssetPair>() } [convertedAssetPair.assetPairId] = convertedAssetPair
+                result.getOrPut(convertedAssetPair.brokerId) { HashMap<String, AssetPair>() } [convertedAssetPair.symbol] = convertedAssetPair
             }
         } catch (e: Exception) {
             LOGGER.error("Unable to load asset pairs: ${e.message}", e)
@@ -78,8 +78,8 @@ class GrpcDictionariesDatabaseAccessor(private val grpcConnectionString: String)
 
     override fun loadAssetPair(brokerId: String, assetPairId: String): AssetPair? {
         try {
-            val response = assetPairGrpcStub.getById(
-                    GrpcDictionaries.GetAssetPairByIdRequest.newBuilder().setBrokerId(brokerId).setAssetPairId(assetPairId).build())
+            val response = assetPairGrpcStub.getBySymbol(
+                    GrpcDictionaries.GetAssetPairBySymbolRequest.newBuilder().setBrokerId(brokerId).setSymbol(assetPairId).build())
             return if (response != null) {
                 convertToAssetPair(response.assetPair)
             } else {
@@ -96,9 +96,9 @@ class GrpcDictionariesDatabaseAccessor(private val grpcConnectionString: String)
     private fun convertToAssetPair(assetPair: GrpcDictionaries.AssetPair): AssetPair {
         return AssetPair(
                 assetPair.brokerId,
-                assetPair.id,
-                assetPair.baseAssetId,
-                assetPair.quotingAssetId,
+                assetPair.symbol,
+                assetPair.baseAsset,
+                assetPair.quotingAsset,
                 assetPair.accuracy,
                 assetPair.minVolume.toBigDecimal(),
                 assetPair.maxVolume.toBigDecimal(),

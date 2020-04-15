@@ -89,7 +89,7 @@ class CashTransferOperationService(private val balancesHolder: BalancesHolder,
                                          now: Date) {
         val operations = LinkedList<WalletOperation>()
 
-        val assetId = operation.asset.assetId
+        val assetId = operation.asset.symbol
         operations.add(WalletOperation(operation.brokerId, operation.fromWalletId, assetId, -operation.volume))
         val receiptOperation = WalletOperation(operation.brokerId, operation.toWalletId, assetId, operation.volume)
         operations.add(receiptOperation)

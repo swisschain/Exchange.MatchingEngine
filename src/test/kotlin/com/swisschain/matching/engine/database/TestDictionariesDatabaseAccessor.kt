@@ -17,7 +17,7 @@ class TestDictionariesDatabaseAccessor : DictionariesDatabaseAccessor {
     }
 
     fun addAssetPair(pair: AssetPair) {
-        assetPairs.getOrPut(pair.brokerId) { HashMap<String, AssetPair>() }[pair.assetPairId] = pair
+        assetPairs.getOrPut(pair.brokerId) { HashMap<String, AssetPair>() }[pair.symbol] = pair
     }
 
     fun clear() {
@@ -28,7 +28,7 @@ class TestDictionariesDatabaseAccessor : DictionariesDatabaseAccessor {
     val assets = HashMap<String, MutableMap<String, Asset>>()
 
     fun addAsset(asset: Asset) {
-        assets.getOrPut(asset.brokerId) { HashMap<String, Asset>() }[asset.assetId] = asset
+        assets.getOrPut(asset.brokerId) { HashMap<String, Asset>() }[asset.symbol] = asset
     }
 
     override fun loadAsset(brokerId: String, assetId: String): Asset? {

@@ -53,7 +53,7 @@ class MatchingResultHandlingHelper(private val applicationSettingsHolder: Applic
     }
 
     private fun createCancelledOppositeOrderWalletOperation(orderExecutionContext: OrderExecutionContext<*>, oppositeOrder: LimitOrder): WalletOperation {
-        val assetId = orderExecutionContext.oppositeLimitAsset!!.assetId
+        val assetId = orderExecutionContext.oppositeLimitAsset!!.symbol
         val reservedVolume = oppositeOrder.reservedLimitVolume
                 ?: if (oppositeOrder.isBuySide()) oppositeOrder.getAbsRemainingVolume() * oppositeOrder.price else oppositeOrder.getAbsRemainingVolume()
         val reservedBalance = orderExecutionContext.executionContext.walletOperationsProcessor.getReservedBalance(oppositeOrder.brokerId, oppositeOrder.walletId, assetId)

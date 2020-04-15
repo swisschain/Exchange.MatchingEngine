@@ -43,7 +43,7 @@ class CashInOutOperationInputValidatorImpl constructor(private val applicationSe
 
         if (!volumeValid) {
             LOGGER.info("Volume accuracy is invalid client: ${cashInOutContext.cashInOutOperation.walletId}, " +
-                    "asset: ${asset.assetId}, volume: $amount")
+                    "asset: ${asset.symbol}, volume: $amount")
             throw ValidationException(ValidationException.Validation.INVALID_VOLUME_ACCURACY)
         }
     }
@@ -51,9 +51,9 @@ class CashInOutOperationInputValidatorImpl constructor(private val applicationSe
     private fun isAssetEnabled(cashInOutContext: CashInOutContext) {
         val amount = cashInOutContext.cashInOutOperation.amount
         val asset = cashInOutContext.cashInOutOperation.asset
-        if (amount < BigDecimal.ZERO && applicationSettingsHolder.isAssetDisabled(asset!!.assetId)) {
+        if (amount < BigDecimal.ZERO && applicationSettingsHolder.isAssetDisabled(asset!!.symbol)) {
             LOGGER.info("Cash out operation (${cashInOutContext.cashInOutOperation.externalId}) for client ${cashInOutContext.cashInOutOperation.walletId} " +
-                    "asset ${asset.assetId}, " +
+                    "asset ${asset.symbol}, " +
                     "volume: ${NumberUtils.roundForPrint(amount)}: disabled asset")
             throw ValidationException(ValidationException.Validation.DISABLED_ASSET)
         }

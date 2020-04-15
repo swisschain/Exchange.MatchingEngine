@@ -80,7 +80,7 @@ class LimitOrderInputValidatorTest {
         singleLimitContextBuilder.assetPair(MIN_VOLUME_ASSET_PAIR)
         //when
         try {
-            limitOrderInputValidator.validateStopOrder(SingleLimitOrderParsedData(getMessageWrapper(singleLimitContextBuilder.build()), MIN_VOLUME_ASSET_PAIR.assetPairId))
+            limitOrderInputValidator.validateStopOrder(SingleLimitOrderParsedData(getMessageWrapper(singleLimitContextBuilder.build()), MIN_VOLUME_ASSET_PAIR.symbol))
         } catch (e: OrderValidationException) {
             //then
             assertEquals(OrderStatus.InvalidPrice, e.orderStatus)
@@ -92,13 +92,13 @@ class LimitOrderInputValidatorTest {
     fun testAssetDoesNotExist() {
         //given
         val singleLimitContextBuilder = getSingleLimitContextBuilder()
-        singleLimitContextBuilder.limitOrder(getLimitOrder(listOf(getNewLimitFee()), NON_EXISTENT_ASSET_PAIR.assetPairId))
+        singleLimitContextBuilder.limitOrder(getLimitOrder(listOf(getNewLimitFee()), NON_EXISTENT_ASSET_PAIR.symbol))
         singleLimitContextBuilder.assetPair(null)
         singleLimitContextBuilder.baseAsset(null)
         singleLimitContextBuilder.quotingAsset(null)
 
         //when
-        limitOrderInputValidator.validateLimitOrder(SingleLimitOrderParsedData(getMessageWrapper(singleLimitContextBuilder.build()), NON_EXISTENT_ASSET_PAIR.assetPairId))
+        limitOrderInputValidator.validateLimitOrder(SingleLimitOrderParsedData(getMessageWrapper(singleLimitContextBuilder.build()), NON_EXISTENT_ASSET_PAIR.symbol))
     }
 
 
@@ -113,7 +113,7 @@ class LimitOrderInputValidatorTest {
 
         //when
         try {
-            limitOrderInputValidator.validateLimitOrder(SingleLimitOrderParsedData(getMessageWrapper(singleLimitContextBuilder.build()), DISABLED_ASSET_PAIR.assetPairId))
+            limitOrderInputValidator.validateLimitOrder(SingleLimitOrderParsedData(getMessageWrapper(singleLimitContextBuilder.build()), DISABLED_ASSET_PAIR.symbol))
         } catch (e: OrderValidationException) {
             //then
             assertEquals(OrderStatus.DisabledAsset, e.orderStatus)
@@ -129,7 +129,7 @@ class LimitOrderInputValidatorTest {
 
         //when
         try {
-            limitOrderInputValidator.validateLimitOrder(SingleLimitOrderParsedData(getMessageWrapper(singleLimitContextBuilder.build()), BTC_USD_ASSET_PAIR.assetPairId))
+            limitOrderInputValidator.validateLimitOrder(SingleLimitOrderParsedData(getMessageWrapper(singleLimitContextBuilder.build()), BTC_USD_ASSET_PAIR.symbol))
         } catch (e: OrderValidationException) {
             //then
             assertEquals(OrderStatus.InvalidPrice, e.orderStatus)
@@ -159,12 +159,12 @@ class LimitOrderInputValidatorTest {
     fun testInvalidValue() {
         //given
         val singleLimitContextBuilder = getSingleLimitContextBuilder()
-        singleLimitContextBuilder.limitOrder(getLimitOrder(listOf(getNewLimitFee()), assetPair = MAX_VALUE_ASSET_PAIR.assetPairId, volume = BigDecimal.valueOf(1), price = BigDecimal.TEN))
+        singleLimitContextBuilder.limitOrder(getLimitOrder(listOf(getNewLimitFee()), assetPair = MAX_VALUE_ASSET_PAIR.symbol, volume = BigDecimal.valueOf(1), price = BigDecimal.TEN))
         singleLimitContextBuilder.assetPair(MAX_VALUE_ASSET_PAIR)
 
         //when
         try {
-            limitOrderInputValidator.validateLimitOrder(SingleLimitOrderParsedData(getMessageWrapper(singleLimitContextBuilder.build()), MAX_VALUE_ASSET_PAIR.assetPairId))
+            limitOrderInputValidator.validateLimitOrder(SingleLimitOrderParsedData(getMessageWrapper(singleLimitContextBuilder.build()), MAX_VALUE_ASSET_PAIR.symbol))
         } catch (e: OrderValidationException) {
             //then
             assertEquals(OrderStatus.InvalidValue, e.orderStatus)
@@ -182,7 +182,7 @@ class LimitOrderInputValidatorTest {
 
         //when
         try {
-            limitOrderInputValidator.validateStopOrder(SingleLimitOrderParsedData(getMessageWrapper(singleLimitContextBuilder.build()), MAX_VALUE_ASSET_PAIR.assetPairId))
+            limitOrderInputValidator.validateStopOrder(SingleLimitOrderParsedData(getMessageWrapper(singleLimitContextBuilder.build()), MAX_VALUE_ASSET_PAIR.symbol))
         } catch (e: OrderValidationException) {
             //then
             assertEquals(OrderStatus.InvalidValue, e.orderStatus)
@@ -253,7 +253,7 @@ class LimitOrderInputValidatorTest {
 
         //when
         try {
-            limitOrderInputValidator.validateLimitOrder(SingleLimitOrderParsedData(getMessageWrapper(singleLimitContextBuilder.build()), BTC_USD_ASSET_PAIR.assetPairId))
+            limitOrderInputValidator.validateLimitOrder(SingleLimitOrderParsedData(getMessageWrapper(singleLimitContextBuilder.build()), BTC_USD_ASSET_PAIR.symbol))
         } catch (e: OrderValidationException) {
             //then
             assertEquals(OrderStatus.InvalidVolumeAccuracy, e.orderStatus)
@@ -270,7 +270,7 @@ class LimitOrderInputValidatorTest {
 
         //when
         try {
-            limitOrderInputValidator.validateStopOrder(SingleLimitOrderParsedData(getMessageWrapper(singleLimitContextBuilder.build()), BTC_USD_ASSET_PAIR.assetPairId))
+            limitOrderInputValidator.validateStopOrder(SingleLimitOrderParsedData(getMessageWrapper(singleLimitContextBuilder.build()), BTC_USD_ASSET_PAIR.symbol))
         } catch (e: OrderValidationException) {
             //then
             assertEquals(OrderStatus.InvalidPrice, e.orderStatus)
@@ -285,7 +285,7 @@ class LimitOrderInputValidatorTest {
         singleLimitContextBuilder.limitOrder(getLimitOrder(listOf(getNewLimitFee())))
 
         //when
-        limitOrderInputValidator.validateLimitOrder(SingleLimitOrderParsedData(getMessageWrapper(singleLimitContextBuilder.build()), BTC_USD_ASSET_PAIR.assetPairId))
+        limitOrderInputValidator.validateLimitOrder(SingleLimitOrderParsedData(getMessageWrapper(singleLimitContextBuilder.build()), BTC_USD_ASSET_PAIR.symbol))
     }
 
     @Test
@@ -295,7 +295,7 @@ class LimitOrderInputValidatorTest {
         singleLimitContextBuilder.limitOrder(getStopOrder(BigDecimal.ONE, BigDecimal.ONE, null, null))
 
         //when
-        limitOrderInputValidator.validateStopOrder(SingleLimitOrderParsedData(getMessageWrapper(singleLimitContextBuilder.build()), BTC_USD_ASSET_PAIR.assetPairId))
+        limitOrderInputValidator.validateStopOrder(SingleLimitOrderParsedData(getMessageWrapper(singleLimitContextBuilder.build()), BTC_USD_ASSET_PAIR.symbol))
     }
 
     fun getMessageWrapper(singleLimitContext: SingleLimitOrderContext): GenericMessageWrapper {

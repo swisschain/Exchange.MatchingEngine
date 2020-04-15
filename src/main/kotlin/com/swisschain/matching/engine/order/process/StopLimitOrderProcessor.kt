@@ -147,7 +147,7 @@ class StopLimitOrderProcessor(private val limitOrderInputValidator: LimitOrderIn
         val limitVolume = orderContext.limitVolume!!
         val walletOperation = WalletOperation(order.brokerId,
                 order.walletId,
-                orderContext.limitAsset!!.assetId,
+                orderContext.limitAsset!!.symbol,
                 BigDecimal.ZERO,
                 limitVolume)
 
@@ -169,7 +169,7 @@ class StopLimitOrderProcessor(private val limitOrderInputValidator: LimitOrderIn
     private fun calculateAvailableBalance(orderContext: StopLimitOrderContext): BigDecimal {
         val balancesGetter = orderContext.executionContext.walletOperationsProcessor
         val limitAsset = orderContext.limitAsset!!
-        return NumberUtils.setScaleRoundHalfUp(balancesGetter.getAvailableBalance(orderContext.order.brokerId, orderContext.order.walletId, limitAsset.assetId), limitAsset.accuracy)
+        return NumberUtils.setScaleRoundHalfUp(balancesGetter.getAvailableBalance(orderContext.order.brokerId, orderContext.order.walletId, limitAsset.symbol), limitAsset.accuracy)
     }
 
     private fun getOrderInfo(order: LimitOrder): String {

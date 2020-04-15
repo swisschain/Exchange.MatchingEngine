@@ -4,7 +4,7 @@ import java.math.BigDecimal
 
 class AssetPair(
         val brokerId: String,
-        val assetPairId: String,
+        val symbol: String,
         val baseAssetId: String,
         val quotingAssetId: String,
         val accuracy: Int,
@@ -16,7 +16,7 @@ class AssetPair(
     override fun toString(): String {
         return "AssetPair(" +
                 "brokerId='$brokerId', " +
-                "assetPairId='$assetPairId', " +
+                "symbol='$symbol', " +
                 "baseAssetId='$baseAssetId', " +
                 "quotingAssetId='$quotingAssetId', " +
                 "accuracy=$accuracy, " +
