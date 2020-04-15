@@ -20,7 +20,6 @@ import com.swisschain.matching.engine.order.OrderStatus
 import com.swisschain.matching.engine.outgoing.messages.v2.toDate
 import com.swisschain.utils.logging.ThrottlingLogger
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.math.BigDecimal
 import java.util.Date
@@ -31,9 +30,7 @@ class SingleLimitOrderContextParser(private val assetsPairsHolder: AssetsPairsHo
                                     private val applicationSettingsHolder: ApplicationSettingsHolder,
                                     private val uuidHolder: UUIDHolder,
                                     @Qualifier("singleLimitOrderPreProcessingLogger")
-                                    private val logger: ThrottlingLogger,
-                                    @Value("#{Config.me.defaultBroker}" )
-                                    private val defaultBrokerId: String) : ContextParser<SingleLimitOrderParsedData> {
+                                    private val logger: ThrottlingLogger) : ContextParser<SingleLimitOrderParsedData> {
 
     override fun parse(messageWrapper: MessageWrapper): SingleLimitOrderParsedData {
 
@@ -107,10 +104,11 @@ class SingleLimitOrderContextParser(private val assetsPairsHolder: AssetsPairsHo
             LimitOrderType.STOP_LIMIT -> OrderStatus.Pending
         }
         val feeInstructions = NewLimitOrderFeeInstruction.create(message.feesList)
-        return LimitOrder(uuidHolder.getNextValue(),
+        return LimitOrder(
+                uuidHolder.getNextValue(),
                 message.uid,
                 message.assetPairId,
-                if (!message.brokerId.isNullOrEmpty()) message.brokerId else defaultBrokerId,
+                message.brokerId,
                 message.walletId,
                 BigDecimal(message.volume),
                 if (message.hasPrice()) BigDecimal(message.price.value) else BigDecimal.ZERO,
@@ -130,6 +128,7 @@ class SingleLimitOrderContextParser(private val assetsPairsHolder: AssetsPairsHo
                 timeInForce = OrderTimeInForce.getByExternalId(message.timeInForceValue),
                 expiryTime = if (message.hasExpiryTime()) message.expiryTime.toDate() else null,
                 parentOrderExternalId = null,
-                childOrderExternalId = null)
+                childOrderExternalId = null
+        )
     }
 }

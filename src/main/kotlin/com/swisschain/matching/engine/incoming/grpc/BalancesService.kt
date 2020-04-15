@@ -8,28 +8,21 @@ import com.swisschain.matching.engine.outgoing.messages.v2.createProtobufTimesta
 import io.grpc.stub.StreamObserver
 import java.util.Date
 
-class BalancesService(private val balancesHolder: BalancesHolder,
-                      private val defaultBrokerId: String): BalancesServiceGrpc.BalancesServiceImplBase() {
+class BalancesService(private val balancesHolder: BalancesHolder): BalancesServiceGrpc.BalancesServiceImplBase() {
 
-    override fun getAll(request: BalancesMessages.BalancesGetAllRequest?,
-                        responseObserver: StreamObserver<BalancesMessages.BalancesGetAllResponse>?) {
-        if (request != null && responseObserver != null) {
-            val now = Date()
-            val brokerId = if (!request.brokerId.isNullOrEmpty()) request.brokerId else defaultBrokerId
-            val balances = balancesHolder.getBalances(brokerId, request.walletId)
-            responseObserver.onNext(buildBalanceAllResponse(now, request.walletId, balances.values))
-            responseObserver.onCompleted()
-        }
+    override fun getAll(request: BalancesMessages.BalancesGetAllRequest,
+                        responseObserver: StreamObserver<BalancesMessages.BalancesGetAllResponse>) {
+        val now = Date()
+        val balances = balancesHolder.getBalances(request.brokerId, request.walletId)
+        responseObserver.onNext(buildBalanceAllResponse(now, request.walletId, balances.values))
+        responseObserver.onCompleted()
     }
 
-    override fun getByAssetId(request: BalancesMessages.BalancesGetByAssetIdRequest?, responseObserver: StreamObserver<BalancesMessages.BalancesGetByAssetIdResponse>?) {
-        if (request != null && responseObserver != null) {
-            val now = Date()
-            val brokerId = if (!request.brokerId.isNullOrEmpty()) request.brokerId else defaultBrokerId
-            val balances = balancesHolder.getBalances(brokerId, request.walletId)
-            responseObserver.onNext(buildBalanceByIdResponse(now, request.walletId, balances[request.assetId]))
-            responseObserver.onCompleted()
-        }
+    override fun getByAssetId(request: BalancesMessages.BalancesGetByAssetIdRequest, responseObserver: StreamObserver<BalancesMessages.BalancesGetByAssetIdResponse>) {
+        val now = Date()
+        val balances = balancesHolder.getBalances(request.brokerId, request.walletId)
+        responseObserver.onNext(buildBalanceByIdResponse(now, request.walletId, balances[request.assetId]))
+        responseObserver.onCompleted()
     }
 
     private fun buildBalanceAllResponse(now: Date, walletId: String, filteredBalances: Collection<AssetBalance>): BalancesMessages.BalancesGetAllResponse {

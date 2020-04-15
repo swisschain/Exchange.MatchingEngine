@@ -7,13 +7,11 @@ import com.swisschain.matching.engine.incoming.parsers.data.LimitOrderMassCancel
 import com.swisschain.matching.engine.messages.MessageType
 import com.swisschain.matching.engine.messages.MessageWrapper
 import com.swisschain.matching.engine.messages.incoming.IncomingMessages
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.util.Date
 
 @Component
-class LimitOrderMassCancelOperationContextParser(@Value("#{Config.me.defaultBroker}" )
-                                                 private val defaultBrokerId: String): ContextParser<LimitOrderMassCancelOperationParsedData> {
+class LimitOrderMassCancelOperationContextParser: ContextParser<LimitOrderMassCancelOperationParsedData> {
     override fun parse(messageWrapper: MessageWrapper): LimitOrderMassCancelOperationParsedData {
         messageWrapper.context = parseMessage(messageWrapper)
         return LimitOrderMassCancelOperationParsedData(messageWrapper)
@@ -30,18 +28,19 @@ class LimitOrderMassCancelOperationContextParser(@Value("#{Config.me.defaultBrok
 
         val messageType =  MessageType.valueOf(messageWrapper.type) ?: throw Exception("Unknown message type ${messageWrapper.type}")
 
-        val brokerId = if (!message.brokerId.isNullOrEmpty()) message.brokerId else defaultBrokerId
         val walletId = if (message.hasWalletId()) message.walletId.value else null
         val assetPairId = if (message.hasAssetPairId()) message.assetPairId.value else null
         val isBuy = if (message.hasIsBuy()) message.isBuy.value else null
 
         return LimitOrderMassCancelOperationContext(
-                brokerId,
+                message.brokerId,
                 message.uid,
                 messageId,
                 walletId,
                 messageWrapper.processedMessage!!,
                 messageType,
-                assetPairId, isBuy)
+                assetPairId,
+                isBuy
+        )
     }
 }

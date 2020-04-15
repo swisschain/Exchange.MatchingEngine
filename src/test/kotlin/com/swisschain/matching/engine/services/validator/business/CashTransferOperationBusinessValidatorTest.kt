@@ -1,6 +1,7 @@
 package com.swisschain.matching.engine.services.validator.business
 
 import com.google.protobuf.StringValue
+import com.swisschain.matching.engine.AbstractTest.Companion.DEFAULT_BROKER
 import com.swisschain.matching.engine.balance.util.TestBalanceHolderWrapper
 import com.swisschain.matching.engine.config.TestApplicationContext
 import com.swisschain.matching.engine.daos.context.CashTransferContext
@@ -123,6 +124,7 @@ class CashTransferOperationBusinessValidatorTest {
     fun getCashTransferOperationBuilder(): IncomingMessages.CashTransferOperation.Builder {
         return IncomingMessages.CashTransferOperation
                 .newBuilder()
+                .setBrokerId(DEFAULT_BROKER)
                 .setId("test")
                 .setAssetId(ASSET_ID)
                 .setTimestamp(Date().createProtobufTimestampBuilder())

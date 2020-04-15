@@ -10,7 +10,6 @@ data class MatchingEngineConfig(
         val grpcEndpoints: GrpcEndpoints,
         val httpOrderBookPort: Int,
         val httpApiPort: Int,
-        val defaultBroker: String,
         val correctReservedVolumes: Boolean,
         val cancelMinVolumeOrders: Boolean,
         val cancelAllOrders: Boolean,

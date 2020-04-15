@@ -341,6 +341,7 @@ class CashInOutOperationServiceTest : AbstractTest() {
     private fun buildReservedCashInOutWrapper(walletId: String, assetId: String, amount: Double, bussinesId: String = UUID.randomUUID().toString()): MessageWrapper {
         return GenericMessageWrapper(MessageType.RESERVED_CASH_IN_OUT_OPERATION.type, IncomingMessages.ReservedCashInOutOperation.newBuilder()
                 .setId(bussinesId)
+                .setBrokerId(DEFAULT_BROKER)
                 .setWalletId(walletId)
                 .setAssetId(assetId)
                 .setReservedVolume(amount.toString())

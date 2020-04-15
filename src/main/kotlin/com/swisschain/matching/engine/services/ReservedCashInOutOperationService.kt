@@ -18,7 +18,6 @@ import com.swisschain.matching.engine.services.validators.impl.ValidationExcepti
 import com.swisschain.matching.engine.utils.order.MessageStatusUtils
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.util.Date
@@ -30,9 +29,7 @@ class ReservedCashInOutOperationService @Autowired constructor(private val asset
                                                                private val messageProcessingStatusHolder: MessageProcessingStatusHolder,
                                                                private val uuidHolder: UUIDHolder,
                                                                private val messageSequenceNumberHolder: MessageSequenceNumberHolder,
-                                                               private val outgoingEventProcessor: OutgoingEventProcessor,
-                                                               @Value("#{Config.me.defaultBroker}" )
-                                                               private val defaultBrokerId: String) : AbstractService {
+                                                               private val outgoingEventProcessor: OutgoingEventProcessor) : AbstractService {
 
     companion object {
         private val LOGGER = LoggerFactory.getLogger(ReservedCashInOutOperationService::class.java.name)
@@ -40,8 +37,7 @@ class ReservedCashInOutOperationService @Autowired constructor(private val asset
 
     override fun processMessage(messageWrapper: MessageWrapper) {
         val message = messageWrapper.parsedMessage!! as IncomingMessages.ReservedCashInOutOperation
-        val brokerId = if (!message.brokerId.isNullOrEmpty()) message.brokerId else defaultBrokerId
-        val asset = assetsHolder.getAsset(brokerId, message.assetId)
+        val asset = assetsHolder.getAsset(message.brokerId, message.assetId)
         if ((isCashIn(message.reservedVolume) && messageProcessingStatusHolder.isCashInDisabled(asset)) ||
                 (!isCashIn(message.reservedVolume) && messageProcessingStatusHolder.isCashOutDisabled(asset))) {
             writeResponse(messageWrapper, MessageStatus.MESSAGE_PROCESSING_DISABLED)
@@ -54,7 +50,13 @@ class ReservedCashInOutOperationService @Autowired constructor(private val asset
 
         val now = Date()
         val matchingEngineOperationId = uuidHolder.getNextValue()
-        val operation = WalletOperation(brokerId, message.walletId, message.assetId, BigDecimal.ZERO, BigDecimal(message.reservedVolume))
+        val operation = WalletOperation(
+                message.brokerId,
+                message.walletId,
+                message.assetId,
+                BigDecimal.ZERO,
+                BigDecimal(message.reservedVolume)
+        )
 
         try {
             reservedCashInOutOperationValidator.performValidation(message)

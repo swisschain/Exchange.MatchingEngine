@@ -1,6 +1,5 @@
 package com.swisschain.matching.engine.config
 
-import com.swisschain.matching.engine.AbstractTest.Companion.DEFAULT_BROKER
 import com.swisschain.matching.engine.balance.util.TestBalanceHolderWrapper
 import com.swisschain.matching.engine.config.spring.JsonConfig
 import com.swisschain.matching.engine.config.spring.QueueConfig
@@ -304,8 +303,7 @@ class TestApplicationContext {
                 feeProcessor,
                 cashInOutOperationBusinessValidator,
                 messageSequenceNumberHolder,
-                outgoingEventProcessor,
-                DEFAULT_BROKER)
+                outgoingEventProcessor)
     }
 
     @Bean
@@ -329,7 +327,7 @@ class TestApplicationContext {
     @Bean
     fun reservedCashInOutOperationValidator(balancesHolder: BalancesHolder,
                                                  assetsHolder: AssetsHolder): ReservedCashInOutOperationValidator {
-        return ReservedCashInOutOperationValidatorImpl(assetsHolder, balancesHolder, DEFAULT_BROKER)
+        return ReservedCashInOutOperationValidatorImpl(assetsHolder, balancesHolder)
     }
 
     @Bean
@@ -346,8 +344,7 @@ class TestApplicationContext {
                 messageProcessingStatusHolder,
                 uuidHolder,
                 messageSequenceNumberHolder,
-                outgoingEventProcessor,
-                DEFAULT_BROKER)
+                outgoingEventProcessor)
     }
 
     @Bean
@@ -411,8 +408,7 @@ class TestApplicationContext {
                 balancesHolder,
                 applicationSettingsHolder,
                 messageProcessingStatusHolder,
-                testUUIDHolder,
-                DEFAULT_BROKER)
+                testUUIDHolder)
     }
 
     @Bean
@@ -444,8 +440,7 @@ class TestApplicationContext {
                 marketOrderValidator,
                 applicationSettingsHolder,
                 messageProcessingStatusHolder,
-                uuidHolder,
-                DEFAULT_BROKER)
+                uuidHolder)
     }
 
     @Bean
@@ -504,7 +499,7 @@ class TestApplicationContext {
 
     @Bean
     fun cashInOutContextParser(assetsHolder: AssetsHolder, uuidHolder: UUIDHolder): CashInOutContextParser {
-        return CashInOutContextParser(DEFAULT_BROKER, assetsHolder, uuidHolder)
+        return CashInOutContextParser(assetsHolder, uuidHolder)
     }
 
     @Bean
@@ -528,7 +523,7 @@ class TestApplicationContext {
 
     @Bean
     fun cashTransferInitializer(assetsHolder: AssetsHolder, uuidHolder: UUIDHolder): CashTransferContextParser {
-        return CashTransferContextParser(DEFAULT_BROKER, assetsHolder, uuidHolder)
+        return CashTransferContextParser(assetsHolder, uuidHolder)
     }
 
     @Bean
@@ -576,7 +571,7 @@ class TestApplicationContext {
                                           messageSequenceNumberHolder: MessageSequenceNumberHolder,
                                           outgoingEventProcessor: OutgoingEventProcessor): CashTransferOperationService {
         return CashTransferOperationService(balancesHolder,  dbTransferOperationQueue, feeProcessor,
-                cashTransferOperationBusinessValidator, messageSequenceNumberHolder, outgoingEventProcessor, DEFAULT_BROKER)
+                cashTransferOperationBusinessValidator, messageSequenceNumberHolder, outgoingEventProcessor)
     }
 
     @Bean
@@ -603,8 +598,7 @@ class TestApplicationContext {
                 assetsHolder,
                 applicationSettingsHolder,
                 uuidHolder,
-                ThrottlingLogger.getLogger("limitOrder"),
-                DEFAULT_BROKER)
+                ThrottlingLogger.getLogger("limitOrder"))
     }
 
     @Bean
@@ -652,12 +646,12 @@ class TestApplicationContext {
 
     @Bean
     fun limitOrderCancelOperationContextParser(): LimitOrderCancelOperationContextParser {
-        return LimitOrderCancelOperationContextParser(DEFAULT_BROKER)
+        return LimitOrderCancelOperationContextParser()
     }
 
     @Bean
     fun limitOrderMassCancelOperationContextParser(): ContextParser<LimitOrderMassCancelOperationParsedData> {
-        return LimitOrderMassCancelOperationContextParser(DEFAULT_BROKER)
+        return LimitOrderMassCancelOperationContextParser()
     }
 
     @Bean

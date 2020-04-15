@@ -49,7 +49,7 @@ class GrpcServicesInit(private val messageProcessor: MessageProcessor,
             LOGGER.info("Starting TradingApiService at $tradingApiServicePort port")
             ServerBuilder.forPort(orderBooksServicePort).addService(OrderBooksService(genericLimitOrderService, assetsHolder, assetsPairsHolder)).build().start()
             LOGGER.info("Starting OrderBooksService at $orderBooksServicePort port")
-            ServerBuilder.forPort(balancesServicePort).addService(BalancesService(balancesHolder, config.me.defaultBroker)).build().start()
+            ServerBuilder.forPort(balancesServicePort).addService(BalancesService(balancesHolder)).build().start()
             LOGGER.info("Starting BalancesService at $balancesServicePort port")
         }
     }

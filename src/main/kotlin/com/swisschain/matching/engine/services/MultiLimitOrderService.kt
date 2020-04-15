@@ -28,7 +28,6 @@ import com.swisschain.matching.engine.outgoing.messages.v2.toDate
 import com.swisschain.matching.engine.services.utils.MultiOrderFilter
 import com.swisschain.matching.engine.utils.order.MessageStatusUtils
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.util.Date
@@ -44,9 +43,7 @@ class MultiLimitOrderService(private val executionContextFactory: ExecutionConte
                              private val balancesHolder: BalancesHolder,
                              private val applicationSettingsHolder: ApplicationSettingsHolder,
                              private val messageProcessingStatusHolder: MessageProcessingStatusHolder,
-                             private val uuidHolder: UUIDHolder,
-                             @Value("#{Config.me.defaultBroker}" )
-                             private val defaultBrokerId: String) : AbstractService {
+                             private val uuidHolder: UUIDHolder) : AbstractService {
 
     companion object {
         private val LOGGER = LoggerFactory.getLogger(MultiLimitOrderService::class.java.name)
@@ -57,9 +54,7 @@ class MultiLimitOrderService(private val executionContextFactory: ExecutionConte
         messageWrapper.messageId = if (message.hasMessageId()) message.messageId.value else message.uid
         messageWrapper.id = message.uid
 
-        val brokerId = if (!message.brokerId.isNullOrEmpty()) message.brokerId else defaultBrokerId
-
-        val assetPair = assetsPairsHolder.getAssetPairAllowNulls(brokerId, message.assetPairId)
+        val assetPair = assetsPairsHolder.getAssetPairAllowNulls(message.brokerId, message.assetPairId)
         if (assetPair == null) {
             LOGGER.info("Unable to process message (${messageWrapper.messageId}): unknown asset pair ${message.assetPairId}")
             writeResponse(messageWrapper, MessageStatus.UNKNOWN_ASSET)
@@ -141,7 +136,6 @@ class MultiLimitOrderService(private val executionContextFactory: ExecutionConte
                 (if (message.hasCancelAllPreviousLimitOrders()) "cancelPrevious: ${message.cancelAllPreviousLimitOrders}, " else "") +
                 (if (message.hasCancelMode()) "cancelMode: ${message.cancelMode}" else ""))
 
-        val brokerId = if (!message.brokerId.isNullOrEmpty()) message.brokerId else defaultBrokerId
         val walletId = message.walletId
         val messageUid = message.uid
         val assetPairId = message.assetPairId
@@ -154,13 +148,13 @@ class MultiLimitOrderService(private val executionContextFactory: ExecutionConte
         val buyReplacements = mutableMapOf<String, LimitOrder>()
         val sellReplacements = mutableMapOf<String, LimitOrder>()
 
-        val baseAssetAvailableBalance = balancesHolder.getAvailableBalance(brokerId, walletId, assetPair.baseAssetId)
-        val quotingAssetAvailableBalance = balancesHolder.getAvailableBalance(brokerId, walletId, assetPair.quotingAssetId)
+        val baseAssetAvailableBalance = balancesHolder.getAvailableBalance(message.brokerId, walletId, assetPair.baseAssetId)
+        val quotingAssetAvailableBalance = balancesHolder.getAvailableBalance(message.brokerId, walletId, assetPair.quotingAssetId)
 
         val filter = MultiOrderFilter(isTrustedClient,
                 baseAssetAvailableBalance,
                 quotingAssetAvailableBalance,
-                assetsHolder.getAsset(brokerId, assetPair.quotingAssetId).accuracy,
+                assetsHolder.getAsset(message.brokerId, assetPair.quotingAssetId).accuracy,
                 now,
                 message.ordersList.size,
                 LOGGER)
@@ -185,7 +179,7 @@ class MultiLimitOrderService(private val executionContextFactory: ExecutionConte
             val order = LimitOrder(uuidHolder.getNextValue(),
                     currentOrder.uid,
                     message.assetPairId,
-                    brokerId,
+                    message.brokerId,
                     message.walletId,
                     BigDecimal(currentOrder.volume),
                     price,
@@ -222,7 +216,7 @@ class MultiLimitOrderService(private val executionContextFactory: ExecutionConte
         }
 
         return MultiLimitOrder(messageUid,
-                brokerId,
+                message.brokerId,
                 walletId,
                 assetPairId,
                 filter.getResult(),

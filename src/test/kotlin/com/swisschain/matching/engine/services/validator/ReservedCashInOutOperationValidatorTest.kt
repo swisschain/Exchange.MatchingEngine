@@ -1,5 +1,6 @@
 package com.swisschain.matching.engine.services.validator
 
+import com.swisschain.matching.engine.AbstractTest.Companion.DEFAULT_BROKER
 import com.swisschain.matching.engine.balance.util.TestBalanceHolderWrapper
 import com.swisschain.matching.engine.config.TestApplicationContext
 import com.swisschain.matching.engine.database.DictionariesDatabaseAccessor
@@ -117,6 +118,7 @@ class ReservedCashInOutOperationValidatorTest {
 
     private fun getDefaultReservedOperationMessageBuilder(): IncomingMessages.ReservedCashInOutOperation.Builder {
         return IncomingMessages.ReservedCashInOutOperation.newBuilder()
+                .setBrokerId(DEFAULT_BROKER)
                 .setId("test")
                 .setWalletId(CLIENT_NAME)
                 .setTimestamp(Date().createProtobufTimestampBuilder())

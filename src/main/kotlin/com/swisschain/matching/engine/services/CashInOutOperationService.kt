@@ -21,7 +21,6 @@ import com.swisschain.matching.engine.services.validators.impl.ValidationExcepti
 import com.swisschain.matching.engine.utils.NumberUtils
 import com.swisschain.matching.engine.utils.order.MessageStatusUtils
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.util.Date
 
@@ -30,9 +29,7 @@ class CashInOutOperationService(private val balancesHolder: BalancesHolder,
                                 private val feeProcessor: FeeProcessor,
                                 private val cashInOutOperationBusinessValidator: CashInOutOperationBusinessValidator,
                                 private val messageSequenceNumberHolder: MessageSequenceNumberHolder,
-                                private val outgoingEventProcessor: OutgoingEventProcessor,
-                                @Value("#{Config.me.defaultBroker}" )
-                                private val defaultBrokerId: String) : AbstractService {
+                                private val outgoingEventProcessor: OutgoingEventProcessor) : AbstractService {
     companion object {
         private val LOGGER = LoggerFactory.getLogger(CashInOutOperationService::class.java.name)
     }
@@ -45,7 +42,6 @@ class CashInOutOperationService(private val balancesHolder: BalancesHolder,
         val walletOperation = CashInOutOperationConverter.fromCashInOutOperationToWalletOperation(cashInOutOperation)
 
         val asset = cashInOutOperation.asset!!
-        val brokerId = if (cashInOutOperation.brokerId.isNotEmpty()) cashInOutOperation.brokerId else defaultBrokerId
         LOGGER.debug("Processing cash in/out messageId: ${cashInOutContext.messageId} operation (${cashInOutOperation.externalId})" +
                 " for client ${cashInOutContext.cashInOutOperation.walletId}, asset ${asset.assetId}," +
                 " amount: ${NumberUtils.roundForPrint(walletOperation.amount)}, feeInstructions: $feeInstructions")
@@ -61,7 +57,13 @@ class CashInOutOperationService(private val balancesHolder: BalancesHolder,
         }
 
         val fees = try {
-            feeProcessor.processFee(brokerId, feeInstructions, walletOperation, operations, balancesGetter = balancesHolder)
+            feeProcessor.processFee(
+                    cashInOutOperation.brokerId,
+                    feeInstructions,
+                    walletOperation,
+                    operations,
+                    balancesGetter = balancesHolder
+            )
         } catch (e: FeeException) {
             writeErrorResponse(messageWrapper, cashInOutOperation.matchingEngineOperationId, INVALID_FEE, e.message)
             return

@@ -41,7 +41,6 @@ import com.swisschain.matching.engine.utils.PrintUtils
 import com.swisschain.matching.engine.utils.order.MessageStatusUtils
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.util.Date
@@ -60,9 +59,7 @@ class MarketOrderService @Autowired constructor(
         private val marketOrderValidator: MarketOrderValidator,
         private val applicationSettingsHolder: ApplicationSettingsHolder,
         private val messageProcessingStatusHolder: MessageProcessingStatusHolder,
-        private val uuidHolder: UUIDHolder,
-        @Value("#{Config.me.defaultBroker}" )
-        private val defaultBrokerId: String) : AbstractService {
+        private val uuidHolder: UUIDHolder) : AbstractService {
     companion object {
         private val LOGGER = LoggerFactory.getLogger(MarketOrderService::class.java.name)
         private val STATS_LOGGER = LoggerFactory.getLogger("${MarketOrderService::class.java.name}.stats")
@@ -77,8 +74,7 @@ class MarketOrderService @Autowired constructor(
         parseMessage(messageWrapper)
         val parsedMessage = messageWrapper.parsedMessage!! as IncomingMessages.MarketOrder
 
-        val brokerId = if (!parsedMessage.brokerId.isNullOrEmpty()) parsedMessage.brokerId else defaultBrokerId
-        val assetPair = assetsPairsHolder.getAssetPairAllowNulls(brokerId, parsedMessage.assetPairId)
+        val assetPair = assetsPairsHolder.getAssetPairAllowNulls(parsedMessage.brokerId, parsedMessage.assetPairId)
 
         val now = Date()
         val feeInstructions: List<NewFeeInstruction>?
@@ -94,12 +90,26 @@ class MarketOrderService @Autowired constructor(
                 "asset: ${parsedMessage.assetPairId}, volume: ${parsedMessage.volume}, " +
                 "fees: $feeInstructions")
 
-        val order = MarketOrder(uuidHolder.getNextValue(), parsedMessage.uid, parsedMessage.assetPairId, brokerId, parsedMessage.walletId, BigDecimal(parsedMessage.volume), null,
-                Processing.name, now, if (parsedMessage.hasTimestamp()) parsedMessage.timestamp.toDate() else now, now, null, true,
-                null, feeInstructions)
+        val order = MarketOrder(
+                uuidHolder.getNextValue(),
+                parsedMessage.uid,
+                parsedMessage.assetPairId,
+                parsedMessage.brokerId,
+                parsedMessage.walletId,
+                BigDecimal(parsedMessage.volume),
+                null,
+                Processing.name,
+                now,
+                if (parsedMessage.hasTimestamp()) parsedMessage.timestamp.toDate() else now,
+                now,
+                null,
+                true,
+                null,
+                feeInstructions
+        )
 
         try {
-            marketOrderValidator.performValidation(order, getOrderBook(brokerId, order), feeInstructions)
+            marketOrderValidator.performValidation(order, getOrderBook(order), feeInstructions)
         } catch (e: OrderValidationException) {
             order.updateStatus(e.orderStatus, now)
             sendErrorNotification(messageWrapper, order, now)
@@ -118,7 +128,7 @@ class MarketOrderService @Autowired constructor(
         val marketOrderExecutionContext = MarketOrderExecutionContext(order, executionContext)
 
         val matchingResult = matchingEngine.match(order,
-                getOrderBook(brokerId, order),
+                getOrderBook(order),
                 messageWrapper.messageId!!,
                 priceDeviationThreshold = if (assetPair.marketOrderPriceDeviationThreshold >= BigDecimal.ZERO) assetPair.marketOrderPriceDeviationThreshold else applicationSettingsHolder.marketOrderPriceDeviationThreshold(assetPair.assetPairId),
                 executionContext = executionContext)
@@ -139,7 +149,7 @@ class MarketOrderService @Autowired constructor(
                     matchingResultHandlingHelper.preProcessCancelledOrdersWalletOperations(marketOrderExecutionContext)
                     matchingResultHandlingHelper.processCancelledOppositeOrders(marketOrderExecutionContext)
                     val orderBook = marketOrderExecutionContext.executionContext.orderBooksHolder
-                            .getChangedOrderBookCopy(brokerId, marketOrderExecutionContext.order.assetPairId)
+                            .getChangedOrderBookCopy(order.brokerId, marketOrderExecutionContext.order.assetPairId)
                     matchingResult.cancelledLimitOrders.forEach {
                         orderBook.removeOrder(it.origin!!)
                     }
@@ -178,7 +188,7 @@ class MarketOrderService @Autowired constructor(
                     matchingResult.skipLimitOrders.forEach { matchingResult.orderBook.put(it) }
 
                     marketOrderExecutionContext.executionContext.orderBooksHolder
-                            .getChangedOrderBookCopy(brokerId, order.assetPairId)
+                            .getChangedOrderBookCopy(order.brokerId, order.assetPairId)
                             .setOrderBook(!order.isBuySide(), matchingResult.orderBook)
 
                     marketOrderExecutionContext.executionContext.marketOrderWithTrades = MarketOrderWithTrades(messageWrapper.messageId!!, order, matchingResult.marketOrderTrades)
@@ -210,7 +220,7 @@ class MarketOrderService @Autowired constructor(
         }
     }
 
-    private fun getOrderBook(brokerId: String, order: MarketOrder) = genericLimitOrderService.getOrderBook(brokerId, order.assetPairId).getOrderBook(!order.isBuySide())
+    private fun getOrderBook(order: MarketOrder) = genericLimitOrderService.getOrderBook(order.brokerId, order.assetPairId).getOrderBook(!order.isBuySide())
 
     private fun writePersistenceErrorResponse(messageWrapper: MessageWrapper, order: MarketOrder) {
         val message = "Unable to save result data"

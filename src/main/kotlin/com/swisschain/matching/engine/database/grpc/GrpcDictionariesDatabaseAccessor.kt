@@ -9,9 +9,7 @@ import io.grpc.ManagedChannel
 import io.grpc.ManagedChannelBuilder
 import java.util.HashMap
 
-class GrpcDictionariesDatabaseAccessor(
-        private val defaultBrokerId: String,
-        private val grpcConnectionString: String): DictionariesDatabaseAccessor {
+class GrpcDictionariesDatabaseAccessor(private val grpcConnectionString: String): DictionariesDatabaseAccessor {
     companion object {
         private val LOGGER = ThrottlingLogger.getLogger(GrpcDictionariesDatabaseAccessor::class.java.name)
     }
@@ -25,8 +23,8 @@ class GrpcDictionariesDatabaseAccessor(
         try {
             val response = assetGrpcStub.getAll(Empty.getDefaultInstance())
             response.assetsList.forEach { asset ->
-                val brokerId = if (asset.brokerId.isNullOrEmpty()) defaultBrokerId else asset.brokerId
-                result.getOrPut(brokerId) { HashMap<String, Asset>() } [asset.id] = convertToAsset(asset)
+                val convertedAsset = convertToAsset(asset)
+                result.getOrPut(convertedAsset.assetId) { HashMap<String, Asset>() } [convertedAsset.assetId] = convertedAsset
             }
         } catch (e: Exception) {
             LOGGER.error("Unable to load assets: ${e.message}", e)
@@ -54,7 +52,12 @@ class GrpcDictionariesDatabaseAccessor(
     }
 
     private fun convertToAsset(asset: GrpcDictionaries.Asset): Asset {
-        return Asset(if (!asset.brokerId.isNullOrEmpty()) asset.brokerId else defaultBrokerId, asset.id, asset.name, asset.accuracy)
+        return Asset(
+                asset.brokerId,
+                asset.id,
+                asset.name,
+                asset.accuracy
+        )
     }
 
     override fun loadAssetPairs(): Map<String, Map<String, AssetPair>> {
@@ -62,8 +65,8 @@ class GrpcDictionariesDatabaseAccessor(
         try {
             val response = assetPairGrpcStub.getAll(Empty.getDefaultInstance())
             response.assetPairsList.forEach { assetPair ->
-                val brokerId = if (assetPair.brokerId.isNullOrEmpty()) defaultBrokerId else assetPair.brokerId
-                result.getOrPut(brokerId) { HashMap<String, AssetPair>() } [assetPair.id] = convertToAssetPair(assetPair)
+                val convertedAssetPair = convertToAssetPair(assetPair)
+                result.getOrPut(convertedAssetPair.brokerId) { HashMap<String, AssetPair>() } [convertedAssetPair.assetPairId] = convertedAssetPair
             }
         } catch (e: Exception) {
             LOGGER.error("Unable to load asset pairs: ${e.message}", e)
@@ -91,10 +94,17 @@ class GrpcDictionariesDatabaseAccessor(
     }
 
     private fun convertToAssetPair(assetPair: GrpcDictionaries.AssetPair): AssetPair {
-        return AssetPair(if (!assetPair.brokerId.isNullOrEmpty()) assetPair.brokerId else defaultBrokerId,
-                assetPair.id, assetPair.baseAssetId, assetPair.quotingAssetId, assetPair.accuracy,
-                assetPair.minVolume.toBigDecimal(), assetPair.maxVolume.toBigDecimal(), assetPair.maxOppositeVolume.toBigDecimal(),
-                assetPair.marketOrderPriceThreshold.toBigDecimal())
+        return AssetPair(
+                assetPair.brokerId,
+                assetPair.id,
+                assetPair.baseAssetId,
+                assetPair.quotingAssetId,
+                assetPair.accuracy,
+                assetPair.minVolume.toBigDecimal(),
+                assetPair.maxVolume.toBigDecimal(),
+                assetPair.maxOppositeVolume.toBigDecimal(),
+                assetPair.marketOrderPriceThreshold.toBigDecimal()
+        )
     }
 
     @Synchronized

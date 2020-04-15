@@ -7,13 +7,11 @@ import com.swisschain.matching.engine.incoming.parsers.data.LimitOrderCancelOper
 import com.swisschain.matching.engine.messages.MessageType
 import com.swisschain.matching.engine.messages.MessageWrapper
 import com.swisschain.matching.engine.messages.incoming.IncomingMessages
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.util.Date
 
 @Component
-class LimitOrderCancelOperationContextParser(@Value("#{Config.me.defaultBroker}" )
-                                             private val defaultBrokerId: String): ContextParser<LimitOrderCancelOperationParsedData> {
+class LimitOrderCancelOperationContextParser: ContextParser<LimitOrderCancelOperationParsedData> {
     override fun parse(messageWrapper: MessageWrapper): LimitOrderCancelOperationParsedData {
         messageWrapper.context = parseContext(messageWrapper)
         return LimitOrderCancelOperationParsedData(messageWrapper)
@@ -25,13 +23,15 @@ class LimitOrderCancelOperationContextParser(@Value("#{Config.me.defaultBroker}"
         messageWrapper.timestamp = Date().time
         messageWrapper.id = message.uid
         messageWrapper.processedMessage = ProcessedMessage(messageWrapper.type, messageWrapper.timestamp!!, messageWrapper.messageId!!)
-        val brokerId = if (!message.brokerId.isNullOrEmpty()) message.brokerId else defaultBrokerId
 
-        return LimitOrderCancelOperationContext(brokerId,
+        return LimitOrderCancelOperationContext(
+                message.brokerId,
                 message.uid,
                 messageWrapper.messageId!!,
                 messageWrapper.processedMessage!!,
-                message.limitOrderIdList.toSet(), getMessageType(messageWrapper.type))
+                message.limitOrderIdList.toSet(),
+                getMessageType(messageWrapper.type)
+        )
     }
 
     private fun getMessageType(type: Byte): MessageType {

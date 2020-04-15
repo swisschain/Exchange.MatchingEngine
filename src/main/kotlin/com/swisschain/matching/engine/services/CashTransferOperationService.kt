@@ -24,7 +24,6 @@ import com.swisschain.matching.engine.services.validators.impl.ValidationExcepti
 import com.swisschain.matching.engine.utils.NumberUtils
 import com.swisschain.matching.engine.utils.order.MessageStatusUtils
 import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.util.Date
 import java.util.LinkedList
@@ -36,9 +35,7 @@ class CashTransferOperationService(private val balancesHolder: BalancesHolder,
                                    private val feeProcessor: FeeProcessor,
                                    private val cashTransferOperationBusinessValidator: CashTransferOperationBusinessValidator,
                                    private val messageSequenceNumberHolder: MessageSequenceNumberHolder,
-                                   private val outgoingEventProcessor: OutgoingEventProcessor,
-                                   @Value("#{Config.me.defaultBroker}" )
-                                   private val defaultBrokerId: String) : AbstractService {
+                                   private val outgoingEventProcessor: OutgoingEventProcessor) : AbstractService {
     companion object {
         private val LOGGER = LoggerFactory.getLogger(CashTransferOperationService::class.java.name)
     }
@@ -48,8 +45,6 @@ class CashTransferOperationService(private val balancesHolder: BalancesHolder,
         val cashTransferContext = messageWrapper.context as CashTransferContext
 
         val transferOperation = cashTransferContext.transferOperation
-
-        val brokerId = if (transferOperation.brokerId.isNotEmpty()) transferOperation.brokerId else defaultBrokerId
 
         val asset = transferOperation.asset
         LOGGER.debug("Processing cash transfer operation ${transferOperation.externalId}) messageId: ${cashTransferContext.messageId}" +
@@ -65,7 +60,12 @@ class CashTransferOperationService(private val balancesHolder: BalancesHolder,
         }
 
         try {
-            processTransferOperation(brokerId, transferOperation, messageWrapper, cashTransferContext, now)
+            processTransferOperation(
+                    transferOperation,
+                    messageWrapper,
+                    cashTransferContext,
+                    now
+            )
         } catch (e: FeeException) {
             writeErrorResponse(messageWrapper, cashTransferContext, INVALID_FEE, e.message)
             return
@@ -83,19 +83,18 @@ class CashTransferOperationService(private val balancesHolder: BalancesHolder,
                 " asset $asset, volume: ${NumberUtils.roundForPrint(transferOperation.volume)} processed")
     }
 
-    private fun processTransferOperation(brokerId: String,
-                                         operation: TransferOperation,
+    private fun processTransferOperation(operation: TransferOperation,
                                          messageWrapper: MessageWrapper,
                                          cashTransferContext: CashTransferContext,
                                          now: Date) {
         val operations = LinkedList<WalletOperation>()
 
         val assetId = operation.asset.assetId
-        operations.add(WalletOperation(brokerId, operation.fromWalletId, assetId, -operation.volume))
-        val receiptOperation = WalletOperation(brokerId, operation.toWalletId, assetId, operation.volume)
+        operations.add(WalletOperation(operation.brokerId, operation.fromWalletId, assetId, -operation.volume))
+        val receiptOperation = WalletOperation(operation.brokerId, operation.toWalletId, assetId, operation.volume)
         operations.add(receiptOperation)
 
-        val fees = feeProcessor.processFee(brokerId, operation.fees, receiptOperation, operations, balancesGetter = balancesHolder)
+        val fees = feeProcessor.processFee(operation.brokerId, operation.fees, receiptOperation, operations, balancesGetter = balancesHolder)
 
         val walletProcessor = balancesHolder.createWalletProcessor(LOGGER)
                 .preProcess(operations, true)

@@ -7,35 +7,31 @@ import com.swisschain.matching.engine.services.validators.ReservedCashInOutOpera
 import com.swisschain.matching.engine.utils.NumberUtils
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.math.BigDecimal
 
 @Component
 class ReservedCashInOutOperationValidatorImpl @Autowired constructor(private val assetsHolder: AssetsHolder,
-                                                                     private val balancesHolder: BalancesHolder,
-                                                                     @Value("#{Config.me.defaultBroker}" )
-                                                                     private val defaultBrokerId: String) : ReservedCashInOutOperationValidator {
+                                                                     private val balancesHolder: BalancesHolder) : ReservedCashInOutOperationValidator {
     companion object {
         private val LOGGER = LoggerFactory.getLogger(ReservedCashInOutOperationValidatorImpl::class.java.name)
     }
 
     override fun performValidation(message: IncomingMessages.ReservedCashInOutOperation) {
-        val brokerId = if (!message.brokerId.isNullOrEmpty()) message.brokerId else defaultBrokerId
-        isVolumeAccuracyValid(brokerId, message)
+        isVolumeAccuracyValid(message)
 
         if (BigDecimal(message.reservedVolume) < BigDecimal.ZERO) {
-            isBalanceValid(brokerId, message)
+            isBalanceValid(message)
         } else {
-            isReservedVolumeValid(brokerId, message)
+            isReservedVolumeValid(message)
         }
     }
 
-    private fun isReservedVolumeValid(brokerId: String, message: IncomingMessages.ReservedCashInOutOperation) {
-        val accuracy = assetsHolder.getAsset(brokerId, message.assetId).accuracy
-        val reservedBalance = balancesHolder.getReservedBalance(brokerId, message.walletId, message.assetId)
+    private fun isReservedVolumeValid(message: IncomingMessages.ReservedCashInOutOperation) {
+        val accuracy = assetsHolder.getAsset(message.brokerId, message.assetId).accuracy
+        val reservedBalance = balancesHolder.getReservedBalance(message.brokerId, message.walletId, message.assetId)
 
-        val balance = balancesHolder.getBalance(brokerId, message.walletId, message.assetId)
+        val balance = balancesHolder.getBalance(message.brokerId, message.walletId, message.assetId)
         if (NumberUtils.setScaleRoundHalfUp(balance - reservedBalance - BigDecimal(message.reservedVolume), accuracy) < BigDecimal.ZERO) {
             LOGGER.info("Reserved cash in operation (${message.id}) for client ${message.walletId} asset ${message.assetId}, " +
                     "volume: ${message.reservedVolume}: low balance $balance, " +
@@ -44,9 +40,9 @@ class ReservedCashInOutOperationValidatorImpl @Autowired constructor(private val
         }
     }
 
-    private fun isBalanceValid(brokerId: String, message: IncomingMessages.ReservedCashInOutOperation) {
-        val accuracy = assetsHolder.getAsset(brokerId, message.assetId).accuracy
-        val reservedBalance = balancesHolder.getReservedBalance(brokerId, message.walletId, message.assetId)
+    private fun isBalanceValid(message: IncomingMessages.ReservedCashInOutOperation) {
+        val accuracy = assetsHolder.getAsset(message.brokerId, message.assetId).accuracy
+        val reservedBalance = balancesHolder.getReservedBalance(message.brokerId, message.walletId, message.assetId)
 
         if (NumberUtils.setScaleRoundHalfUp(reservedBalance + BigDecimal(message.reservedVolume), accuracy) < BigDecimal.ZERO) {
             LOGGER.info("Reserved cash out operation (${message.id}) for client ${message.walletId} asset ${message.assetId}, " +
@@ -55,10 +51,10 @@ class ReservedCashInOutOperationValidatorImpl @Autowired constructor(private val
         }
     }
 
-    private fun isVolumeAccuracyValid(brokerId: String, message: IncomingMessages.ReservedCashInOutOperation) {
+    private fun isVolumeAccuracyValid(message: IncomingMessages.ReservedCashInOutOperation) {
         val assetId = message.assetId
         val volume = message.reservedVolume
-        val volumeValid = NumberUtils.isScaleSmallerOrEqual(BigDecimal(volume), assetsHolder.getAsset(brokerId, assetId).accuracy)
+        val volumeValid = NumberUtils.isScaleSmallerOrEqual(BigDecimal(volume), assetsHolder.getAsset(message.brokerId, assetId).accuracy)
 
         if (!volumeValid) {
             LOGGER.info("Volume accuracy invalid, assetId $assetId, volume $volume")

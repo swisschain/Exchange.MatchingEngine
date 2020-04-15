@@ -1,5 +1,6 @@
 package com.swisschain.matching.engine.services.validator.input
 
+import com.swisschain.matching.engine.AbstractTest.Companion.DEFAULT_BROKER
 import com.swisschain.matching.engine.balance.util.TestBalanceHolderWrapper
 import com.swisschain.matching.engine.config.TestApplicationContext
 import com.swisschain.matching.engine.daos.FeeType
@@ -143,6 +144,7 @@ class CashInOutOperationInputValidatorTest {
 
     private fun getDefaultCashInOutOperationBuilder(): IncomingMessages.CashInOutOperation.Builder {
         return IncomingMessages.CashInOutOperation.newBuilder()
+                .setBrokerId(DEFAULT_BROKER)
                 .setId("test")
                 .setWalletId(CLIENT_ID)
                 .setAssetId(ASSET_ID)

@@ -76,6 +76,7 @@ companion object {
             val id = UUID.randomUUID().toString()
             val builder = IncomingMessages.MarketOrder.newBuilder()
                     .setUid(id)
+                    .setBrokerId(DEFAULT_BROKER)
                     .setTimestamp(order.createdAt.createProtobufTimestampBuilder())
                     .setWalletId(order.walletId)
                     .setAssetPairId(order.assetPairId)
@@ -164,6 +165,7 @@ companion object {
                                          cancelMode: OrderCancelMode?): IncomingMessages.MultiLimitOrder {
             val multiOrderBuilder = IncomingMessages.MultiLimitOrder.newBuilder()
                     .setUid(UUID.randomUUID().toString())
+                    .setBrokerId(DEFAULT_BROKER)
                     .setTimestamp(Date().createProtobufTimestampBuilder())
                     .setWalletId(walletId)
                     .setAssetPairId(assetPairId)
@@ -264,6 +266,7 @@ companion object {
     ): MessageWrapper {
         return cashTransferContextParser.parse(GenericMessageWrapper(MessageType.CASH_TRANSFER_OPERATION.type, IncomingMessages.CashTransferOperation.newBuilder()
                 .setId(businessId)
+                .setBrokerId(DEFAULT_BROKER)
                 .setFromWalletId(fromWalletId)
                 .setToWalletId(toWalletId)
                 .setAssetId(assetId)
@@ -276,6 +279,7 @@ companion object {
                               fees: List<NewFeeInstruction> = listOf()): MessageWrapper {
         val builder = IncomingMessages.CashInOutOperation.newBuilder()
                 .setId(businessId)
+                .setBrokerId(DEFAULT_BROKER)
                 .setWalletId(walletId)
                 .setAssetId(assetId)
                 .setVolume(amount.toString())
@@ -290,8 +294,12 @@ companion object {
     fun buildLimitOrderCancelWrapper(uid: String) = buildLimitOrderCancelWrapper(listOf(uid))
 
     fun buildLimitOrderCancelWrapper(uids: List<String>): MessageWrapper {
-        val parsedData = limitOrderCancelOperationContextParser.parse(GenericMessageWrapper(MessageType.LIMIT_ORDER_CANCEL.type, IncomingMessages.LimitOrderCancel.newBuilder()
-                .setUid(UUID.randomUUID().toString()).addAllLimitOrderId(uids).build(), null, false))
+        val parsedData = limitOrderCancelOperationContextParser.parse(GenericMessageWrapper(
+                MessageType.LIMIT_ORDER_CANCEL.type,
+                IncomingMessages.LimitOrderCancel.newBuilder().setBrokerId(DEFAULT_BROKER).setUid(UUID.randomUUID().toString()).addAllLimitOrderId(uids).build(),
+                null,
+                false
+        ))
         return parsedData.messageWrapper
     }
 
@@ -299,7 +307,7 @@ companion object {
                                          assetPairId: String? = null,
                                          isBuy: Boolean? = null): MessageWrapper {
         val builder = IncomingMessages.LimitOrderMassCancel.newBuilder()
-                .setUid(UUID.randomUUID().toString())
+                .setBrokerId(DEFAULT_BROKER).setUid(UUID.randomUUID().toString())
         walletId?.let {
             builder.setWalletId(StringValue.of(it))
         }
@@ -318,6 +326,7 @@ companion object {
                                cancel: Boolean = false): GenericMessageWrapper {
         val builder = IncomingMessages.LimitOrder.newBuilder()
                 .setUid(order.externalId)
+                .setBrokerId(DEFAULT_BROKER)
                 .setTimestamp(order.createdAt.createProtobufTimestampBuilder())
                 .setWalletId(order.walletId)
                 .setAssetPairId(order.assetPairId)

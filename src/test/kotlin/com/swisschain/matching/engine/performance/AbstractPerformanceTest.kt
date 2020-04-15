@@ -1,6 +1,5 @@
 package com.swisschain.matching.engine.performance
 
-import com.swisschain.matching.engine.AbstractTest.Companion.DEFAULT_BROKER
 import com.swisschain.matching.engine.balance.util.TestBalanceHolderWrapper
 import com.swisschain.matching.engine.daos.OutgoingEventData
 import com.swisschain.matching.engine.database.PersistenceManager
@@ -170,16 +169,15 @@ abstract class AbstractPerformanceTest {
                 assetsHolder,
                 applicationSettingsHolder,
                 uuidHolder,
-                LOGGER,
-                DEFAULT_BROKER)
-        cashInOutContextParser = CashInOutContextParser(DEFAULT_BROKER, assetsHolder, uuidHolder)
-        cashTransferContextParser = CashTransferContextParser(DEFAULT_BROKER, assetsHolder, uuidHolder)
+                LOGGER)
+        cashInOutContextParser = CashInOutContextParser(assetsHolder, uuidHolder)
+        cashTransferContextParser = CashTransferContextParser(assetsHolder, uuidHolder)
 
         messageBuilder = MessageBuilder(singleLimitOrderContextParser,
                 cashInOutContextParser,
                 cashTransferContextParser,
-                LimitOrderCancelOperationContextParser(DEFAULT_BROKER),
-                LimitOrderMassCancelOperationContextParser(DEFAULT_BROKER))
+                LimitOrderCancelOperationContextParser(),
+                LimitOrderMassCancelOperationContextParser())
 
         genericStopLimitOrderService = GenericStopLimitOrderService(stopOrdersDatabaseAccessorsHolder, expiryOrdersQueue)
 
@@ -238,8 +236,7 @@ abstract class AbstractPerformanceTest {
                 balancesHolder,
                 applicationSettingsHolder,
                 messageProcessingStatusHolder,
-                uuidHolder,
-                DEFAULT_BROKER)
+                uuidHolder)
 
         val marketOrderValidator = MarketOrderValidatorImpl(assetsPairsHolder, assetsHolder, applicationSettingsHolder)
         marketOrderService = MarketOrderService(matchingEngine,
@@ -254,8 +251,7 @@ abstract class AbstractPerformanceTest {
                 marketOrderValidator,
                 applicationSettingsHolder,
                 messageProcessingStatusHolder,
-                uuidHolder,
-                DEFAULT_BROKER)
+                uuidHolder)
 
         startEventProcessorThread(outgoingEventData, "OutgoingEventData")
         startEventProcessorThread(outgoingEventsQueue, "ExecutionEventProcessor")

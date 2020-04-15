@@ -106,7 +106,7 @@ open class DatabaseAccessorConfig {
 
     @Bean
     open fun grpcDictionariesDatabaseAccessor(): DictionariesDatabaseAccessor {
-        return GrpcDictionariesDatabaseAccessor(config.me.defaultBroker, config.me.grpcEndpoints.dictionariesConnection)
+        return GrpcDictionariesDatabaseAccessor(config.me.grpcEndpoints.dictionariesConnection)
     }
     //</editor-fold>
 }
