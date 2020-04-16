@@ -7,7 +7,7 @@ import java.math.BigDecimal
 
 class DictionariesInit {
     companion object {
-        fun createAsset(id: String, accuracy: Int, brokerId: String = DEFAULT_BROKER) = Asset(brokerId, id, id, accuracy)
+        fun createAsset(id: String, accuracy: Int, brokerId: String = DEFAULT_BROKER) = Asset(brokerId, id, accuracy)
 
         fun createAssetPair(
                 assetPairId: String,

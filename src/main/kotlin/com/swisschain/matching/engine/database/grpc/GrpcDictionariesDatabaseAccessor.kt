@@ -24,7 +24,7 @@ class GrpcDictionariesDatabaseAccessor(private val grpcConnectionString: String)
             val response = assetGrpcStub.getAll(Empty.getDefaultInstance())
             response.assetsList.forEach { asset ->
                 val convertedAsset = convertToAsset(asset)
-                result.getOrPut(convertedAsset.symbol) { HashMap<String, Asset>() } [convertedAsset.symbol] = convertedAsset
+                result.getOrPut(convertedAsset.brokerId) { HashMap<String, Asset>() } [convertedAsset.symbol] = convertedAsset
             }
         } catch (e: Exception) {
             LOGGER.error("Unable to load assets: ${e.message}", e)
@@ -54,8 +54,7 @@ class GrpcDictionariesDatabaseAccessor(private val grpcConnectionString: String)
     private fun convertToAsset(asset: GrpcDictionaries.Asset): Asset {
         return Asset(
                 asset.brokerId,
-                asset.id,
-                asset.name,
+                asset.symbol,
                 asset.accuracy
         )
     }

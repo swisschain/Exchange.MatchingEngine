@@ -31,11 +31,10 @@ message GetAssetBySymbolResponse {
 }
 
 message Asset {
-    string id = 1;
-    string name = 2;
+    string brokerId = 1;
+    string symbol = 2;
     string description = 3;
     int32 accuracy = 4;
-    string brokerId = 8;
 }
 
 message GetAllAssetPairsResponse {

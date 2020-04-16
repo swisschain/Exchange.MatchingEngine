@@ -8,5 +8,5 @@ interface DictionariesDatabaseAccessor {
     fun loadAsset(brokerId: String, assetId: String): Asset?
 
     fun loadAssetPairs(): Map<String, Map<String, AssetPair>>
-    fun loadAssetPair(brokerId: String, assetId: String): AssetPair?
+    fun loadAssetPair(brokerId: String, assetPairId: String): AssetPair?
 }
