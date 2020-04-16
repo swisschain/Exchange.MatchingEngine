@@ -47,6 +47,7 @@ class OrderBooksService(
 
     private fun buildOrderBook(orderBook: OrderBook): OutgoingMessages.OrderBookSnapshot {
         val builder = OutgoingMessages.OrderBookSnapshot.newBuilder()
+                .setBrokerId(orderBook.brokerId)
                 .setAsset(orderBook.assetPair).setIsBuy(orderBook.isBuy).setTimestamp(orderBook.timestamp.createProtobufTimestampBuilder())
         val pair = assetPairsCache.getAssetPair(orderBook.brokerId, orderBook.assetPair)
         val baseAsset = assetsCache.getAsset(orderBook.brokerId, pair.baseAssetId)
