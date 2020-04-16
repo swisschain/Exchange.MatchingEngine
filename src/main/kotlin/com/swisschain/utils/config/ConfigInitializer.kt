@@ -8,6 +8,5 @@ object ConfigInitializer {
         } else {
             HttpConfigParser.initConfig(url, classOfT)
         }
-
     }
 }
