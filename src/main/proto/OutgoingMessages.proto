@@ -101,6 +101,7 @@ message CashInEvent {
         string volume = 3;
         repeated Fee fees = 4;
         string brokerId = 5;
+        string description = 6;
     }
     Header header = 1;
     repeated BalanceUpdate balanceUpdates = 2;
@@ -114,6 +115,7 @@ message CashOutEvent {
         string volume = 3;
         repeated Fee fees = 4;
         string brokerId = 5;
+        string description = 6;
     }
     Header header = 1;
     repeated BalanceUpdate balanceUpdates = 2;
@@ -129,6 +131,7 @@ message CashTransferEvent {
         string assetId = 5;
         repeated Fee fees = 6;
         string brokerId = 7;
+        string description = 8;
     }
     Header header = 1;
     repeated BalanceUpdate balanceUpdates = 2;
@@ -251,6 +254,7 @@ message ReservedBalanceUpdateEvent {
         string assetId = 2;
         string volume = 3;
         string brokerId = 4;
+        string description = 5;
     }
     Header header = 1;
     repeated BalanceUpdate balanceUpdates = 2;

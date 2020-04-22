@@ -19,6 +19,7 @@ class CashOutEventBuilder : EventBuilder<CashOutEventData, CashOutEvent>() {
                 eventData.cashOutOperation.walletId,
                 eventData.cashOutOperation.assetId,
                 bigDecimalToString(eventData.cashOutOperation.amount.abs())!!,
+                eventData.cashOutOperation.description?: "",
                 convertFees(eventData.internalFees))
         return this
     }

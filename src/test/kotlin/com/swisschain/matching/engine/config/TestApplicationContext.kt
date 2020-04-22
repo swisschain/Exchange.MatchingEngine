@@ -4,7 +4,6 @@ import com.swisschain.matching.engine.balance.util.TestBalanceHolderWrapper
 import com.swisschain.matching.engine.config.spring.JsonConfig
 import com.swisschain.matching.engine.config.spring.QueueConfig
 import com.swisschain.matching.engine.daos.TradeInfo
-import com.swisschain.matching.engine.daos.TransferOperation
 import com.swisschain.matching.engine.daos.setting.AvailableSettingGroup
 import com.swisschain.matching.engine.database.CashOperationIdDatabaseAccessor
 import com.swisschain.matching.engine.database.DictionariesDatabaseAccessor
@@ -565,12 +564,11 @@ class TestApplicationContext {
     }
 
     @Bean
-    fun cashTransferOperationService(balancesHolder: BalancesHolder,
-                                          dbTransferOperationQueue: BlockingQueue<TransferOperation>, feeProcessor: FeeProcessor,
+    fun cashTransferOperationService(balancesHolder: BalancesHolder, feeProcessor: FeeProcessor,
                                           cashTransferOperationBusinessValidator: CashTransferOperationBusinessValidator,
                                           messageSequenceNumberHolder: MessageSequenceNumberHolder,
                                           outgoingEventProcessor: OutgoingEventProcessor): CashTransferOperationService {
-        return CashTransferOperationService(balancesHolder,  dbTransferOperationQueue, feeProcessor,
+        return CashTransferOperationService(balancesHolder,  feeProcessor,
                 cashTransferOperationBusinessValidator, messageSequenceNumberHolder, outgoingEventProcessor)
     }
 

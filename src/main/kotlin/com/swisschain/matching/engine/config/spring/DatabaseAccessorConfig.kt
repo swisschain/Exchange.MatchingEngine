@@ -1,7 +1,6 @@
 package com.swisschain.matching.engine.config.spring
 
 import com.swisschain.matching.engine.database.CashOperationIdDatabaseAccessor
-import com.swisschain.matching.engine.database.CashOperationsDatabaseAccessor
 import com.swisschain.matching.engine.database.DictionariesDatabaseAccessor
 import com.swisschain.matching.engine.database.MonitoringDatabaseAccessor
 import com.swisschain.matching.engine.database.PersistenceManager
@@ -11,7 +10,6 @@ import com.swisschain.matching.engine.database.ReservedVolumesDatabaseAccessor
 import com.swisschain.matching.engine.database.SettingsDatabaseAccessor
 import com.swisschain.matching.engine.database.SettingsHistoryDatabaseAccessor
 import com.swisschain.matching.engine.database.common.PersistenceManagerFactory
-import com.swisschain.matching.engine.database.grpc.GrpcCashOperationsDatabaseAccessor
 import com.swisschain.matching.engine.database.grpc.GrpcDictionariesDatabaseAccessor
 import com.swisschain.matching.engine.database.grpc.GrpcMonitoringDatabaseAccessor
 import com.swisschain.matching.engine.database.grpc.GrpcReservedVolumeCorrectionDatabaseAccessor
@@ -79,10 +77,6 @@ open class DatabaseAccessorConfig {
 
     //<editor-fold desc="gRPC DB accessors">
 
-    @Bean
-    open fun grpcCashOperationsDatabaseAccessor(): CashOperationsDatabaseAccessor {
-        return GrpcCashOperationsDatabaseAccessor(config.me.grpcEndpoints.cashOperationsConnection)
-    }
     @Bean
     open fun grpcReservedVolumesDatabaseAccessor(): ReservedVolumesDatabaseAccessor {
         return GrpcReservedVolumeCorrectionDatabaseAccessor(config.me.grpcEndpoints.reservedVolumesConnection)

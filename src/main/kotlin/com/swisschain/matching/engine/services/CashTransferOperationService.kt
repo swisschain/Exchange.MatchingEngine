@@ -27,11 +27,9 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.util.Date
 import java.util.LinkedList
-import java.util.concurrent.BlockingQueue
 
 @Service
 class CashTransferOperationService(private val balancesHolder: BalancesHolder,
-                                   private val dbTransferOperationQueue: BlockingQueue<TransferOperation>,
                                    private val feeProcessor: FeeProcessor,
                                    private val cashTransferOperationBusinessValidator: CashTransferOperationBusinessValidator,
                                    private val messageSequenceNumberHolder: MessageSequenceNumberHolder,
@@ -76,7 +74,6 @@ class CashTransferOperationService(private val balancesHolder: BalancesHolder,
             writeErrorResponse(messageWrapper, cashTransferContext, RUNTIME, e.message)
             return
         }
-        dbTransferOperationQueue.put(transferOperation)
 
         writeResponse(messageWrapper, transferOperation.matchingEngineOperationId, OK)
         LOGGER.info("Cash transfer operation (${transferOperation.externalId}) from client ${transferOperation.fromWalletId} to client ${transferOperation.toWalletId}," +

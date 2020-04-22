@@ -8,6 +8,7 @@ class CashTransfer(val brokerId: String,
                    val volume: String,
                    val overdraftLimit: String?,
                    val assetId: String,
+                   val description: String,
                    val fees: List<Fee>?) : EventPart<OutgoingMessages.CashTransferEvent.CashTransfer.Builder> {
 
     override fun createGeneratedMessageBuilder(): OutgoingMessages.CashTransferEvent.CashTransfer.Builder {
@@ -17,6 +18,7 @@ class CashTransfer(val brokerId: String,
                 .setToWalletId(toWalletId)
                 .setVolume(volume)
                 .setOverdraftLimit(overdraftLimit)
+                .setDescription(description)
                 .assetId = assetId
         fees?.forEach { fee ->
             builder.addFees(fee.createGeneratedMessageBuilder())

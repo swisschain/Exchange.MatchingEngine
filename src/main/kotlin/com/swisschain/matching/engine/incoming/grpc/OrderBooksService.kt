@@ -9,6 +9,7 @@ import com.swisschain.matching.engine.outgoing.messages.OrderBook
 import com.swisschain.matching.engine.outgoing.messages.v2.createProtobufTimestampBuilder
 import com.swisschain.matching.engine.services.GenericLimitOrderService
 import com.swisschain.matching.engine.utils.NumberUtils
+import io.grpc.ManagedChannelBuilder
 import io.grpc.stub.StreamObserver
 import java.util.Date
 
@@ -59,5 +60,15 @@ class OrderBooksService(
                     .setOrderId(orderBookPrice.id).build())
         }
         return builder.build()
+    }
+}
+
+fun main() {
+//    val channel = ManagedChannelBuilder.forTarget("13.69.62.36:4002").usePlaintext().build()
+    val channel = ManagedChannelBuilder.forTarget("localhost:4002").usePlaintext().build()
+    val stub = OrderBooksServiceGrpc.newBlockingStub(channel)
+    val result = stub.orderBookSnapshots(Empty.getDefaultInstance())
+    result.forEach {
+        println(it)
     }
 }

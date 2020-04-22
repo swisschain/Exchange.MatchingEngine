@@ -7,7 +7,6 @@ import com.swisschain.matching.engine.holders.CurrentTransactionDataHolder
 import com.swisschain.matching.engine.holders.MessageProcessingStatusHolder
 import com.swisschain.matching.engine.holders.MessageSequenceNumberHolder
 import com.swisschain.matching.engine.incoming.MessageRouter
-import com.swisschain.matching.engine.outgoing.database.TransferOperationSaveService
 import com.swisschain.matching.engine.performance.PerformanceStatsHolder
 import com.swisschain.matching.engine.services.AbstractService
 import com.swisschain.matching.engine.services.CashInOutOperationService
@@ -62,9 +61,6 @@ class MessageProcessor : Thread(MessageProcessor::class.java.name) {
     private lateinit var limitOrderMassCancelService: LimitOrderMassCancelService
 
     @Autowired
-    private lateinit var transferOperationSaveService: TransferOperationSaveService
-
-    @Autowired
     private lateinit var reservedCashInOutOperationService: ReservedCashInOutOperationService
 
     @Autowired
@@ -90,8 +86,6 @@ class MessageProcessor : Thread(MessageProcessor::class.java.name) {
     }
 
     override fun run() {
-        transferOperationSaveService.start()
-
         while (true) {
             processMessage(messageRouter.preProcessedMessageQueue.take())
         }

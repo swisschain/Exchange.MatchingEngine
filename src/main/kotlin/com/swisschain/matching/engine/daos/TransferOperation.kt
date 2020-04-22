@@ -15,6 +15,7 @@ data class TransferOperation(
         val dateTime: Date,
         val volume: BigDecimal,
         val overdraftLimit: BigDecimal?,
+        val description: String,
         val fees: List<FeeInstruction>?) {
 
     override fun equals(other: Any?): Boolean {
@@ -32,6 +33,7 @@ data class TransferOperation(
         if (dateTime != other.dateTime) return false
         if (!NumberUtils.equalsIgnoreScale(volume, other.volume)) return false
         if (!NumberUtils.equalsIgnoreScale(overdraftLimit, other.overdraftLimit)) return false
+        if (description != other.description) return false
         if (fees != other.fees) return false
 
         return true
@@ -47,6 +49,7 @@ data class TransferOperation(
         result = 31 * result + dateTime.hashCode()
         result = 31 * result + volume.stripTrailingZeros().hashCode()
         result = 31 * result + (overdraftLimit?.stripTrailingZeros()?.hashCode() ?: 0)
+        result = 31 * result + (description?.hashCode() ?: 0)
         result = 31 * result + (fees?.hashCode() ?: 0)
         return result
     }

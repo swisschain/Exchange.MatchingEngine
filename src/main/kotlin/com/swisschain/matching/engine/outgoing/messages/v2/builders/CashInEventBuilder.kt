@@ -19,6 +19,7 @@ class CashInEventBuilder : EventBuilder<CashInEventData, CashInEvent>() {
                 eventData.cashInOperation.walletId,
                 eventData.cashInOperation.assetId,
                 bigDecimalToString(eventData.cashInOperation.amount)!!,
+                eventData.cashInOperation.description?: "",
                 convertFees(eventData.internalFees))
         return this
     }

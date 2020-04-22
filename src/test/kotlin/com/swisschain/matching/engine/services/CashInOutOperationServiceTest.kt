@@ -92,6 +92,7 @@ class CashInOutOperationServiceTest : AbstractTest() {
         assertEquals("Client1", cashInEvent.cashIn.walletId)
         assertEquals("50", cashInEvent.cashIn.volume)
         assertEquals("Asset1", cashInEvent.cashIn.assetId)
+        assertEquals("TestDescription", cashInEvent.cashIn.description)
 
         assertEquals(1, cashInEvent.balanceUpdates.size)
         val balanceUpdate = cashInEvent.balanceUpdates.first()
@@ -156,6 +157,7 @@ class CashInOutOperationServiceTest : AbstractTest() {
         assertEquals("Client1", cashOutEvent.cashOut.walletId)
         assertEquals("50", cashOutEvent.cashOut.volume)
         assertEquals("Asset1", cashOutEvent.cashOut.assetId)
+        assertEquals("TestDescription", cashOutEvent.cashOut.description)
 
         assertEquals(1, cashOutEvent.balanceUpdates.size)
         val balanceUpdate = cashOutEvent.balanceUpdates.first()

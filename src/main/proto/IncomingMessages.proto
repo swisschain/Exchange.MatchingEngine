@@ -51,6 +51,7 @@ message CashInOutOperation {
     repeated Fee fees = 6;
     google.protobuf.StringValue messageId = 7;
     string brokerId = 8;
+    string description = 9;
 }
 
 message CashTransferOperation {
@@ -64,6 +65,7 @@ message CashTransferOperation {
     repeated Fee fees = 8;
     google.protobuf.StringValue messageId = 9;
     string brokerId = 10;
+    string description = 11;
 }
 
 enum Status {
@@ -208,6 +210,7 @@ message ReservedCashInOutOperation {
     string reservedVolume = 5;
     google.protobuf.StringValue messageId = 6;
     string brokerId = 7;
+    string description = 8;
 }
 
 enum FeeType {

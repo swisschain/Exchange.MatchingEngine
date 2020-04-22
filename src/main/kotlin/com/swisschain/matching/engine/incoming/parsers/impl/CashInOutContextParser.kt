@@ -39,6 +39,7 @@ class CashInOutContextParser(private val assetsHolder: AssetsHolder,
                         assetsHolder.getAssetAllowNulls(message.brokerId, message.assetId),
                         message.timestamp.toDate(),
                         BigDecimal(message.volume),
+                        message.description,
                         feeInstructions = NewFeeInstruction.create(message.feesList)
                 ))
 

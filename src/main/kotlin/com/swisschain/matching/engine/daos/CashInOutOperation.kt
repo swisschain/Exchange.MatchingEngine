@@ -13,6 +13,7 @@ data class CashInOutOperation(
         val asset: Asset?,
         val dateTime: Date,
         val amount: BigDecimal,
+        val description: String,
         val feeInstructions: List<NewFeeInstruction>) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -27,6 +28,7 @@ data class CashInOutOperation(
         if (asset != other.asset) return false
         if (dateTime != other.dateTime) return false
         if (!NumberUtils.equalsIgnoreScale(amount, other.amount)) return false
+        if (description != other.description) return false
         if (feeInstructions != other.feeInstructions) return false
         return true
     }
@@ -39,6 +41,7 @@ data class CashInOutOperation(
         result = 31 * result + (asset?.hashCode() ?: 0)
         result = 31 * result + dateTime.hashCode()
         result = 31 * result + amount.stripTrailingZeros().hashCode()
+        result = 31 * result + description.hashCode()
         result = 31 * result + feeInstructions.hashCode()
         return result
     }

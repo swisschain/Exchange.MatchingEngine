@@ -38,6 +38,7 @@ class CashTransferContextParser(private val assetsHolder: AssetsHolder,
                 Date(message.timestamp.seconds),
                 BigDecimal(message.volume),
                 if (message.hasOverdraftLimit()) BigDecimal(message.overdraftLimit.value) else null,
+                message.description,
                 feeInstructions
         )
 

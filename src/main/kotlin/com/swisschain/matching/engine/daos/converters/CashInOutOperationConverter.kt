@@ -11,7 +11,8 @@ class CashInOutOperationConverter {
                     cashInOutOperation.walletId,
                     cashInOutOperation.asset!!.symbol,
                     cashInOutOperation.amount,
-                    BigDecimal.ZERO)
+                    BigDecimal.ZERO,
+                    cashInOutOperation.description)
         }
     }
 }

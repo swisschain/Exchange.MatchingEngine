@@ -7,7 +7,8 @@ data class WalletOperation(val brokerId: String,
                            val walletId: String,
                            val assetId: String,
                            val amount: BigDecimal,
-                           val reservedAmount: BigDecimal = BigDecimal.ZERO) {
+                           val reservedAmount: BigDecimal = BigDecimal.ZERO,
+                           val description: String? = null) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -29,6 +30,7 @@ data class WalletOperation(val brokerId: String,
         result = 31 * result + assetId.hashCode()
         result = 31 * result + amount.stripTrailingZeros().hashCode()
         result = 31 * result + reservedAmount.stripTrailingZeros().hashCode()
+        result = 31 * result + (description?.hashCode() ?: 0)
         return result
     }
 }

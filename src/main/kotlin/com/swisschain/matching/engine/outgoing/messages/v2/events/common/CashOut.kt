@@ -6,6 +6,7 @@ class CashOut(val brokerId: String,
               val walletId: String,
               val assetId: String,
               val volume: String,
+              val description: String,
               val fees: List<Fee>?) : EventPart<OutgoingMessages.CashOutEvent.CashOut.Builder> {
 
     override fun createGeneratedMessageBuilder(): OutgoingMessages.CashOutEvent.CashOut.Builder {
@@ -13,6 +14,7 @@ class CashOut(val brokerId: String,
         builder.setBrokerId(brokerId)
                 .setWalletId(walletId)
                 .setAssetId(assetId)
+                .setDescription(description)
                 .volume = volume
         fees?.forEach { fee ->
             builder.addFees(fee.createGeneratedMessageBuilder())

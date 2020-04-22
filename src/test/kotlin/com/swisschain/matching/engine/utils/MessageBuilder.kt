@@ -283,6 +283,7 @@ companion object {
                 .setWalletId(walletId)
                 .setAssetId(assetId)
                 .setVolume(amount.toString())
+                .setDescription("TestDescription")
                 .setTimestamp(Date().createProtobufTimestampBuilder())
         fees.forEach {
             builder.addFees(buildFee(it))
