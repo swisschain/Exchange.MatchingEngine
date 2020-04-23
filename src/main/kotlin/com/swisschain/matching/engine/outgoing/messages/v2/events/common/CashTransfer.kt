@@ -17,7 +17,7 @@ class CashTransfer(val brokerId: String,
                 .setFromWalletId(fromWalletId)
                 .setToWalletId(toWalletId)
                 .setVolume(volume)
-                .setOverdraftLimit(overdraftLimit)
+                .setOverdraftLimit(overdraftLimit?:"0.0")
                 .setDescription(description)
                 .assetId = assetId
         fees?.forEach { fee ->
