@@ -48,6 +48,7 @@ class CashTransferOperationService(private val balancesHolder: BalancesHolder,
         LOGGER.debug("Processing cash transfer operation ${transferOperation.externalId}) messageId: ${cashTransferContext.messageId}" +
                 " from client ${transferOperation.fromWalletId} to client ${transferOperation.toWalletId}, " +
                 "asset $asset, volume: ${NumberUtils.roundForPrint(transferOperation.volume)}, " +
+                "description: ${transferOperation.description} " +
                 "feeInstructions: ${transferOperation.fees}")
 
         try {
@@ -77,7 +78,7 @@ class CashTransferOperationService(private val balancesHolder: BalancesHolder,
 
         writeResponse(messageWrapper, transferOperation.matchingEngineOperationId, OK)
         LOGGER.info("Cash transfer operation (${transferOperation.externalId}) from client ${transferOperation.fromWalletId} to client ${transferOperation.toWalletId}," +
-                " asset $asset, volume: ${NumberUtils.roundForPrint(transferOperation.volume)} processed")
+                " asset $asset, volume: ${NumberUtils.roundForPrint(transferOperation.volume)}, description: ${transferOperation.description}  processed")
     }
 
     private fun processTransferOperation(operation: TransferOperation,
