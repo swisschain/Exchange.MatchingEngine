@@ -79,6 +79,7 @@ class StopOrderBookProcessor(private val limitOrderProcessor: LimitOrderProcesso
         val assetPair = executionContext.assetPairsById[order.assetPairId]!!
         val limitAssetId = if (order.isBuySide()) assetPair.quotingAssetId else assetPair.baseAssetId
         val walletOperation = WalletOperation(order.brokerId,
+                order.accountId,
                 order.walletId,
                 limitAssetId,
                 BigDecimal.ZERO,

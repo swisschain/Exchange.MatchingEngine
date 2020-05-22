@@ -16,7 +16,6 @@ class ReservedBalanceUpdateEventBuilder : EventBuilder<ReservedBalanceUpdateEven
     override fun setEventData(eventData: ReservedBalanceUpdateEventData): EventBuilder<ReservedBalanceUpdateEventData, ReservedBalanceUpdateEvent> {
         balanceUpdates = convertBalanceUpdates(eventData.clientBalanceUpdates)
         reservedBalanceUpdate = ReservedBalanceUpdate(eventData.reservedBalanceUpdateOperation.brokerId,
-                eventData.reservedBalanceUpdateOperation.accountId!!,
                 eventData.reservedBalanceUpdateOperation.walletId,
                 eventData.reservedBalanceUpdateOperation.assetId,
                 bigDecimalToString(eventData.reservedBalanceUpdateOperation.reservedAmount)!!)

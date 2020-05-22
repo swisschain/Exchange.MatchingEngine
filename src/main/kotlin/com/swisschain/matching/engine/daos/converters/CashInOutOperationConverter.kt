@@ -9,6 +9,7 @@ class CashInOutOperationConverter {
         fun fromCashInOutOperationToWalletOperation(cashInOutOperation: CashInOutOperation): WalletOperation {
             return WalletOperation(
                     cashInOutOperation.brokerId,
+                    cashInOutOperation.accountId,
                     cashInOutOperation.walletId,
                     cashInOutOperation.asset!!.symbol,
                     cashInOutOperation.amount,

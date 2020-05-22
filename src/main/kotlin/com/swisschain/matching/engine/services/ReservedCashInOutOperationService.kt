@@ -52,6 +52,7 @@ class ReservedCashInOutOperationService @Autowired constructor(private val asset
         val matchingEngineOperationId = uuidHolder.getNextValue()
         val operation = WalletOperation(
                 message.brokerId,
+                message.accountId,
                 message.walletId,
                 message.assetId,
                 BigDecimal.ZERO,

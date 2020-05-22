@@ -256,7 +256,7 @@ class LimitOrderProcessor(private val limitOrderInputValidator: LimitOrderInputV
                 orderCopy.reservedLimitVolume = if (orderCopy.isBuySide()) NumberUtils.setScaleRoundDown(orderCopy.getAbsRemainingVolume() * orderCopy.price, limitAsset.accuracy) else orderCopy.getAbsRemainingVolume()
                 if (!applicationSettingsHolder.isTrustedClient(orderCopy.walletId)) {
                     val newReservedBalance = NumberUtils.setScaleRoundHalfUp(orderCopy.reservedLimitVolume!!, limitAsset.accuracy)
-                    orderContext.ownWalletOperations!!.add(WalletOperation(orderCopy.brokerId, orderCopy.walletId,
+                    orderContext.ownWalletOperations!!.add(WalletOperation(orderCopy.brokerId, orderCopy.accountId, orderCopy.walletId,
                             limitAsset.symbol,
                             BigDecimal.ZERO,
                             newReservedBalance))
@@ -322,7 +322,7 @@ class LimitOrderProcessor(private val limitOrderInputValidator: LimitOrderInputV
         val order = orderContext.order
         val limitVolume = orderContext.limitVolume!!
 
-        val walletOperation = WalletOperation(order.brokerId, order.walletId,
+        val walletOperation = WalletOperation(order.brokerId, order.accountId, order.walletId,
                 orderContext.limitAsset!!.symbol,
                 BigDecimal.ZERO,
                 limitVolume)

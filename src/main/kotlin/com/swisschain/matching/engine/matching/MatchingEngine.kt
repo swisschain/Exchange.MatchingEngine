@@ -159,10 +159,10 @@ class MatchingEngine(private val genericLimitOrderService: GenericLimitOrderServ
                     continue
                 }
 
-                val baseAssetOperation = WalletOperation(order.brokerId, order.walletId, assetPair.baseAssetId, marketRoundedVolume, BigDecimal.ZERO)
-                val quotingAssetOperation = WalletOperation(order.brokerId, order.walletId, assetPair.quotingAssetId, oppositeRoundedVolume, BigDecimal.ZERO)
-                val limitBaseAssetOperation = WalletOperation(limitOrder.brokerId, limitOrder.walletId, assetPair.baseAssetId, -marketRoundedVolume, if (-marketRoundedVolume < BigDecimal.ZERO) -marketRoundedVolume else BigDecimal.ZERO)
-                val limitQuotingAssetOperation = WalletOperation(limitOrder.brokerId, limitOrder.walletId, assetPair.quotingAssetId, -oppositeRoundedVolume, if (-oppositeRoundedVolume < BigDecimal.ZERO) -oppositeRoundedVolume else BigDecimal.ZERO)
+                val baseAssetOperation = WalletOperation(order.brokerId, order.accountId, order.walletId, assetPair.baseAssetId, marketRoundedVolume, BigDecimal.ZERO)
+                val quotingAssetOperation = WalletOperation(order.brokerId, order.accountId, order.walletId, assetPair.quotingAssetId, oppositeRoundedVolume, BigDecimal.ZERO)
+                val limitBaseAssetOperation = WalletOperation(limitOrder.brokerId, limitOrder.accountId, limitOrder.walletId, assetPair.baseAssetId, -marketRoundedVolume, if (-marketRoundedVolume < BigDecimal.ZERO) -marketRoundedVolume else BigDecimal.ZERO)
+                val limitQuotingAssetOperation = WalletOperation(limitOrder.brokerId, limitOrder.accountId, limitOrder.walletId, assetPair.quotingAssetId, -oppositeRoundedVolume, if (-oppositeRoundedVolume < BigDecimal.ZERO) -oppositeRoundedVolume else BigDecimal.ZERO)
 
                 val ownCashMovements = mutableListOf(baseAssetOperation, quotingAssetOperation)
                 val oppositeCashMovements = mutableListOf(limitBaseAssetOperation, limitQuotingAssetOperation)
@@ -220,7 +220,7 @@ class MatchingEngine(private val genericLimitOrderService: GenericLimitOrderServ
                     limitOrderCopy.updateStatus(OrderStatus.Matched, now)
                     completedLimitOrders.add(limitOrderCopyWrapper)
                     if (limitOrderCopy.reservedLimitVolume != null && limitOrderCopy.reservedLimitVolume!! > BigDecimal.ZERO) {
-                        oppositeCashMovements.add(WalletOperation(limitOrder.brokerId, limitOrder.walletId, if (-marketRoundedVolume < BigDecimal.ZERO) assetPair.baseAssetId else assetPair.quotingAssetId, BigDecimal.ZERO, -limitOrderCopy.reservedLimitVolume!!))
+                        oppositeCashMovements.add(WalletOperation(limitOrder.brokerId, limitOrder.accountId, limitOrder.walletId, if (-marketRoundedVolume < BigDecimal.ZERO) assetPair.baseAssetId else assetPair.quotingAssetId, BigDecimal.ZERO, -limitOrderCopy.reservedLimitVolume!!))
                         limitOrderCopy.reservedLimitVolume =  BigDecimal.ZERO
                     }
                 } else {

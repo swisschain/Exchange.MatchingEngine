@@ -37,7 +37,7 @@ class WalletOperationsCalculator(
 
                 if (reservedBalance > BigDecimal.ZERO) {
                     walletOperation.add(
-                            WalletOperation(order.brokerId, order.walletId, limitAsset, BigDecimal.ZERO, if (limitVolume > reservedBalance) -reservedBalance else -limitVolume)
+                            WalletOperation(order.brokerId, order.accountId, order.walletId, limitAsset, BigDecimal.ZERO, if (limitVolume > reservedBalance) -reservedBalance else -limitVolume)
                     )
                 }
             }

@@ -146,6 +146,7 @@ class StopLimitOrderProcessor(private val limitOrderInputValidator: LimitOrderIn
         val order = orderContext.order
         val limitVolume = orderContext.limitVolume!!
         val walletOperation = WalletOperation(order.brokerId,
+                order.accountId,
                 order.walletId,
                 orderContext.limitAsset!!.symbol,
                 BigDecimal.ZERO,

@@ -89,8 +89,8 @@ class CashTransferOperationService(private val balancesHolder: BalancesHolder,
         val operations = LinkedList<WalletOperation>()
 
         val assetId = operation.asset.symbol
-        operations.add(WalletOperation(operation.brokerId, operation.fromWalletId, assetId, -operation.volume))
-        val receiptOperation = WalletOperation(operation.brokerId, operation.toWalletId, assetId, operation.volume)
+        operations.add(WalletOperation(operation.brokerId, operation.accountId, operation.fromWalletId, assetId, -operation.volume))
+        val receiptOperation = WalletOperation(operation.brokerId,  operation.accountId, operation.toWalletId, assetId, operation.volume)
         operations.add(receiptOperation)
 
         val fees = feeProcessor.processFee(operation.brokerId, operation.fees, receiptOperation, operations, balancesGetter = balancesHolder)

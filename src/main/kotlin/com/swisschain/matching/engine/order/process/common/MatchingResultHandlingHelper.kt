@@ -58,6 +58,7 @@ class MatchingResultHandlingHelper(private val applicationSettingsHolder: Applic
                 ?: if (oppositeOrder.isBuySide()) oppositeOrder.getAbsRemainingVolume() * oppositeOrder.price else oppositeOrder.getAbsRemainingVolume()
         val reservedBalance = orderExecutionContext.executionContext.walletOperationsProcessor.getReservedBalance(oppositeOrder.brokerId, oppositeOrder.walletId, assetId)
         return WalletOperation(oppositeOrder.brokerId,
+                oppositeOrder.accountId,
                 oppositeOrder.walletId,
                 assetId,
                 BigDecimal.ZERO,

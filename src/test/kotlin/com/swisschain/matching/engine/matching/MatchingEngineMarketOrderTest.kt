@@ -338,16 +338,16 @@ class MatchingEngineMarketOrderTest : MatchingEngineTest() {
 
         assertCashMovementsEquals(
                 listOf(
-                        WalletOperation(DEFAULT_BROKER,  1, "EUR", BigDecimal.valueOf(91.1), BigDecimal.ZERO),
-                        WalletOperation(DEFAULT_BROKER,  1, "USD", BigDecimal.valueOf(-108.41), BigDecimal.ZERO)
+                        WalletOperation(DEFAULT_BROKER, null,  1, "EUR", BigDecimal.valueOf(91.1), BigDecimal.ZERO),
+                        WalletOperation(DEFAULT_BROKER, null,  1, "USD", BigDecimal.valueOf(-108.41), BigDecimal.ZERO)
                 ),
                 matchingResult.ownCashMovements
         )
 
         assertCashMovementsEquals(
                 listOf(
-                        WalletOperation(DEFAULT_BROKER,  2, "EUR", BigDecimal.valueOf(-91.1), BigDecimal.valueOf(-91.1)),
-                        WalletOperation(DEFAULT_BROKER,  2, "USD", BigDecimal.valueOf(108.41), BigDecimal.ZERO)
+                        WalletOperation(DEFAULT_BROKER, null,  2, "EUR", BigDecimal.valueOf(-91.1), BigDecimal.valueOf(-91.1)),
+                        WalletOperation(DEFAULT_BROKER, null,  2, "USD", BigDecimal.valueOf(108.41), BigDecimal.ZERO)
                 ),
                 matchingResult.oppositeCashMovements
         )

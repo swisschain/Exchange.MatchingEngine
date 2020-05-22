@@ -187,8 +187,8 @@ class FeeProcessor(private val assetsHolder: AssetsHolder,
             throw NotEnoughFundsFeeException("Not enough funds for fee (asset: ${feeAsset.symbol}, available balance: $balance, feeAmount: $absFeeAmount)")
         }
         clientBalances[feeAsset.symbol] = NumberUtils.setScaleRoundHalfUp(balance - absFeeAmount, feeAsset.accuracy)
-        operations.add(WalletOperation(brokerId, feeInstruction.sourceWalletId, feeAsset.symbol, -absFeeAmount))
-        operations.add(WalletOperation(brokerId, feeInstruction.targetWalletId!!, feeAsset.symbol, absFeeAmount))
+        operations.add(WalletOperation(brokerId, null, feeInstruction.sourceWalletId, feeAsset.symbol, -absFeeAmount))
+        operations.add(WalletOperation(brokerId, null, feeInstruction.targetWalletId!!, feeAsset.symbol, absFeeAmount))
         return FeeTransfer(feeInstruction.sourceWalletId, feeInstruction.targetWalletId,
                 absFeeAmount, feeAsset.symbol, if (feeCoef != null) NumberUtils.setScaleRoundHalfUp(feeCoef, FEE_COEF_ACCURACY) else null)
     }
@@ -212,7 +212,7 @@ class FeeProcessor(private val assetsHolder: AssetsHolder,
                 throw NotEnoughFundsFeeException("Not enough funds for fee (asset: ${feeAsset.symbol}, available balance: $balance, feeAmount: $absFeeAmount)")
             }
             clientBalances[feeAsset.symbol] = NumberUtils.setScaleRoundHalfUp(balance - absFeeAmount, feeAsset.accuracy)
-            operations.add(WalletOperation(brokerId, receiptOperation.walletId, feeAsset.symbol, -absFeeAmount))
+            operations.add(WalletOperation(brokerId, null, receiptOperation.walletId, feeAsset.symbol, -absFeeAmount))
         } else {
             val baseReceiptOperationAmount = receiptOperationWrapper.baseReceiptOperation.amount
             if (absFeeAmount > baseReceiptOperationAmount.abs()) {
@@ -220,13 +220,13 @@ class FeeProcessor(private val assetsHolder: AssetsHolder,
             }
             val newReceiptAmount = if (baseReceiptOperationAmount > BigDecimal.ZERO) receiptOperation.amount - absFeeAmount else receiptOperation.amount
             operations.remove(receiptOperation)
-            val newReceiptOperation = WalletOperation(brokerId, receiptOperation.walletId,
+            val newReceiptOperation = WalletOperation(brokerId, null, receiptOperation.walletId,
                     receiptOperation.assetId, NumberUtils.setScaleRoundHalfUp(newReceiptAmount, feeAsset.accuracy))
             operations.add(newReceiptOperation)
             receiptOperationWrapper.currentReceiptOperation = newReceiptOperation
         }
 
-        operations.add(WalletOperation(brokerId, feeInstruction.targetWalletId!!,
+        operations.add(WalletOperation(brokerId, null, feeInstruction.targetWalletId!!,
                 feeAsset.symbol, absFeeAmount))
 
         return FeeTransfer(receiptOperation.walletId, feeInstruction.targetWalletId, absFeeAmount,

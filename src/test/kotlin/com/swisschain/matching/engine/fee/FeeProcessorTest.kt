@@ -75,8 +75,8 @@ class FeeProcessorTest {
         testDictionariesDatabaseAccessor.addAssetPair(DictionariesInit.createAssetPair("EURUSD", "EUR", "USD", 5))
 
         val operations = LinkedList<WalletOperation>()
-        operations.add(WalletOperation(DEFAULT_BROKER, 1, "USD", BigDecimal.valueOf(-10.0)))
-        operations.add(WalletOperation(DEFAULT_BROKER, 2, "USD", BigDecimal.valueOf(10.0)))
+        operations.add(WalletOperation(DEFAULT_BROKER, null, 1, "USD", BigDecimal.valueOf(-10.0)))
+        operations.add(WalletOperation(DEFAULT_BROKER, null, 2, "USD", BigDecimal.valueOf(10.0)))
         val originalOperations = LinkedList(operations)
         val receiptOperation = operations[1]
 
@@ -146,8 +146,8 @@ class FeeProcessorTest {
         testDictionariesDatabaseAccessor.addAssetPair(DictionariesInit.createAssetPair("EURUSD", "EUR", "USD", 5))
 
         val operations = LinkedList<WalletOperation>()
-        operations.add(WalletOperation(DEFAULT_BROKER, 1, "USD", BigDecimal.valueOf(-0.5)))
-        operations.add(WalletOperation(DEFAULT_BROKER, 2, "USD", BigDecimal.valueOf(0.5)))
+        operations.add(WalletOperation(DEFAULT_BROKER, null, 1, "USD", BigDecimal.valueOf(-0.5)))
+        operations.add(WalletOperation(DEFAULT_BROKER, null, 2, "USD", BigDecimal.valueOf(0.5)))
         val originalOperations = LinkedList(operations)
         val receiptOperation = operations[1]
 
@@ -172,7 +172,7 @@ class FeeProcessorTest {
         testDictionariesDatabaseAccessor.addAssetPair(DictionariesInit.createAssetPair("EURUSD", "EUR", "USD", 5))
 
         val operations = LinkedList<WalletOperation>()
-        operations.add(WalletOperation(DEFAULT_BROKER, 1, "USD", BigDecimal.valueOf(-0.5)))
+        operations.add(WalletOperation(DEFAULT_BROKER, null, 1, "USD", BigDecimal.valueOf(-0.5)))
         val receiptOperation = operations[0]
 
         val feeInstructions = buildFeeInstructions(type = FeeType.CLIENT_FEE, size = 0.4, sizeType = FeeSizeType.ABSOLUTE, targetWalletId = 3)
@@ -191,7 +191,7 @@ class FeeProcessorTest {
         testDictionariesDatabaseAccessor.addAssetPair(DictionariesInit.createAssetPair("EURUSD", "EUR", "USD", 5))
 
         val operations = LinkedList<WalletOperation>()
-        operations.add(WalletOperation(DEFAULT_BROKER, 1, "USD", BigDecimal.valueOf(-0.5)))
+        operations.add(WalletOperation(DEFAULT_BROKER, null, 1, "USD", BigDecimal.valueOf(-0.5)))
         val receiptOperation = operations[0]
 
         val feeInstructions = buildFeeInstructions(type = FeeType.CLIENT_FEE, size = 0.4, sizeType = FeeSizeType.PERCENTAGE, targetWalletId = 3)
@@ -210,8 +210,8 @@ class FeeProcessorTest {
         testDictionariesDatabaseAccessor.addAsset(DictionariesInit.createAsset("EUR", 4))
 
         val operations = LinkedList<WalletOperation>()
-        operations.add(WalletOperation(DEFAULT_BROKER, 1, "USD", BigDecimal.valueOf(-0.5)))
-        operations.add(WalletOperation(DEFAULT_BROKER, 2, "USD", BigDecimal.valueOf(0.5)))
+        operations.add(WalletOperation(DEFAULT_BROKER, null, 1, "USD", BigDecimal.valueOf(-0.5)))
+        operations.add(WalletOperation(DEFAULT_BROKER, null, 2, "USD", BigDecimal.valueOf(0.5)))
         val receiptOperation = operations[1]
 
         val feeInstructions = buildFeeInstructions(type = FeeType.CLIENT_FEE, size = 0.6543, sizeType = FeeSizeType.ABSOLUTE, targetWalletId = 3, assetIds = listOf("EUR"))
@@ -225,8 +225,8 @@ class FeeProcessorTest {
     @Test
     fun testClientPercentageFee() {
         val operations = LinkedList<WalletOperation>()
-        operations.add(WalletOperation(DEFAULT_BROKER, 1, "USD", BigDecimal.valueOf(-10.1)))
-        operations.add(WalletOperation(DEFAULT_BROKER, 2, "USD", BigDecimal.valueOf(10.1)))
+        operations.add(WalletOperation(DEFAULT_BROKER, null, 1, "USD", BigDecimal.valueOf(-10.1)))
+        operations.add(WalletOperation(DEFAULT_BROKER, null, 2, "USD", BigDecimal.valueOf(10.1)))
         val receiptOperation = operations[1]
         val originalOperations = LinkedList(operations)
 
@@ -250,8 +250,8 @@ class FeeProcessorTest {
     @Test
     fun testClientAbsoluteFee() {
         val operations = LinkedList<WalletOperation>()
-        operations.add(WalletOperation(DEFAULT_BROKER, 1, "USD", BigDecimal.valueOf(-11.1)))
-        operations.add(WalletOperation(DEFAULT_BROKER, 2, "USD", BigDecimal.valueOf(11.1)))
+        operations.add(WalletOperation(DEFAULT_BROKER, null, 1, "USD", BigDecimal.valueOf(-11.1)))
+        operations.add(WalletOperation(DEFAULT_BROKER, null, 2, "USD", BigDecimal.valueOf(11.1)))
         val receiptOperation = operations[1]
         val originalOperations = LinkedList(operations)
 
@@ -275,8 +275,8 @@ class FeeProcessorTest {
     @Test
     fun testClientPercentageFeeRound() {
         val operations = LinkedList<WalletOperation>()
-        operations.add(WalletOperation(DEFAULT_BROKER, 1, "USD", BigDecimal.valueOf(-29.99)))
-        operations.add(WalletOperation(DEFAULT_BROKER, 2, "USD", BigDecimal.valueOf(29.99)))
+        operations.add(WalletOperation(DEFAULT_BROKER, null, 1, "USD", BigDecimal.valueOf(-29.99)))
+        operations.add(WalletOperation(DEFAULT_BROKER, null, 2, "USD", BigDecimal.valueOf(29.99)))
         val receiptOperation = operations[1]
         val originalOperations = LinkedList(operations)
 
@@ -302,8 +302,8 @@ class FeeProcessorTest {
         testBalanceHolderWrapper.updateBalance(3, "USD", 1000.0)
 
         val operations = LinkedList<WalletOperation>()
-        operations.add(WalletOperation(DEFAULT_BROKER, 1, "USD", BigDecimal.valueOf(-10.1)))
-        operations.add(WalletOperation(DEFAULT_BROKER, 2, "USD", BigDecimal.valueOf(10.1)))
+        operations.add(WalletOperation(DEFAULT_BROKER, null, 1, "USD", BigDecimal.valueOf(-10.1)))
+        operations.add(WalletOperation(DEFAULT_BROKER, null, 2, "USD", BigDecimal.valueOf(10.1)))
         val receiptOperation = operations[1]
         val originalOperations = LinkedList(operations)
 
@@ -330,8 +330,8 @@ class FeeProcessorTest {
         testBalanceHolderWrapper.updateBalance(3, "USD", 0.1)
 
         val operations = LinkedList<WalletOperation>()
-        operations.add(WalletOperation(DEFAULT_BROKER, 1, "USD", BigDecimal.valueOf(-10.1)))
-        operations.add(WalletOperation(DEFAULT_BROKER, 2, "USD", BigDecimal.valueOf(10.1)))
+        operations.add(WalletOperation(DEFAULT_BROKER, null, 1, "USD", BigDecimal.valueOf(-10.1)))
+        operations.add(WalletOperation(DEFAULT_BROKER, null, 2, "USD", BigDecimal.valueOf(10.1)))
         val receiptOperation = operations[1]
         val originalOperations = LinkedList(operations)
 
@@ -343,8 +343,8 @@ class FeeProcessorTest {
     @Test
     fun testMakerPercentageFee() {
         val operations = LinkedList<WalletOperation>()
-        operations.add(WalletOperation(DEFAULT_BROKER, 1, "USD", BigDecimal.valueOf(-10.1)))
-        operations.add(WalletOperation(DEFAULT_BROKER, 2, "USD", BigDecimal.valueOf(10.1)))
+        operations.add(WalletOperation(DEFAULT_BROKER, null, 1, "USD", BigDecimal.valueOf(-10.1)))
+        operations.add(WalletOperation(DEFAULT_BROKER, null, 2, "USD", BigDecimal.valueOf(10.1)))
         val receiptOperation = operations[1]
         val originalOperations = LinkedList(operations)
 
@@ -368,8 +368,8 @@ class FeeProcessorTest {
     @Test
     fun testMakerAbsoluteFee() {
         val operations = LinkedList<WalletOperation>()
-        operations.add(WalletOperation(DEFAULT_BROKER, 1, "USD", BigDecimal.valueOf(-10.1)))
-        operations.add(WalletOperation(DEFAULT_BROKER, 2, "USD", BigDecimal.valueOf(10.1)))
+        operations.add(WalletOperation(DEFAULT_BROKER, null, 1, "USD", BigDecimal.valueOf(-10.1)))
+        operations.add(WalletOperation(DEFAULT_BROKER, null, 2, "USD", BigDecimal.valueOf(10.1)))
         val receiptOperation = operations[1]
         val originalOperations = LinkedList(operations)
 
@@ -400,8 +400,8 @@ class FeeProcessorTest {
         testBalanceHolderWrapper.updateBalance(4, "USD", 1000.0)
 
         val operations = LinkedList<WalletOperation>()
-        operations.add(WalletOperation(DEFAULT_BROKER, 1, "USD", BigDecimal.valueOf(-10.1)))
-        operations.add(WalletOperation(DEFAULT_BROKER, 2, "USD", BigDecimal.valueOf(10.1)))
+        operations.add(WalletOperation(DEFAULT_BROKER, null, 1, "USD", BigDecimal.valueOf(-10.1)))
+        operations.add(WalletOperation(DEFAULT_BROKER, null, 2, "USD", BigDecimal.valueOf(10.1)))
         val receiptOperation = operations[1]
         val originalOperations = LinkedList(operations)
 
@@ -456,8 +456,8 @@ class FeeProcessorTest {
         testBalanceHolderWrapper.updateBalance(3, "USD", 1.12)
 
         val operations = LinkedList<WalletOperation>()
-        operations.add(WalletOperation(DEFAULT_BROKER, 1, "USD", BigDecimal.valueOf(-10.12)))
-        operations.add(WalletOperation(DEFAULT_BROKER, 2, "USD", BigDecimal.valueOf(10.12)))
+        operations.add(WalletOperation(DEFAULT_BROKER, null, 1, "USD", BigDecimal.valueOf(-10.12)))
+        operations.add(WalletOperation(DEFAULT_BROKER, null, 2, "USD", BigDecimal.valueOf(10.12)))
         val receiptOperation = operations[1]
         val originalOperations = LinkedList(operations)
 
@@ -473,8 +473,8 @@ class FeeProcessorTest {
     @Test
     fun testMultipleFeeMoreThanOperationVolume() {
         val operations = LinkedList<WalletOperation>()
-        operations.add(WalletOperation(DEFAULT_BROKER, 1, "USD", BigDecimal.valueOf(-10.12)))
-        operations.add(WalletOperation(DEFAULT_BROKER, 2, "USD", BigDecimal.valueOf(10.12)))
+        operations.add(WalletOperation(DEFAULT_BROKER, null, 1, "USD", BigDecimal.valueOf(-10.12)))
+        operations.add(WalletOperation(DEFAULT_BROKER, null, 2, "USD", BigDecimal.valueOf(10.12)))
         val receiptOperation = operations[1]
         val originalOperations = LinkedList(operations)
 
@@ -491,8 +491,8 @@ class FeeProcessorTest {
     @Test
     fun testMakerMultipleFeeMoreThanOperationVolume() {
         val operations = LinkedList<WalletOperation>()
-        operations.add(WalletOperation(DEFAULT_BROKER, 1, "USD", BigDecimal.valueOf(-10.12)))
-        operations.add(WalletOperation(DEFAULT_BROKER, 2, "USD", BigDecimal.valueOf(10.12)))
+        operations.add(WalletOperation(DEFAULT_BROKER, null, 1, "USD", BigDecimal.valueOf(-10.12)))
+        operations.add(WalletOperation(DEFAULT_BROKER, null, 2, "USD", BigDecimal.valueOf(10.12)))
         val receiptOperation = operations[1]
         val originalOperations = LinkedList(operations)
 
@@ -511,8 +511,8 @@ class FeeProcessorTest {
 
 
         val operations = LinkedList<WalletOperation>()
-        operations.add(WalletOperation(DEFAULT_BROKER, 1, "USD", BigDecimal.valueOf(-10.12)))
-        operations.add(WalletOperation(DEFAULT_BROKER, 2, "USD", BigDecimal.valueOf(10.12)))
+        operations.add(WalletOperation(DEFAULT_BROKER, null, 1, "USD", BigDecimal.valueOf(-10.12)))
+        operations.add(WalletOperation(DEFAULT_BROKER, null, 2, "USD", BigDecimal.valueOf(10.12)))
         val receiptOperation = operations[1]
         val originalOperations = LinkedList(operations)
 
@@ -538,7 +538,7 @@ class FeeProcessorTest {
     @Test
     fun testNegativeReceiptOperationAmount() {
         val operations = LinkedList<WalletOperation>()
-        operations.add(WalletOperation(DEFAULT_BROKER, 1, "USD", BigDecimal.valueOf(-900.0)))
+        operations.add(WalletOperation(DEFAULT_BROKER, null, 1, "USD", BigDecimal.valueOf(-900.0)))
         val receiptOperation = operations.first()
 
         val feeInstructions = listOf(buildFeeInstruction(type = FeeType.CLIENT_FEE, sizeType = FeeSizeType.ABSOLUTE, size = 100.0, targetWalletId = 4)!!)
@@ -554,7 +554,7 @@ class FeeProcessorTest {
     @Test
     fun testNegativeReceiptOperationAmountMultipleFee() {
         val operations = LinkedList<WalletOperation>()
-        operations.add(WalletOperation(DEFAULT_BROKER, 1, "USD", BigDecimal.valueOf(-900.0)))
+        operations.add(WalletOperation(DEFAULT_BROKER, null, 1, "USD", BigDecimal.valueOf(-900.0)))
         val receiptOperation = operations.first()
 
         val feeInstructions = listOf(buildFeeInstruction(type = FeeType.CLIENT_FEE, sizeType = FeeSizeType.ABSOLUTE, size = 50.0, targetWalletId = 4)!!,
@@ -576,8 +576,8 @@ class FeeProcessorTest {
     @Test
     fun testMakerFeeModificator() {
         val operations = LinkedList<WalletOperation>()
-        operations.add(WalletOperation(DEFAULT_BROKER, 1, "USD", BigDecimal.valueOf(-10.1)))
-        operations.add(WalletOperation(DEFAULT_BROKER, 2, "USD", BigDecimal.valueOf(10.1)))
+        operations.add(WalletOperation(DEFAULT_BROKER, null, 1, "USD", BigDecimal.valueOf(-10.1)))
+        operations.add(WalletOperation(DEFAULT_BROKER, null, 2, "USD", BigDecimal.valueOf(10.1)))
         val receiptOperation = operations[1]
         val originalOperations = LinkedList(operations)
 
