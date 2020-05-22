@@ -831,7 +831,7 @@ class LimitOrderServiceTest : AbstractTest() {
         assertEquals(OutgoingOrderStatus.MATCHED, event.orders[1].status)
 
         assertEquals(BigDecimal.ZERO, testWalletDatabaseAccessor.getReservedBalance(1, "USD"))
-        assertEquals(BigDecimal.ZERO, balancesHolder.getReservedBalance(DEFAULT_BROKER, 1, "USD"))
+        assertEquals(BigDecimal.ZERO, balancesHolder.getReservedBalance(DEFAULT_BROKER, 1000, 1, "USD"))
         assertEquals(0, genericLimitOrderService.getOrderBook(DEFAULT_BROKER, "BTCUSD").getOrderBook(true).size)
         assertEquals(0, testOrderDatabaseAccessor.getOrders("BTCUSD", true).size)
     }
@@ -850,7 +850,7 @@ class LimitOrderServiceTest : AbstractTest() {
 
         initServices()
 
-        assertEquals(BigDecimal.valueOf(29.99), balancesHolder.getReservedBalance(DEFAULT_BROKER, 1, "BTC"))
+        assertEquals(BigDecimal.valueOf(29.99), balancesHolder.getReservedBalance(DEFAULT_BROKER, 1000, 1, "BTC"))
 
         singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(buildLimitOrder(walletId = 2, assetId = "BTCUSD", volume = 30.0, price = 6110.0)))
         assertEquals(1, clientsEventsQueue.size)
@@ -864,7 +864,7 @@ class LimitOrderServiceTest : AbstractTest() {
         assertEquals("-0.09", event.orders[3].remainingVolume)
 
         assertEquals(BigDecimal.valueOf(70.01), balancesHolder.getBalance(DEFAULT_BROKER, 1, "BTC"))
-        assertEquals(BigDecimal.ZERO, balancesHolder.getReservedBalance(DEFAULT_BROKER, 1, "BTC"))
+        assertEquals(BigDecimal.ZERO, balancesHolder.getReservedBalance(DEFAULT_BROKER, 1000, 1, "BTC"))
     }
 
     @Test
@@ -1351,14 +1351,14 @@ class LimitOrderServiceTest : AbstractTest() {
 
         testOrderBookWrapper.addLimitOrder(buildLimitOrder(walletId = 1, assetId = "EURUSD", volume = -50.0, price = 1.1,
                 // 'not enough funds' fee to cancel this order during matching
-                fees = listOf(NewLimitOrderFeeInstruction(FeeType.CLIENT_FEE, null, null, FeeSizeType.PERCENTAGE, BigDecimal.valueOf(0.1), null, 500, listOf("BTC"), null))
+                fees = listOf(NewLimitOrderFeeInstruction(FeeType.CLIENT_FEE, null, null, FeeSizeType.PERCENTAGE, BigDecimal.valueOf(0.1), null, null, 1000, 500, listOf("BTC"), null))
         ))
 
         testOrderBookWrapper.addLimitOrder(buildLimitOrder(walletId = 1, assetId = "EURUSD", volume = -50.0, price = 1.2))
 
         singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(buildLimitOrder(walletId = 2, assetId = "EURUSD", volume = 50.0, price = 1.2,
                 // 'not enough funds' fee to cancel this order after matching
-                fees = listOf(NewLimitOrderFeeInstruction(FeeType.CLIENT_FEE, FeeSizeType.PERCENTAGE, BigDecimal.valueOf(0.1), null, null, null, 500, listOf("BTC"), null))
+                fees = listOf(NewLimitOrderFeeInstruction(FeeType.CLIENT_FEE, FeeSizeType.PERCENTAGE, BigDecimal.valueOf(0.1), null, null, null, null, 1000, 500, listOf("BTC"), null))
         )))
 
         assertEquals(1, clientsEventsQueue.size)

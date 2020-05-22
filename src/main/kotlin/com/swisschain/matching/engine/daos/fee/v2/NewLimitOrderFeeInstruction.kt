@@ -11,11 +11,13 @@ class NewLimitOrderFeeInstruction(
         takerSize: BigDecimal?,
         val makerSizeType: FeeSizeType?,
         val makerSize: BigDecimal?,
+        sourceAccountId: Long?,
         sourceWalletId: Long?,
+        targetAccountId: Long?,
         targetWalletId: Long?,
         assetIds: List<String>,
         val makerFeeModificator: BigDecimal?
-) : NewFeeInstruction(type, takerSizeType, takerSize, sourceWalletId, targetWalletId, assetIds) {
+) : NewFeeInstruction(type, takerSizeType, takerSize, sourceAccountId, sourceWalletId, targetAccountId, targetWalletId, assetIds) {
 
     companion object {
         fun create(fees: List<IncomingMessages.LimitOrderFee>): List<NewLimitOrderFeeInstruction> {
@@ -40,7 +42,9 @@ class NewLimitOrderFeeInstruction(
                     if (fee.hasTakerSize()) BigDecimal(fee.takerSize.value) else null,
                     makerSizeType,
                     if (fee.hasMakerSize()) BigDecimal(fee.makerSize.value) else null,
+                    if (fee.hasSourceAccountId()) fee.sourceAccountId.value else null,
                     if (fee.hasSourceWalletId()) fee.sourceWalletId.value else null,
+                    if (fee.hasTargetAccountId()) fee.targetAccountId.value else null,
                     if (fee.hasTargetWalletId()) fee.targetWalletId.value else null,
                     fee.assetIdList.toList(),
                     if (fee.hasMakerFeeModificator())  BigDecimal(fee.makerFeeModificator.value) else null)
@@ -55,7 +59,9 @@ class NewLimitOrderFeeInstruction(
                 (if (makerSize != null) ", makerSize=${makerSize.toPlainString()}" else "") +
                 (if (makerFeeModificator != null) ", makerFeeModificator=${makerFeeModificator.toPlainString()}" else "") +
                 (if (assetIds.isNotEmpty()) ", assetIds=$assetIds" else "") +
+                (if (sourceAccountId != null) ", sourceAccountId=$sourceAccountId" else "") +
                 (if (sourceWalletId != null) ", sourceWalletId=$sourceWalletId" else "") +
+                (if (targetAccountId != null) ", targetAccountId=$targetAccountId" else "") +
                 "${if (targetWalletId != null) ", targetWalletId=$targetWalletId" else ""})"
     }
 

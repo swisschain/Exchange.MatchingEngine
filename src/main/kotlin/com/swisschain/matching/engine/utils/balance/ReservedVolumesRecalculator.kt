@@ -138,6 +138,7 @@ class ReservedVolumesRecalculator @Autowired constructor(private val orderBookDa
                             wallet.setReservedBalance(assetBalance.asset, newBalance.volume)
                             updatedWallets.add(wallet)
                             val balanceUpdate = ClientBalanceUpdate(wallet.brokerId,
+                                    wallet.accountId,
                                     id,
                                     assetBalance.asset,
                                     assetBalance.balance,
@@ -154,6 +155,7 @@ class ReservedVolumesRecalculator @Autowired constructor(private val orderBookDa
                         wallet.setReservedBalance(assetBalance.asset, BigDecimal.ZERO)
                         updatedWallets.add(wallet)
                         val balanceUpdate = ClientBalanceUpdate(wallet.brokerId,
+                                wallet.accountId,
                                 id,
                                 assetBalance.asset,
                                 assetBalance.balance,
@@ -174,7 +176,7 @@ class ReservedVolumesRecalculator @Autowired constructor(private val orderBookDa
             balanceUpdates.forEach { clientBalanceUpdate ->
                 sequenceNumber = messageSequenceNumberHolder.getNewValue()
                 val walletOperation = WalletOperation(clientBalanceUpdate.brokerId,
-                        null,
+                        clientBalanceUpdate.accountId,
                         clientBalanceUpdate.walletId,
                         clientBalanceUpdate.asset,
                         BigDecimal.ZERO,

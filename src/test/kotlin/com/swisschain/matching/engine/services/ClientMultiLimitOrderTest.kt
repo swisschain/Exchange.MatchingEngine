@@ -771,7 +771,7 @@ class ClientMultiLimitOrderTest : AbstractTest() {
                         IncomingLimitOrder(volume = 3.0, price = 1.3, id = "matched2"),
                         IncomingLimitOrder(volume = 5.0, price = 1.2, id = "rejectedAfterMatching",
                                 // 'not enough funds' fee to cancel this order during matching
-                                feeInstructions = listOf(NewLimitOrderFeeInstruction(FeeType.CLIENT_FEE, FeeSizeType.PERCENTAGE, BigDecimal.valueOf(0.1), null, null, null, 500, listOf("BTC"), null))
+                                feeInstructions = listOf(NewLimitOrderFeeInstruction(FeeType.CLIENT_FEE, FeeSizeType.PERCENTAGE, BigDecimal.valueOf(0.1), null, null,  null, null, null, 500, listOf("BTC"), null))
                         ))))
 
 

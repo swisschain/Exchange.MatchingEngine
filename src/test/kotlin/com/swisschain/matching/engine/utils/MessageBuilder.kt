@@ -93,8 +93,14 @@ companion object {
             fee.size?.let {
                 builder.size = StringValue.of(it.toPlainString())
             }
+            fee.sourceAccountId?.let {
+                builder.setSourceAccountId(UInt64Value.of(it))
+            }
             fee.sourceWalletId?.let {
                 builder.setSourceWalletId(UInt64Value.of(it))
+            }
+            fee.targetAccountId?.let {
+                builder.setTargetAccountId(UInt64Value.of(it))
             }
             fee.targetWalletId?.let {
                 builder.setTargetWalletId(UInt64Value.of(it))
@@ -122,8 +128,14 @@ companion object {
             fee.makerSizeType?.let {
                 builder.makerSizeType = Int32Value.of(it.externalId)
             }
+            fee.sourceAccountId?.let {
+                builder.setSourceAccountId(UInt64Value.of(it))
+            }
             fee.sourceWalletId?.let {
                 builder.setSourceWalletId(UInt64Value.of(it))
+            }
+            fee.targetAccountId?.let {
+                builder.setTargetAccountId(UInt64Value.of(it))
             }
             fee.targetWalletId?.let {
                 builder.setTargetWalletId(UInt64Value.of(it))
@@ -203,7 +215,7 @@ companion object {
             return if (type == null) listOf()
             else return listOf(NewFeeInstruction(type, sizeType,
                     if (size != null) BigDecimal.valueOf(size) else null,
-                    sourceWalletId, targetWalletId, assetIds))
+                    1000, sourceWalletId, 1000, targetWalletId, assetIds))
         }
 
         fun buildFeeInstruction(type: FeeType? = null,
@@ -215,7 +227,7 @@ companion object {
             return if (type == null) null
             else return NewFeeInstruction(type, sizeType,
                     if (size != null) BigDecimal.valueOf(size) else null,
-                    sourceWalletId, targetWalletId, assetIds)
+                    1000, sourceWalletId, 1000, targetWalletId, assetIds)
         }
 
         fun buildLimitOrderFeeInstruction(type: FeeType? = null,
@@ -230,8 +242,8 @@ companion object {
                     if (takerSize != null) BigDecimal.valueOf(takerSize) else null,
                     makerSizeType,
                     if (makerSize != null) BigDecimal.valueOf(makerSize) else null,
-                    sourceWalletId,
-                    targetWalletId)
+                    1000, sourceWalletId,
+                    1000, targetWalletId)
         }
 
         fun buildLimitOrderFeeInstructions(type: FeeType? = null,
@@ -248,7 +260,7 @@ companion object {
                     if (takerSize != null) BigDecimal.valueOf(takerSize) else null,
                     makerSizeType,
                     if (makerSize != null) BigDecimal.valueOf(makerSize) else null,
-                    sourceWalletId, targetWalletId, assetIds,
+                    1000, sourceWalletId, 1000, targetWalletId, assetIds,
                     if (makerFeeModificator != null) BigDecimal.valueOf(makerFeeModificator) else null))
         }
     }

@@ -349,7 +349,7 @@ class LimitOrderProcessor(private val limitOrderInputValidator: LimitOrderInputV
     private fun calculateAvailableBalance(orderContext: LimitOrderExecutionContext): BigDecimal? {
         val balancesGetter = orderContext.executionContext.walletOperationsProcessor
         val limitAsset = orderContext.limitAsset ?: return null
-        return NumberUtils.setScaleRoundHalfUp(balancesGetter.getAvailableBalance(orderContext.order.brokerId, orderContext.order.walletId, limitAsset.symbol), limitAsset.accuracy)
+        return NumberUtils.setScaleRoundHalfUp(balancesGetter.getAvailableBalance(orderContext.order.brokerId, orderContext.order.accountId, orderContext.order.walletId, limitAsset.symbol), limitAsset.accuracy)
     }
 
     private fun getOrderInfo(order: LimitOrder) = "Limit order (id: ${order.externalId})"

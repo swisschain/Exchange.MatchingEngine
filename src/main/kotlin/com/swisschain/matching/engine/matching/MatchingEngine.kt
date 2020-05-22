@@ -404,7 +404,7 @@ class MatchingEngine(private val genericLimitOrderService: GenericLimitOrderServ
 
     private fun getBalance(order: Order, assetPair: AssetPair, balancesGetter: BalancesGetter): BigDecimal {
         val asset = if (order.isBuySide()) assetPair.quotingAssetId else assetPair.baseAssetId
-        return balancesGetter.getAvailableBalance(order.brokerId, order.walletId, asset)
+        return balancesGetter.getAvailableBalance(order.brokerId, order.accountId, order.walletId, asset)
     }
 
     private fun getMarketBalance(availableBalances: MutableMap<Long, MutableMap<String, BigDecimal>>, order: Order, asset: Asset): BigDecimal {
@@ -471,7 +471,7 @@ class MatchingEngine(private val genericLimitOrderService: GenericLimitOrderServ
         val balancesGetter = executionContext.walletOperationsProcessor
         val assetPair = executionContext.assetPairsById[order.assetPairId]!!
         val limitAssetId = if (order.isBuySide()) assetPair.quotingAssetId else assetPair.baseAssetId
-        val availableBalance = limitBalances[order.walletId] ?: balancesGetter.getAvailableReservedBalance(order.brokerId, order.walletId, limitAssetId)
+        val availableBalance = limitBalances[order.walletId] ?: balancesGetter.getAvailableReservedBalance(order.brokerId, order.accountId, order.walletId, limitAssetId)
         val accuracy = executionContext.assetsById[limitAssetId]!!.accuracy
         val result = availableBalance >= volume
         executionContext.info("order=${order.externalId}, client=${order.walletId}, $limitAssetId : ${NumberUtils.roundForPrint(availableBalance)} >= ${NumberUtils.roundForPrint(volume)} = $result")

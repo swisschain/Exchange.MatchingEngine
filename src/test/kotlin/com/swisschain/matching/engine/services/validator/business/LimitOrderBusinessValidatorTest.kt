@@ -114,7 +114,7 @@ class LimitOrderBusinessValidatorTest {
     }
 
     fun getValidFee(): NewLimitOrderFeeInstruction {
-        return NewLimitOrderFeeInstruction(FeeType.NO_FEE, null, null, null, null, null, null, ArrayList<String>(), null)
+        return NewLimitOrderFeeInstruction(FeeType.NO_FEE, null, null, null, null, null, null, null,null, ArrayList<String>(), null)
     }
 
     private fun getValidOrderBook(): AssetOrderBook {

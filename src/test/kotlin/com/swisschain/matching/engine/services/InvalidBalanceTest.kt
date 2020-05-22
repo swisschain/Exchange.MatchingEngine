@@ -103,7 +103,7 @@ class InvalidBalanceTest : AbstractTest() {
         assertEquals(BigDecimal.ZERO, testWalletDatabaseAccessor.getBalance(1, "ETH"))
 
         assertBalance(2, "ETH", 1000.0, 0.0)
-        assertEquals(BigDecimal.ZERO, balancesHolder.getReservedBalance(DEFAULT_BROKER, 2, "USD"))
+        assertEquals(BigDecimal.ZERO, balancesHolder.getReservedBalance(DEFAULT_BROKER, 1000, 2, "USD"))
         assertEquals(BigDecimal.ZERO, testWalletDatabaseAccessor.getReservedBalance(2, "USD"))
     }
 
@@ -204,7 +204,7 @@ class InvalidBalanceTest : AbstractTest() {
 
         assertEquals(1, testOrderDatabaseAccessor.getOrders("ETHUSD", true).size)
         assertEquals(BigDecimal.valueOf(0.2), balancesHolder.getBalance(DEFAULT_BROKER, 1, "ETH"))
-        assertEquals(BigDecimal.valueOf(0.04), balancesHolder.getReservedBalance(DEFAULT_BROKER, 1, "ETH"))
+        assertEquals(BigDecimal.valueOf(0.04), balancesHolder.getReservedBalance(DEFAULT_BROKER, 1000,1, "ETH"))
         assertEquals(BigDecimal.valueOf(0.05), balancesHolder.getBalance(DEFAULT_BROKER, 2, "ETH"))
         assertEquals(BigDecimal.valueOf(224.5), balancesHolder.getBalance(DEFAULT_BROKER, 2, "USD"))
 
@@ -238,8 +238,8 @@ class InvalidBalanceTest : AbstractTest() {
         assertEquals(0, testOrderDatabaseAccessor.getOrders("ETHUSD", false).size)
         assertEquals(1, testOrderDatabaseAccessor.getOrders("ETHUSD", true).size)
         assertEquals(BigDecimal.valueOf(0.04), balancesHolder.getBalance(DEFAULT_BROKER, 1, "ETH"))
-        assertEquals(BigDecimal.valueOf(275.0), balancesHolder.getReservedBalance(DEFAULT_BROKER, 2, "USD"))
-        assertEquals(BigDecimal.ZERO, balancesHolder.getReservedBalance(DEFAULT_BROKER, 1, "ETH"))
+        assertEquals(BigDecimal.valueOf(275.0), balancesHolder.getReservedBalance(DEFAULT_BROKER, 1000,2, "USD"))
+        assertEquals(BigDecimal.ZERO, balancesHolder.getReservedBalance(DEFAULT_BROKER, 1000,1, "ETH"))
         assertEquals(BigDecimal.ZERO, balancesHolder.getBalance(DEFAULT_BROKER, 2, "ETH"))
         assertEquals(BigDecimal.valueOf(275.0), balancesHolder.getBalance(DEFAULT_BROKER, 2, "USD"))
 

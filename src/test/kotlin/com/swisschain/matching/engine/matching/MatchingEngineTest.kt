@@ -187,7 +187,7 @@ abstract class MatchingEngineTest {
     }
 
     private fun walletOperationTransform(operation: WalletOperation): WalletOperation =
-            WalletOperation(DEFAULT_BROKER, null, operation.walletId, operation.assetId, operation.amount.stripTrailingZeros(), operation.reservedAmount.stripTrailingZeros())
+            WalletOperation(DEFAULT_BROKER, 1000, operation.walletId, operation.assetId, operation.amount.stripTrailingZeros(), operation.reservedAmount.stripTrailingZeros())
 
     protected fun assertCashMovementsEquals(expectedMovements: List<WalletOperation>, actualMovements: List<WalletOperation>) {
         assertEquals(expectedMovements.size, actualMovements.size)

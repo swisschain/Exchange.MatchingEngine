@@ -349,6 +349,6 @@ class LimitOrderInputValidatorTest {
     }
 
     fun getNewLimitFee(): NewLimitOrderFeeInstruction {
-        return NewLimitOrderFeeInstruction(FeeType.NO_FEE, null, null, null, null, null, null, listOf(), null)
+        return NewLimitOrderFeeInstruction(FeeType.NO_FEE, null, null, null, null, null, null, null, null, listOf(), null)
     }
 }

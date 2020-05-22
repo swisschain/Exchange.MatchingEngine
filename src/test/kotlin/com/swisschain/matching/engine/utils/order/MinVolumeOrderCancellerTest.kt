@@ -188,8 +188,8 @@ class MinVolumeOrderCancellerTest : AbstractTest() {
         multiLimitOrderService.processMessage(buildMultiLimitOrderWrapper("BTCEUR", 100,
                 listOf(IncomingLimitOrder(-1.0, price = 10000.0, id = "order2"))))
 
-        assertEquals(BigDecimal.ZERO, balancesHolder.getReservedBalance(DEFAULT_BROKER, 100, "BTC"))
-        assertEquals(BigDecimal.valueOf( 1.0), balancesHolder.getReservedBalance(DEFAULT_BROKER, 1, "BTC"))
+        assertEquals(BigDecimal.ZERO, balancesHolder.getReservedBalance(DEFAULT_BROKER, 1000, 100, "BTC"))
+        assertEquals(BigDecimal.valueOf( 1.0), balancesHolder.getReservedBalance(DEFAULT_BROKER, 1000, 1, "BTC"))
         assertEquals(2, testOrderDatabaseAccessor.getOrders("BTCEUR", false).size)
         assertEquals(2, genericLimitOrderService.getOrderBook(DEFAULT_BROKER, "BTCEUR").getOrderBook(false).size)
 
@@ -209,9 +209,9 @@ class MinVolumeOrderCancellerTest : AbstractTest() {
         assertEquals(0, genericLimitOrderService.searchOrders(DEFAULT_BROKER, 100, "BTCEUR", false).size)
 
         assertEquals(BigDecimal.valueOf(1.0), testWalletDatabaseAccessor.getReservedBalance(1, "BTC"))
-        assertEquals(BigDecimal.valueOf(1.0), balancesHolder.getReservedBalance(DEFAULT_BROKER, 1, "BTC"))
+        assertEquals(BigDecimal.valueOf(1.0), balancesHolder.getReservedBalance(DEFAULT_BROKER, 1000, 1, "BTC"))
         assertEquals(BigDecimal.ZERO, testWalletDatabaseAccessor.getReservedBalance(100, "BTC"))
-        assertEquals(BigDecimal.ZERO, balancesHolder.getReservedBalance(DEFAULT_BROKER, 100, "BTC"))
+        assertEquals(BigDecimal.ZERO, balancesHolder.getReservedBalance(DEFAULT_BROKER, 1000, 100, "BTC"))
 
         // recalculate reserved volumes to reset locked reservedAmount
         recalculator.recalculate()

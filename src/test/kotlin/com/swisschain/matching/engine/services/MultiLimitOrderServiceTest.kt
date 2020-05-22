@@ -572,10 +572,10 @@ class MultiLimitOrderServiceTest: AbstractTest() {
                 orders = listOf(
                         IncomingLimitOrder(60.0, 1.2,
                                 feeInstructions = listOf(NewLimitOrderFeeInstruction(FeeType.CLIENT_FEE, FeeSizeType.PERCENTAGE, BigDecimal.valueOf(0.01),
-                                        FeeSizeType.PERCENTAGE, BigDecimal.valueOf(0.02), marketMaker, feeHolder, listOf(), null))),
+                                        FeeSizeType.PERCENTAGE, BigDecimal.valueOf(0.02), 1000, marketMaker, 1000, feeHolder, listOf(), null))),
                         IncomingLimitOrder(60.0, 1.1,
                                 feeInstructions = listOf(NewLimitOrderFeeInstruction(FeeType.CLIENT_FEE, FeeSizeType.PERCENTAGE, BigDecimal.valueOf(0.03),
-                                        FeeSizeType.PERCENTAGE, BigDecimal.valueOf(0.04), marketMaker, feeHolder, listOf(), null)))),
+                                        FeeSizeType.PERCENTAGE, BigDecimal.valueOf(0.04), 1000, marketMaker, 1000, feeHolder, listOf(), null)))),
                 cancel = true))
 
         assertEquals(BigDecimal.valueOf(0.5), balancesHolder.getBalance(DEFAULT_BROKER, feeHolder, "EUR")) // 0.01 * 50 (expr1)

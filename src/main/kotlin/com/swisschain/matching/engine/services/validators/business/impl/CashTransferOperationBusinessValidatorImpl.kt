@@ -35,7 +35,7 @@ class CashTransferOperationBusinessValidatorImpl (private val balancesHolder: Ba
         val transferOperation = cashTransferContext.transferOperation
         val asset = transferOperation.asset
         val balanceOfFromClient = balancesHolder.getBalance(transferOperation.brokerId, transferOperation.fromWalletId, asset.symbol)
-        val reservedBalanceOfFromClient = balancesHolder.getReservedBalance(transferOperation.brokerId, transferOperation.fromWalletId, asset.symbol)
+        val reservedBalanceOfFromClient = balancesHolder.getReservedBalance(transferOperation.brokerId, transferOperation.accountId, transferOperation.fromWalletId, asset.symbol)
         val overdraftLimit = if (transferOperation.overdraftLimit != null) -transferOperation.overdraftLimit else BigDecimal.ZERO
         if (balanceOfFromClient - reservedBalanceOfFromClient - transferOperation.volume < overdraftLimit) {
             LOGGER.info("Cash transfer operation (${transferOperation.externalId}) from client ${transferOperation.fromWalletId} " +

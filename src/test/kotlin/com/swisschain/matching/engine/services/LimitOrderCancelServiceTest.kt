@@ -67,7 +67,7 @@ class LimitOrderCancelServiceTest : AbstractTest() {
 
         assertEquals(1, outgoingOrderBookQueue.size)
 
-        assertEquals(BigDecimal.ZERO, balancesHolder.getReservedBalance(DEFAULT_BROKER, 1, "EUR"))
+        assertEquals(BigDecimal.ZERO, balancesHolder.getReservedBalance(DEFAULT_BROKER, 1000,1, "EUR"))
 
         val order = testOrderDatabaseAccessor.loadLimitOrders().find { it.id == "3" }
         assertNull(order)

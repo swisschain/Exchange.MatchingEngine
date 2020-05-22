@@ -5,16 +5,19 @@ import java.util.HashMap
 
 class Wallet {
     val brokerId: String
+    val accountId: Long
     val walletId: Long
     val balances: MutableMap<String, AssetBalance> = HashMap()
 
-    constructor(brokerId: String, walletId: Long) {
+    constructor(brokerId: String, accountId: Long, walletId: Long) {
         this.brokerId = brokerId
+        this.accountId = accountId
         this.walletId = walletId
     }
 
-    constructor(brokerId: String, walletId: Long, balances: List<AssetBalance>) {
+    constructor(brokerId: String, accountId: Long, walletId: Long, balances: List<AssetBalance>) {
         this.brokerId = brokerId
+        this.accountId = accountId
         this.walletId = walletId
         balances.forEach {
             this.balances[it.asset] = it
@@ -24,7 +27,7 @@ class Wallet {
     fun setBalance(asset: String, balance: BigDecimal) {
         val oldBalance = balances[asset]
         if (oldBalance == null) {
-            balances[asset] = AssetBalance(brokerId, walletId, asset, balance)
+            balances[asset] = AssetBalance(brokerId, accountId, walletId, asset, balance)
         } else {
             oldBalance.balance = balance
         }
@@ -33,7 +36,7 @@ class Wallet {
     fun setReservedBalance(asset: String, reservedBalance: BigDecimal) {
         val oldBalance = balances[asset]
         if (oldBalance == null) {
-            balances[asset] = AssetBalance(brokerId, walletId, asset, reservedBalance, reservedBalance)
+            balances[asset] = AssetBalance(brokerId, accountId, walletId, asset, reservedBalance, reservedBalance)
         } else {
             oldBalance.reserved = reservedBalance
         }

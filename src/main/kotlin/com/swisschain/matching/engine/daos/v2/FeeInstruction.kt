@@ -11,7 +11,9 @@ open class FeeInstruction(
         val type: FeeType,
         val sizeType: FeeSizeType?,
         val size: BigDecimal?,
+        val sourceAccountId: Long?,
         val sourceWalletId: Long?,
+        val targetAccountId: Long?,
         val targetWalletId: Long?
 ) : Serializable {
 
@@ -29,7 +31,9 @@ open class FeeInstruction(
                     feeType,
                     sizeType,
                     if (fee.hasSize()) BigDecimal(fee.size.value)  else null,
+                    if (fee.hasSourceAccountId()) fee.sourceAccountId.value else null,
                     if (fee.hasSourceWalletId()) fee.sourceWalletId.value else null,
+                    if (fee.hasTargetAccountId()) fee.targetAccountId.value else null,
                     if (fee.hasTargetWalletId()) fee.targetWalletId.value else null
             )
         }
@@ -39,9 +43,11 @@ open class FeeInstruction(
         return "FeeInstruction(type=$type" +
                 (if (sizeType != null) ", sizeType=$sizeType" else "") +
                 (if (size != null) ", size=${size.toPlainString()}" else "") +
+                (if (sourceAccountId != null) ", sourceAccountId=$sourceAccountId" else "") +
                 (if (sourceWalletId != null) ", sourceWalletId=$sourceWalletId" else "") +
+                ({if (targetAccountId != null) ", targetAccountId=$targetAccountId" else ""}) +
                 "${if (targetWalletId != null) ", targetWalletId=$targetWalletId" else ""})"
     }
 
-    open fun toNewFormat(): NewFeeInstruction = NewFeeInstruction(type, sizeType, size, sourceWalletId, targetWalletId, emptyList())
+    open fun toNewFormat(): NewFeeInstruction = NewFeeInstruction(type, sizeType, size, sourceAccountId, sourceWalletId, targetAccountId, targetWalletId, emptyList())
 }

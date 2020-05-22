@@ -258,7 +258,7 @@ class MarketOrderServiceTest : AbstractTest() {
         assertEquals(0, eventMarketOrder.trades?.size)
 
         balancesHolder.updateBalance(
-                ProcessedMessage(MessageType.CASH_IN_OUT_OPERATION.type, System.currentTimeMillis(), "test"), 0, DEFAULT_BROKER, 4, "EUR", BigDecimal.valueOf(1000.0))
+                ProcessedMessage(MessageType.CASH_IN_OUT_OPERATION.type, System.currentTimeMillis(), "test"), 0, DEFAULT_BROKER, 1000, 4, "EUR", BigDecimal.valueOf(1000.0))
         marketOrderService.processMessage(buildMarketOrderWrapper(buildMarketOrder(walletId = 4, assetId = "EURUSD", volume = -1000.0)))
         assertEquals(1, clientsEventsQueue.size)
         event = clientsEventsQueue.poll() as ExecutionEvent

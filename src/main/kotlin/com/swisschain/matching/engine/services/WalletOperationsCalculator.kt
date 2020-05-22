@@ -33,7 +33,7 @@ class WalletOperationsCalculator(
                 val assetPair = assetsPairsHolder.getAssetPair(order.brokerId, order.assetPairId)
                 val limitAsset = if (order.isBuySide()) assetPair.quotingAssetId else assetPair.baseAssetId
                 val limitVolume = order.reservedLimitVolume ?: if (order.isBuySide()) order.getAbsRemainingVolume() * order.price else order.getAbsRemainingVolume()
-                val reservedBalance = balancesHolder.getReservedBalance(order.brokerId, order.walletId, limitAsset)
+                val reservedBalance = balancesHolder.getReservedBalance(order.brokerId, order.accountId, order.walletId, limitAsset)
 
                 if (reservedBalance > BigDecimal.ZERO) {
                     walletOperation.add(

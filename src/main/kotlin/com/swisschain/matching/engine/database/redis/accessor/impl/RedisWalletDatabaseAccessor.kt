@@ -47,7 +47,7 @@ class RedisWalletDatabaseAccessor(private val redisConnection: RedisConnection, 
                     if (key.removePrefix("$KEY_PREFIX_BALANCE${balance.walletId}$KEY_SEPARATOR") != balance.asset) {
                         throw Exception("Invalid assetId: ${balance.asset}, balance key: $key")
                     }
-                    val clientBalances = result.getOrPut(balance.brokerId) { HashMap() }.getOrPut(balance.walletId) { Wallet(balance.brokerId, balance.walletId) }
+                    val clientBalances = result.getOrPut(balance.brokerId) { HashMap() }.getOrPut(balance.walletId) { Wallet(balance.brokerId, balance.accountId, balance.walletId) }
                     clientBalances.balances[balance.asset] = balance
                     balancesCount++
                 } catch (e: Exception) {

@@ -16,8 +16,8 @@ class ReservedBalanceUpdateEventTest {
     @Test
     fun buildGeneratedMessage() {
         val header = Header(MessageType.RESERVED_BALANCE_UPDATE, 1L, "messageUID", "requestUID", "version", Date(), "EVENT_TYPE")
-        val balanceUpdates = listOf(BalanceUpdate(DEFAULT_BROKER,1, "Asset1", "1", "2", "3", "4"),
-                BalanceUpdate(DEFAULT_BROKER,2, "Asset2", "21", "22", "23", "24"))
+        val balanceUpdates = listOf(BalanceUpdate(DEFAULT_BROKER, 1000,1, "Asset1", "1", "2", "3", "4"),
+                BalanceUpdate(DEFAULT_BROKER, 1000, 2, "Asset2", "21", "22", "23", "24"))
         val reservedBalanceUpdate = ReservedBalanceUpdate(DEFAULT_BROKER,3, "Asset3", "-7")
         val serializedEvent = ReservedBalanceUpdateEvent(header, balanceUpdates, reservedBalanceUpdate).buildGeneratedMessage()
 

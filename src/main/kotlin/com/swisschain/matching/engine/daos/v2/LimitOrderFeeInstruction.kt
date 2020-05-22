@@ -12,9 +12,11 @@ class LimitOrderFeeInstruction(
         takerSize: BigDecimal?,
         val makerSizeType: FeeSizeType?,
         val makerSize: BigDecimal?,
+        sourceAccountId: Long?,
         sourceWalletId: Long?,
+        targetAccountId: Long?,
         targetWalletId: Long?
-) : FeeInstruction(type, takerSizeType, takerSize, sourceWalletId, targetWalletId) {
+) : FeeInstruction(type, takerSizeType, takerSize, sourceAccountId, sourceWalletId, targetAccountId, targetWalletId) {
 
     companion object {
         fun create(fee: IncomingMessages.LimitOrderFee?): LimitOrderFeeInstruction? {
@@ -38,7 +40,9 @@ class LimitOrderFeeInstruction(
                     if (fee.hasTakerSize()) BigDecimal(fee.takerSize.value) else null,
                     makerSizeType,
                     if (fee.hasMakerSize()) BigDecimal(fee.makerSize.value) else null,
+                    if (fee.hasSourceAccountId()) fee.sourceAccountId.value else null,
                     if (fee.hasSourceWalletId()) fee.sourceWalletId.value else null,
+                    if (fee.hasTargetAccountId()) fee.targetAccountId.value else null,
                     if (fee.hasTargetWalletId()) fee.targetWalletId.value else null)
         }
     }
@@ -49,10 +53,12 @@ class LimitOrderFeeInstruction(
                 (if (size != null) ", takerSize=${size.toPlainString()}" else "") +
                 (if (makerSizeType != null) ", makerSizeType=$makerSizeType" else "") +
                 (if (makerSize != null) ", makerSize=${makerSize.toPlainString()}" else "") +
+                (if (sourceAccountId != null) ", sourceAccounttId=$sourceAccountId" else "") +
                 (if (sourceWalletId != null) ", sourceWalletId=$sourceWalletId" else "") +
+                (if (targetAccountId != null) ", targetAccountId=$targetAccountId" else "") +
                 "${if (targetWalletId != null) ", targetWalletId=$targetWalletId" else ""})"
     }
 
-    override fun toNewFormat() = NewLimitOrderFeeInstruction(type, sizeType, size, makerSizeType, makerSize, sourceWalletId, targetWalletId , emptyList(), null)
+    override fun toNewFormat() = NewLimitOrderFeeInstruction(type, sizeType, size, makerSizeType, makerSize, sourceAccountId, sourceWalletId, targetAccountId, targetWalletId , emptyList(), null)
 
 }

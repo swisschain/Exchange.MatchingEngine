@@ -137,6 +137,7 @@ class MultiLimitOrderService(private val executionContextFactory: ExecutionConte
                 "cancelMode: ${message.cancelMode}")
 
         val walletId = message.walletId
+        val accountId = message.accountId
         val messageUid = message.id
         val assetPairId = message.assetPairId
         val cancelAllPreviousLimitOrders = message.cancelAllPreviousLimitOrders
@@ -148,8 +149,8 @@ class MultiLimitOrderService(private val executionContextFactory: ExecutionConte
         val buyReplacements = mutableMapOf<String, LimitOrder>()
         val sellReplacements = mutableMapOf<String, LimitOrder>()
 
-        val baseAssetAvailableBalance = balancesHolder.getAvailableBalance(message.brokerId, walletId, assetPair.baseAssetId)
-        val quotingAssetAvailableBalance = balancesHolder.getAvailableBalance(message.brokerId, walletId, assetPair.quotingAssetId)
+        val baseAssetAvailableBalance = balancesHolder.getAvailableBalance(message.brokerId, accountId, walletId, assetPair.baseAssetId)
+        val quotingAssetAvailableBalance = balancesHolder.getAvailableBalance(message.brokerId, accountId, walletId, assetPair.quotingAssetId)
 
         val filter = MultiOrderFilter(isTrustedClient,
                 baseAssetAvailableBalance,

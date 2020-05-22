@@ -9,9 +9,11 @@ import java.math.BigDecimal
 open class NewFeeInstruction(type: FeeType,
                              takerSizeType: FeeSizeType?,
                              takerSize: BigDecimal?,
+                             sourceAccountId: Long?,
                              sourceWalletId: Long?,
+                             targetAccountId: Long?,
                              targetWalletId: Long?,
-                             val assetIds: List<String>) : FeeInstruction(type, takerSizeType, takerSize, sourceWalletId, targetWalletId) {
+                             val assetIds: List<String>) : FeeInstruction(type, takerSizeType, takerSize, sourceAccountId, sourceWalletId, targetAccountId, targetWalletId) {
 
     companion object {
         fun create(fees: List<IncomingMessages.Fee>): List<NewFeeInstruction> {
@@ -28,7 +30,9 @@ open class NewFeeInstruction(type: FeeType,
                     feeType,
                     sizeType,
                     if (fee.hasSize()) BigDecimal(fee.size.value) else null,
+                    if (fee.hasSourceAccountId()) fee.sourceAccountId.value else null,
                     if (fee.hasSourceWalletId()) fee.sourceWalletId.value else null,
+                    if (fee.hasTargetAccountId()) fee.targetAccountId.value else null,
                     if (fee.hasTargetWalletId()) fee.targetWalletId.value else null,
                     fee.assetIdList.toList()
             )
@@ -40,7 +44,9 @@ open class NewFeeInstruction(type: FeeType,
                 (if (sizeType != null) ", sizeType=$sizeType" else "") +
                 (if (size != null) ", size=${size.toPlainString()}" else "") +
                 (if (assetIds.isNotEmpty()) ", assetIds=$assetIds" else "") +
+                (if (sourceAccountId != null) ", sourceAccountId=$sourceAccountId" else "") +
                 (if (sourceWalletId != null) ", sourceWalletId=$sourceWalletId" else "") +
+                (if (targetWalletId != null) ", targetAccountId=$targetAccountId" else "") +
                 "${if (targetWalletId != null) ", targetWalletId=$targetWalletId" else ""})"
     }
 

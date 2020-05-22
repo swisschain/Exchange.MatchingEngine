@@ -11,13 +11,13 @@ class CurrentTransactionBalancesHolder(private val balancesHolder: BalancesHolde
     private val changedBalancesByWalletIdAndAssetId = mutableMapOf<String, MutableMap<String, AssetBalance>>()
     private val changedWalletsByWalletId = mutableMapOf<String, Wallet>()
 
-    fun updateBalance(brokerId: String, walletId: Long, assetId: String, balance: BigDecimal) {
-        val walletAssetBalance = getWalletAssetBalance(brokerId, walletId, assetId)
+    fun updateBalance(brokerId: String, accountId: Long, walletId: Long, assetId: String, balance: BigDecimal) {
+        val walletAssetBalance = getWalletAssetBalance(brokerId, accountId, walletId, assetId)
         walletAssetBalance.assetBalance.balance = balance
     }
 
-    fun updateReservedBalance(brokerId: String, walletId: Long, assetId: String, balance: BigDecimal) {
-        val walletAssetBalance = getWalletAssetBalance(brokerId, walletId, assetId)
+    fun updateReservedBalance(brokerId: String, accountId: Long, walletId: Long, assetId: String, balance: BigDecimal) {
+        val walletAssetBalance = getWalletAssetBalance(brokerId, accountId, walletId, assetId)
         walletAssetBalance.assetBalance.reserved = balance
     }
 
@@ -29,34 +29,35 @@ class CurrentTransactionBalancesHolder(private val balancesHolder: BalancesHolde
         balancesHolder.setWallets(changedWalletsByWalletId.values)
     }
 
-    fun getWalletAssetBalance(brokerId: String, walletId: Long, assetId: String): WalletAssetBalance {
+    fun getWalletAssetBalance(brokerId: String, accountId: Long, walletId: Long, assetId: String): WalletAssetBalance {
         val wallet = changedWalletsByWalletId.getOrPut("$brokerId-$walletId") {
-            copyWallet(balancesHolder.wallets[brokerId]?.get(walletId)) ?: Wallet(brokerId, walletId)
+            copyWallet(balancesHolder.wallets[brokerId]?.get(walletId)) ?: Wallet(brokerId, accountId, walletId)
         }
         val assetBalance = changedBalancesByWalletIdAndAssetId
                 .getOrPut("$brokerId-$walletId") {
                     mutableMapOf()
                 }
                 .getOrPut(assetId) {
-                    wallet.balances.getOrPut(assetId) { AssetBalance(brokerId, walletId, assetId) }
+                    wallet.balances.getOrPut(assetId) { AssetBalance(brokerId, accountId, walletId, assetId) }
                 }
         return WalletAssetBalance(wallet, assetBalance)
     }
 
-    fun getChangedCopyOrOriginalAssetBalance(brokerId:String, walletId: Long, assetId: String): AssetBalance {
-        return (changedWalletsByWalletId["$brokerId-$walletId"] ?: balancesHolder.wallets[brokerId]?.get(walletId) ?: Wallet(brokerId, walletId)).balances[assetId]
-                ?: AssetBalance(brokerId, walletId, assetId)
+    fun getChangedCopyOrOriginalAssetBalance(brokerId:String, accountId: Long, walletId: Long, assetId: String): AssetBalance {
+        return (changedWalletsByWalletId["$brokerId-$walletId"] ?: balancesHolder.wallets[brokerId]?.get(walletId) ?: Wallet(brokerId, accountId, walletId)).balances[assetId]
+                ?: AssetBalance(brokerId, accountId, walletId, assetId)
     }
 
     private fun copyWallet(wallet: Wallet?): Wallet? {
         if (wallet == null) {
             return null
         }
-        return Wallet(wallet.brokerId, wallet.walletId, wallet.balances.values.map { copyAssetBalance(it) })
+        return Wallet(wallet.brokerId, wallet.accountId, wallet.walletId, wallet.balances.values.map { copyAssetBalance(it) })
     }
 
     private fun copyAssetBalance(assetBalance: AssetBalance): AssetBalance {
         return AssetBalance(assetBalance.brokerId,
+                assetBalance.accountId,
                 assetBalance.walletId,
                 assetBalance.asset,
                 assetBalance.balance,

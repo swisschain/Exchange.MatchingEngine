@@ -670,6 +670,6 @@ class FeeTest: AbstractTest() {
                                               assetIds: List<String> = listOf(),
                                               makerFeeModificator: BigDecimal? = null): NewLimitOrderFeeInstruction? {
         return if (type == null) null
-        else return NewLimitOrderFeeInstruction(type, takerSizeType, takerSize, makerSizeType, makerSize, sourceWalletId, targetWalletId, assetIds, makerFeeModificator)
+        else return NewLimitOrderFeeInstruction(type, takerSizeType, takerSize, makerSizeType, makerSize, 1000, sourceWalletId, 1000, targetWalletId, assetIds, makerFeeModificator)
     }
 }

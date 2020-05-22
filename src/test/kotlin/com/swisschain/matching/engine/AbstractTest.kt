@@ -165,7 +165,7 @@ abstract class AbstractTest {
             assertEquals(BigDecimal.valueOf(balance), testWalletDatabaseAccessor.getBalance(walletId, assetId))
         }
         if (reserved != null) {
-            assertEquals(BigDecimal.valueOf(reserved), balancesHolder.getReservedBalance(DEFAULT_BROKER, walletId, assetId))
+            assertEquals(BigDecimal.valueOf(reserved), balancesHolder.getReservedBalance(DEFAULT_BROKER, 1000, walletId, assetId))
             assertEquals(BigDecimal.valueOf(reserved), testWalletDatabaseAccessor.getReservedBalance(walletId, assetId))
         }
     }

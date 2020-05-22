@@ -46,7 +46,7 @@ class WalletOperationsProcessor(private val balancesHolder: BalancesHolder,
                 return@forEach
             }
             val changedAssetBalance = changedAssetBalances.getOrPut(generateKey(operation)) {
-                getChangedAssetBalance(operation.brokerId, operation.walletId, operation.assetId)
+                getChangedAssetBalance(operation.brokerId, operation.accountId, operation.walletId, operation.assetId)
             }
 
             val asset = assetsHolder.getAsset(operation.brokerId, operation.assetId)
@@ -86,6 +86,7 @@ class WalletOperationsProcessor(private val balancesHolder: BalancesHolder,
         val update = clientBalanceUpdatesByWalletIdAndAssetId.getOrPut(key) {
             ClientBalanceUpdate(
                     changedAssetBalance.brokerId,
+                    changedAssetBalance.accountId,
                     changedAssetBalance.walletId,
                     changedAssetBalance.assetId,
                     changedAssetBalance.originBalance,
@@ -129,41 +130,41 @@ class WalletOperationsProcessor(private val balancesHolder: BalancesHolder,
         return clientBalanceUpdatesByWalletIdAndAssetId.values.toList()
     }
 
-    override fun getAvailableBalance(brokerId: String, walletId: Long, assetId: String): BigDecimal {
-        val balance = getChangedCopyOrOriginalAssetBalance(brokerId, walletId, assetId)
+    override fun getAvailableBalance(brokerId: String, accountId: Long, walletId: Long, assetId: String): BigDecimal {
+        val balance = getChangedCopyOrOriginalAssetBalance(brokerId, accountId, walletId, assetId)
         return if (balance.reserved > BigDecimal.ZERO)
             balance.balance - balance.reserved
         else
             balance.balance
     }
 
-    override fun getAvailableReservedBalance(brokerId: String, walletId: Long, assetId: String): BigDecimal {
-        val balance = getChangedCopyOrOriginalAssetBalance(brokerId, walletId, assetId)
+    override fun getAvailableReservedBalance(brokerId: String, accountId: Long, walletId: Long, assetId: String): BigDecimal {
+        val balance = getChangedCopyOrOriginalAssetBalance(brokerId, accountId, walletId, assetId)
         return if (balance.reserved > BigDecimal.ZERO && balance.reserved < balance.balance)
             balance.reserved
         else
             balance.balance
     }
 
-    override fun getReservedBalance(brokerId: String, walletId: Long, assetId: String): BigDecimal {
-        return getChangedCopyOrOriginalAssetBalance(brokerId, walletId, assetId).reserved
+    override fun getReservedBalance(brokerId: String, accountId: Long, walletId: Long, assetId: String): BigDecimal {
+        return getChangedCopyOrOriginalAssetBalance(brokerId, accountId, walletId, assetId).reserved
     }
 
     private fun isTrustedClientReservedBalanceOperation(operation: WalletOperation): Boolean {
         return NumberUtils.equalsIgnoreScale(BigDecimal.ZERO, operation.amount) && applicationSettingsHolder.isTrustedClient(operation.walletId)
     }
 
-    private fun getChangedAssetBalance(brokerId: String, walletId: Long, assetId: String): ChangedAssetBalance {
-        val walletAssetBalance = getCurrentTransactionWalletAssetBalance(brokerId, walletId, assetId)
+    private fun getChangedAssetBalance(brokerId: String, accountId: Long, walletId: Long, assetId: String): ChangedAssetBalance {
+        val walletAssetBalance = getCurrentTransactionWalletAssetBalance(brokerId, accountId,  walletId, assetId)
         return ChangedAssetBalance(brokerId, walletAssetBalance.wallet, walletAssetBalance.assetBalance)
     }
 
-    private fun getChangedCopyOrOriginalAssetBalance(brokerId: String, walletId: Long, assetId: String): AssetBalance {
-        return currentTransactionBalancesHolder.getChangedCopyOrOriginalAssetBalance(brokerId, walletId, assetId)
+    private fun getChangedCopyOrOriginalAssetBalance(brokerId: String, accountId: Long, walletId: Long, assetId: String): AssetBalance {
+        return currentTransactionBalancesHolder.getChangedCopyOrOriginalAssetBalance(brokerId, accountId, walletId, assetId)
     }
 
-    private fun getCurrentTransactionWalletAssetBalance(brokerId: String, walletId: Long, assetId: String): WalletAssetBalance {
-        return currentTransactionBalancesHolder.getWalletAssetBalance(brokerId, walletId, assetId)
+    private fun getCurrentTransactionWalletAssetBalance(brokerId: String, accountId: Long, walletId: Long, assetId: String): WalletAssetBalance {
+        return currentTransactionBalancesHolder.getWalletAssetBalance(brokerId, accountId, walletId, assetId)
     }
 }
 
@@ -172,6 +173,7 @@ private class ChangedAssetBalance(val brokerId: String,
                                   assetBalance: AssetBalance) {
 
     val assetId = assetBalance.asset
+    val accountId = wallet.accountId
     val walletId = wallet.walletId
     val originBalance = assetBalance.balance
     val originReserved = assetBalance.reserved

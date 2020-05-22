@@ -273,7 +273,7 @@ class CashInOutOperationServiceTest : AbstractTest() {
 
     @Test
     fun testRounding() {
-        balancesHolder.insertOrUpdateWallets(listOf(Wallet(DEFAULT_BROKER, 1, listOf(AssetBalance(DEFAULT_BROKER, 1,"Asset1", BigDecimal.valueOf(29.99))))), null)
+        balancesHolder.insertOrUpdateWallets(listOf(Wallet(DEFAULT_BROKER,  1000,1, listOf(AssetBalance(DEFAULT_BROKER, 1000,1,"Asset1", BigDecimal.valueOf(29.99))))), null)
         cashInOutOperationService.processMessage(messageBuilder.buildCashInOutWrapper(1, "Asset1", -0.01))
         val balance = testWalletDatabaseAccessor.getBalance(1, "Asset1")
 

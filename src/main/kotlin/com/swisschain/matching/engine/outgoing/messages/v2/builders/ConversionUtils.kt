@@ -37,6 +37,7 @@ fun convertBalanceUpdates(clientBalanceUpdates: List<ClientBalanceUpdate>): List
         it.newBalance.compareTo(it.oldBalance) != 0 || it.newReserved.compareTo(it.oldReserved) != 0
     }.map { balanceUpdate ->
         BalanceUpdate(balanceUpdate.brokerId,
+                balanceUpdate.accountId,
                 balanceUpdate.walletId,
                 balanceUpdate.asset,
                 bigDecimalToString(balanceUpdate.oldBalance)!!,
@@ -243,7 +244,9 @@ private fun convertFeeTransfer(index: Int, internalFeeTransfer: com.swisschain.m
         return null
     }
     return FeeTransfer(bigDecimalToString(internalFeeTransfer.volume)!!,
+            internalFeeTransfer.fromAccountId,
             internalFeeTransfer.fromWalletId,
+            internalFeeTransfer.toAccountId,
             internalFeeTransfer.toWalletId,
             internalFeeTransfer.asset,
             bigDecimalToString(internalFeeTransfer.feeCoef),

@@ -22,7 +22,7 @@ class TestWalletDatabaseAccessor : WalletDatabaseAccessor {
         }
 
         wallets.forEach { wallet ->
-            val updatedWallet = this.wallets.getOrPut(wallet.brokerId) { HashMap() }.getOrPut(wallet.walletId) { Wallet(wallet.brokerId, wallet.walletId) }
+            val updatedWallet = this.wallets.getOrPut(wallet.brokerId) { HashMap() }.getOrPut(wallet.walletId) { Wallet(wallet.brokerId, wallet.accountId, wallet.walletId) }
             wallet.balances.values.forEach {
                 updatedWallet.setBalance(it.asset, it.balance)
                 updatedWallet.setReservedBalance(it.asset, it.reserved)
