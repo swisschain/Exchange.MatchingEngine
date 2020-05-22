@@ -16,6 +16,7 @@ class CashOutEventBuilder : EventBuilder<CashOutEventData, CashOutEvent>() {
     override fun setEventData(eventData: CashOutEventData): EventBuilder<CashOutEventData, CashOutEvent> {
         balanceUpdates = convertBalanceUpdates(eventData.clientBalanceUpdates)
         cashOut = CashOut(eventData.cashOutOperation.brokerId,
+                eventData.cashOutOperation.accountId!!,
                 eventData.cashOutOperation.walletId,
                 eventData.cashOutOperation.assetId,
                 bigDecimalToString(eventData.cashOutOperation.amount.abs())!!,

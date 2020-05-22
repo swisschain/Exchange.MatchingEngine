@@ -4,7 +4,7 @@ import com.swisschain.matching.engine.order.OrderCancelMode
 
 data class MultiLimitOrder(val messageUid: String,
                            val brokerId: String,
-                           val walletId: String,
+                           val walletId: Long,
                            val assetPairId: String,
                            val orders: Collection<LimitOrder>,
                            val cancelAllPreviousLimitOrders: Boolean,

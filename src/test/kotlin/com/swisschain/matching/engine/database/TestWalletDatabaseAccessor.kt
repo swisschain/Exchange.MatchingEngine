@@ -9,9 +9,9 @@ import java.util.HashMap
 @Component
 class TestWalletDatabaseAccessor : WalletDatabaseAccessor {
 
-    private val wallets = HashMap<String, MutableMap<String, Wallet>>()
+    private val wallets = HashMap<String, MutableMap<Long, Wallet>>()
 
-    override fun loadWallets(): MutableMap<String, MutableMap<String, Wallet>> {
+    override fun loadWallets(): MutableMap<String, MutableMap<Long, Wallet>> {
         return wallets
     }
 
@@ -30,7 +30,7 @@ class TestWalletDatabaseAccessor : WalletDatabaseAccessor {
         }
     }
 
-    fun getBalance(walletId: String, assetId: String): BigDecimal {
+    fun getBalance(walletId: Long, assetId: String): BigDecimal {
         val client = wallets[DEFAULT_BROKER]?.get(walletId)?.balances
         if (client != null) {
             val wallet = client[assetId]
@@ -42,7 +42,7 @@ class TestWalletDatabaseAccessor : WalletDatabaseAccessor {
     }
 
 
-    fun getReservedBalance(walletId: String, assetId: String): BigDecimal {
+    fun getReservedBalance(walletId: Long, assetId: String): BigDecimal {
         val client = wallets[DEFAULT_BROKER]?.get(walletId)?.balances
         if (client != null) {
             val wallet = client[assetId]

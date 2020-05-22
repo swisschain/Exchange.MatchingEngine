@@ -25,7 +25,7 @@ class BalancesService(private val balancesHolder: BalancesHolder): BalancesServi
         responseObserver.onCompleted()
     }
 
-    private fun buildBalanceAllResponse(now: Date, walletId: String, filteredBalances: Collection<AssetBalance>): BalancesMessages.BalancesGetAllResponse {
+    private fun buildBalanceAllResponse(now: Date, walletId: Long, filteredBalances: Collection<AssetBalance>): BalancesMessages.BalancesGetAllResponse {
         val builder = BalancesMessages.BalancesGetAllResponse.newBuilder()
         builder.walletId = walletId
         builder.timestamp = now.createProtobufTimestampBuilder().build()
@@ -34,7 +34,7 @@ class BalancesService(private val balancesHolder: BalancesHolder): BalancesServi
         return builder.build()
     }
 
-    private fun buildBalanceByIdResponse(now: Date, walletId: String, balance: AssetBalance?): BalancesMessages.BalancesGetByAssetIdResponse {
+    private fun buildBalanceByIdResponse(now: Date, walletId: Long, balance: AssetBalance?): BalancesMessages.BalancesGetByAssetIdResponse {
         val builder = BalancesMessages.BalancesGetByAssetIdResponse.newBuilder()
         builder.walletId = walletId
         builder.timestamp = now.createProtobufTimestampBuilder().build()

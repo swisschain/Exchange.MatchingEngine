@@ -18,7 +18,7 @@ class GenericStopLimitOrderService(private val stopOrdersDatabaseAccessorsHolder
     var initialStopOrdersCount = 0
     private val stopLimitOrdersQueues = ConcurrentHashMap<String, ConcurrentHashMap<String, AssetStopOrderBook>>()
     private val stopLimitOrdersMap = HashMap<String, MutableMap<String, LimitOrder>>()
-    private val clientStopLimitOrdersMap = HashMap<String, MutableMap<String, MutableList<LimitOrder>>>()
+    private val clientStopLimitOrdersMap = HashMap<String, MutableMap<Long, MutableList<LimitOrder>>>()
 
     init {
         update()
@@ -76,7 +76,7 @@ class GenericStopLimitOrderService(private val stopOrdersDatabaseAccessorsHolder
         stopLimitOrdersQueues.getOrPut(brokerId) { ConcurrentHashMap() } [assetPairId] = assetOrderBook
     }
 
-    override fun getLimitOrdersByWalletIdMap(brokerId: String): MutableMap<String, MutableList<LimitOrder>> = clientStopLimitOrdersMap.getOrElse(brokerId) { HashMap() }
+    override fun getLimitOrdersByWalletIdMap(brokerId: String): MutableMap<Long, MutableList<LimitOrder>> = clientStopLimitOrdersMap.getOrElse(brokerId) { HashMap() }
 
     override fun getOrderBooksByAssetPairIdMap(brokerId: String): Map<String, AssetStopOrderBook> = stopLimitOrdersQueues.getOrElse(brokerId) { HashMap() }
 

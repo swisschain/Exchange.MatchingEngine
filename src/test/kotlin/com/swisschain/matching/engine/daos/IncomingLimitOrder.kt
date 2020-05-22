@@ -8,7 +8,7 @@ import java.util.UUID
 
 data class IncomingLimitOrder(val volume: Double,
                               val price: Double? = null,
-                              val uid: String? = UUID.randomUUID().toString(),
+                              val id: String? = UUID.randomUUID().toString(),
                               val feeInstructions: List<NewLimitOrderFeeInstruction> = emptyList(),
                               val oldUid: String? = null,
                               val timeInForce: OrderTimeInForce? = null,

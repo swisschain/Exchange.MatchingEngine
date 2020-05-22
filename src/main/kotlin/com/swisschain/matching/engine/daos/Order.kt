@@ -14,7 +14,8 @@ abstract class Order(
         val assetPairId: String,
         @Version(3)
         val brokerId: String,
-        val walletId: String,
+        val accountId: Long,
+        val walletId: Long,
         val volume: BigDecimal,
         status: String,
         val createdAt: Date,

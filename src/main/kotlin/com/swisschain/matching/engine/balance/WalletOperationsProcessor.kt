@@ -129,7 +129,7 @@ class WalletOperationsProcessor(private val balancesHolder: BalancesHolder,
         return clientBalanceUpdatesByWalletIdAndAssetId.values.toList()
     }
 
-    override fun getAvailableBalance(brokerId: String, walletId: String, assetId: String): BigDecimal {
+    override fun getAvailableBalance(brokerId: String, walletId: Long, assetId: String): BigDecimal {
         val balance = getChangedCopyOrOriginalAssetBalance(brokerId, walletId, assetId)
         return if (balance.reserved > BigDecimal.ZERO)
             balance.balance - balance.reserved
@@ -137,7 +137,7 @@ class WalletOperationsProcessor(private val balancesHolder: BalancesHolder,
             balance.balance
     }
 
-    override fun getAvailableReservedBalance(brokerId: String, walletId: String, assetId: String): BigDecimal {
+    override fun getAvailableReservedBalance(brokerId: String, walletId: Long, assetId: String): BigDecimal {
         val balance = getChangedCopyOrOriginalAssetBalance(brokerId, walletId, assetId)
         return if (balance.reserved > BigDecimal.ZERO && balance.reserved < balance.balance)
             balance.reserved
@@ -145,7 +145,7 @@ class WalletOperationsProcessor(private val balancesHolder: BalancesHolder,
             balance.balance
     }
 
-    override fun getReservedBalance(brokerId: String, walletId: String, assetId: String): BigDecimal {
+    override fun getReservedBalance(brokerId: String, walletId: Long, assetId: String): BigDecimal {
         return getChangedCopyOrOriginalAssetBalance(brokerId, walletId, assetId).reserved
     }
 
@@ -153,16 +153,16 @@ class WalletOperationsProcessor(private val balancesHolder: BalancesHolder,
         return NumberUtils.equalsIgnoreScale(BigDecimal.ZERO, operation.amount) && applicationSettingsHolder.isTrustedClient(operation.walletId)
     }
 
-    private fun getChangedAssetBalance(brokerId: String, walletId: String, assetId: String): ChangedAssetBalance {
+    private fun getChangedAssetBalance(brokerId: String, walletId: Long, assetId: String): ChangedAssetBalance {
         val walletAssetBalance = getCurrentTransactionWalletAssetBalance(brokerId, walletId, assetId)
         return ChangedAssetBalance(brokerId, walletAssetBalance.wallet, walletAssetBalance.assetBalance)
     }
 
-    private fun getChangedCopyOrOriginalAssetBalance(brokerId: String, walletId: String, assetId: String): AssetBalance {
+    private fun getChangedCopyOrOriginalAssetBalance(brokerId: String, walletId: Long, assetId: String): AssetBalance {
         return currentTransactionBalancesHolder.getChangedCopyOrOriginalAssetBalance(brokerId, walletId, assetId)
     }
 
-    private fun getCurrentTransactionWalletAssetBalance(brokerId: String, walletId: String, assetId: String): WalletAssetBalance {
+    private fun getCurrentTransactionWalletAssetBalance(brokerId: String, walletId: Long, assetId: String): WalletAssetBalance {
         return currentTransactionBalancesHolder.getWalletAssetBalance(brokerId, walletId, assetId)
     }
 }
@@ -194,7 +194,7 @@ private fun generateKey(operation: WalletOperation) = generateKey(operation.wall
 
 private fun generateKey(assetBalance: ChangedAssetBalance) = generateKey(assetBalance.walletId, assetBalance.assetId)
 
-private fun generateKey(walletId: String, assetId: String) = "${walletId}_$assetId"
+private fun generateKey(walletId: Long, assetId: String) = "${walletId}_$assetId"
 
 @Throws(BalanceException::class)
 private fun validateBalanceChange(assetBalance: ChangedAssetBalance) =
@@ -206,7 +206,7 @@ private fun validateBalanceChange(assetBalance: ChangedAssetBalance) =
                 assetBalance.reserved)
 
 @Throws(BalanceException::class)
-fun validateBalanceChange(walletId: String, assetId: String, oldBalance: BigDecimal, oldReserved: BigDecimal, newBalance: BigDecimal, newReserved: BigDecimal) {
+fun validateBalanceChange(walletId: Long, assetId: String, oldBalance: BigDecimal, oldReserved: BigDecimal, newBalance: BigDecimal, newReserved: BigDecimal) {
     val balanceInfo = "Invalid balance (client=$walletId, asset=$assetId, oldBalance=$oldBalance, oldReserved=$oldReserved, newBalance=$newBalance, newReserved=$newReserved)"
 
     // Balance can become negative earlier due to transfer operation with overdraftLimit > 0.

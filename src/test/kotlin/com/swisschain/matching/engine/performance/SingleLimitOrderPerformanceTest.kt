@@ -14,17 +14,17 @@ class SingleLimitOrderPerformanceTest: AbstractPerformanceTest()  {
     override fun initServices() {
         super.initServices()
 
-        testBalanceHolderWrapper.updateBalance("Client1", "EUR", 1000.0)
-        testBalanceHolderWrapper.updateBalance("Client1", "USD", 1000.0)
-        testBalanceHolderWrapper.updateBalance("Client2", "EUR", 1000.0)
-        testBalanceHolderWrapper.updateBalance("Client2", "USD", 1000.0)
+        testBalanceHolderWrapper.updateBalance(1, "EUR", 1000.0)
+        testBalanceHolderWrapper.updateBalance(1, "USD", 1000.0)
+        testBalanceHolderWrapper.updateBalance(2, "EUR", 1000.0)
+        testBalanceHolderWrapper.updateBalance(2, "USD", 1000.0)
 
         testDictionariesDatabaseAccessor.addAsset(DictionariesInit.createAsset("USD", 2))
         testDictionariesDatabaseAccessor.addAsset(DictionariesInit.createAsset("EUR", 2))
         testDictionariesDatabaseAccessor.addAsset(DictionariesInit.createAsset("ETH", 6))
         testDictionariesDatabaseAccessor.addAsset(DictionariesInit.createAsset("BTC", 8))
 
-        applicationSettingsCache.createOrUpdateSettingValue(AvailableSettingGroup.TRUSTED_CLIENTS, "Client3", "Client3", true)
+        applicationSettingsCache.createOrUpdateSettingValue(AvailableSettingGroup.TRUSTED_CLIENTS, "3", "3", true)
 
         testDictionariesDatabaseAccessor.addAssetPair(DictionariesInit.createAssetPair("EURUSD", "EUR", "USD", 5))
         testDictionariesDatabaseAccessor.addAssetPair(DictionariesInit.createAssetPair("EURCHF", "EUR", "CHF", 5))
@@ -48,16 +48,16 @@ class SingleLimitOrderPerformanceTest: AbstractPerformanceTest()  {
     private fun notEnoughFundsCase(): Double {
         initServices()
         val counter = ActionTimeCounter()
-        testBalanceHolderWrapper.updateBalance("Client1", "EUR", 1000.0)
-        testBalanceHolderWrapper.updateReservedBalance("Client1", "EUR",  500.0)
+        testBalanceHolderWrapper.updateBalance(1, "EUR", 1000.0)
+        testBalanceHolderWrapper.updateReservedBalance(1, "EUR",  500.0)
 
         counter.executeAction { singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(MessageBuilder.buildLimitOrder(price = 1.2, volume = -501.0))) }
         return counter.getAverageTime()
     }
 
     private fun leadToNegativeSpread(): Double {
-        testBalanceHolderWrapper.updateBalance("Client1", "EUR", 1000.0)
-        testBalanceHolderWrapper.updateReservedBalance("Client1", "EUR",  500.0)
+        testBalanceHolderWrapper.updateBalance(1, "EUR", 1000.0)
+        testBalanceHolderWrapper.updateReservedBalance(1, "EUR",  500.0)
         primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(price = 1.25, volume = 10.0))
         initServices()
 
@@ -102,34 +102,34 @@ class SingleLimitOrderPerformanceTest: AbstractPerformanceTest()  {
 
     fun testAddAndMatchLimitOrderRounding(): Double {
         val counter = ActionTimeCounter()
-        testBalanceHolderWrapper.updateBalance("Client1", "EUR", 1000.0)
-        testBalanceHolderWrapper.updateBalance("Client1", "USD", 1000.0)
-        testBalanceHolderWrapper.updateBalance("Client3", "BTC", 1000.0)
+        testBalanceHolderWrapper.updateBalance(1, "EUR", 1000.0)
+        testBalanceHolderWrapper.updateBalance(1, "USD", 1000.0)
+        testBalanceHolderWrapper.updateBalance(3, "BTC", 1000.0)
 
         initServices()
-        counter.executeAction {  singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(MessageBuilder.buildLimitOrder(walletId = "Client1", assetId = "BTCUSD", price = 4199.351, volume = 0.00357198)))}
-        counter.executeAction {  singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(MessageBuilder.buildLimitOrder(walletId = "Client3", assetId = "BTCUSD", price = 4199.351, volume = -0.00357198)))}
+        counter.executeAction {  singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(MessageBuilder.buildLimitOrder(walletId = 1, assetId = "BTCUSD", price = 4199.351, volume = 0.00357198)))}
+        counter.executeAction {  singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(MessageBuilder.buildLimitOrder(walletId = 3, assetId = "BTCUSD", price = 4199.351, volume = -0.00357198)))}
         return counter.getAverageTime()
     }
 
     fun testAddAndMatchLimitOrderWithDust(): Double {
         val counter = ActionTimeCounter()
-        testBalanceHolderWrapper.updateBalance("Client1", "BTC", 1000.0)
-        testBalanceHolderWrapper.updateBalance("Client3", "EUR", 1000.0)
+        testBalanceHolderWrapper.updateBalance(1, "BTC", 1000.0)
+        testBalanceHolderWrapper.updateBalance(3, "EUR", 1000.0)
 
         initServices()
 
-        counter.executeAction {  singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(MessageBuilder.buildLimitOrder(assetId = "BTCEUR", walletId = "Client1", price = 3200.0, volume = -0.01)))}
-        counter.executeAction {  singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(MessageBuilder.buildLimitOrder(assetId = "BTCEUR", walletId = "Client3", price = 3200.0, volume = 0.009973)))}
+        counter.executeAction {  singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(MessageBuilder.buildLimitOrder(assetId = "BTCEUR", walletId = 1, price = 3200.0, volume = -0.01)))}
+        counter.executeAction {  singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(MessageBuilder.buildLimitOrder(assetId = "BTCEUR", walletId = 3, price = 3200.0, volume = 0.009973)))}
         return counter.getAverageTime()
     }
 
     fun testAddAndMatchLimitOrderWithSamePrice(): Double {
         val counter = ActionTimeCounter()
-        testBalanceHolderWrapper.updateBalance("Client3", "EUR", 1000.0)
-        testBalanceHolderWrapper.updateBalance("Client3", "USD", 1000.0)
-        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "EURUSD", price = 122.512, volume = -10.0, walletId = "Client3"))
-        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "EURUSD", price = 122.524, volume = -10.0, walletId = "Client3"))
+        testBalanceHolderWrapper.updateBalance(3, "EUR", 1000.0)
+        testBalanceHolderWrapper.updateBalance(3, "USD", 1000.0)
+        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "EURUSD", price = 122.512, volume = -10.0, walletId = 3))
+        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "EURUSD", price = 122.524, volume = -10.0, walletId = 3))
 
         initServices()
         counter.executeAction {  singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(MessageBuilder.buildLimitOrder(price = 122.512, volume = 1.0)))}
@@ -138,12 +138,12 @@ class SingleLimitOrderPerformanceTest: AbstractPerformanceTest()  {
 
     fun testAddAndMatchLimitSellDustOrder(): Double {
         val counter = ActionTimeCounter()
-        testBalanceHolderWrapper.updateBalance("Client3", "EUR", 1000.0)
-        testBalanceHolderWrapper.updateBalance("Client1", "BTC", 1000.0)
-        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "BTCEUR", price = 3583.081, volume = 0.00746488, walletId = "Client3"))
-        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "BTCEUR", price = 3581.391, volume = 0.00253512, walletId = "Client3"))
-        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "BTCEUR", price = 3579.183, volume = 0.00253512, walletId = "Client3"))
-        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "BTCEUR", price = 3578.183, volume = 0.00253512, walletId = "Client3"))
+        testBalanceHolderWrapper.updateBalance(3, "EUR", 1000.0)
+        testBalanceHolderWrapper.updateBalance(1, "BTC", 1000.0)
+        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "BTCEUR", price = 3583.081, volume = 0.00746488, walletId = 3))
+        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "BTCEUR", price = 3581.391, volume = 0.00253512, walletId = 3))
+        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "BTCEUR", price = 3579.183, volume = 0.00253512, walletId = 3))
+        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "BTCEUR", price = 3578.183, volume = 0.00253512, walletId = 3))
 
         initServices()
 
@@ -153,36 +153,36 @@ class SingleLimitOrderPerformanceTest: AbstractPerformanceTest()  {
 
     fun testAddAndMatchBuyLimitDustOrder(): Double {
         val counter = ActionTimeCounter()
-        testBalanceHolderWrapper.updateBalance("Client3", "BTC", 1000.0)
-        testBalanceHolderWrapper.updateBalance("Client1", "EUR", 4000.0)
-        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "BTCEUR", price = 3827.395, volume = -0.00703833, walletId = "Client3"))
-        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "BTCEUR", price = 3830.926, volume = -0.01356452, walletId = "Client3"))
-        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "BTCEUR", price = 3832.433, volume = -0.02174805, walletId = "Client3"))
-        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "BTCEUR", price = 3836.76, volume = -0.02740016, walletId = "Client3"))
-        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "BTCEUR", price = 3838.624, volume = -0.03649953, walletId = "Client3"))
-        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "BTCEUR", price = 3842.751, volume = -0.03705699, walletId = "Client3"))
-        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "BTCEUR", price = 3845.948, volume = -0.04872587, walletId = "Client3"))
-        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "BTCEUR", price = 3847.942, volume = -0.05056858, walletId = "Client3"))
-        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "BTCEUR", price = 3851.385, volume = -0.05842735, walletId = "Client3"))
-        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "BTCEUR", price = 3855.364, volume = -0.07678406, walletId = "Client3"))
-        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "BTCEUR", price = 3858.021, volume = -0.07206853, walletId = "Client3"))
-        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "BTCEUR", price = 3861.283, volume = -0.05011803, walletId = "Client3"))
-        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "BTCEUR", price = 3863.035, volume = -0.1, walletId = "Client3"))
+        testBalanceHolderWrapper.updateBalance(3, "BTC", 1000.0)
+        testBalanceHolderWrapper.updateBalance(1, "EUR", 4000.0)
+        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "BTCEUR", price = 3827.395, volume = -0.00703833, walletId = 3))
+        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "BTCEUR", price = 3830.926, volume = -0.01356452, walletId = 3))
+        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "BTCEUR", price = 3832.433, volume = -0.02174805, walletId = 3))
+        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "BTCEUR", price = 3836.76, volume = -0.02740016, walletId = 3))
+        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "BTCEUR", price = 3838.624, volume = -0.03649953, walletId = 3))
+        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "BTCEUR", price = 3842.751, volume = -0.03705699, walletId = 3))
+        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "BTCEUR", price = 3845.948, volume = -0.04872587, walletId = 3))
+        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "BTCEUR", price = 3847.942, volume = -0.05056858, walletId = 3))
+        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "BTCEUR", price = 3851.385, volume = -0.05842735, walletId = 3))
+        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "BTCEUR", price = 3855.364, volume = -0.07678406, walletId = 3))
+        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "BTCEUR", price = 3858.021, volume = -0.07206853, walletId = 3))
+        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "BTCEUR", price = 3861.283, volume = -0.05011803, walletId = 3))
+        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "BTCEUR", price = 3863.035, volume = -0.1, walletId = 3))
 
         initServices()
-        counter.executeAction {  singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(MessageBuilder.buildLimitOrder(walletId = "Client1", assetId = "BTCEUR", price = 3890.0, volume = 0.5)))}
+        counter.executeAction {  singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(MessageBuilder.buildLimitOrder(walletId = 1, assetId = "BTCEUR", price = 3890.0, volume = 0.5)))}
         return counter.getAverageTime()
     }
 
     fun testAddAndPartiallyMatchLimitOrder(): Double {
         val counter = ActionTimeCounter()
 
-        testBalanceHolderWrapper.updateBalance("Client3", "EUR", 2000.0)
-        testBalanceHolderWrapper.updateBalance("Client3", "USD", 2000.0)
-        testBalanceHolderWrapper.updateBalance("Client1", "EUR", 2000.0)
-        testBalanceHolderWrapper.updateBalance("Client1", "USD", 2000.0)
-        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "EURUSD", price = 122.512, volume = -10.0, walletId = "Client3"))
-        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "EURUSD", price = 122.524, volume = -10.0, walletId = "Client3"))
+        testBalanceHolderWrapper.updateBalance(3, "EUR", 2000.0)
+        testBalanceHolderWrapper.updateBalance(3, "USD", 2000.0)
+        testBalanceHolderWrapper.updateBalance(1, "EUR", 2000.0)
+        testBalanceHolderWrapper.updateBalance(1, "USD", 2000.0)
+        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "EURUSD", price = 122.512, volume = -10.0, walletId = 3))
+        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(assetId = "EURUSD", price = 122.524, volume = -10.0, walletId = 3))
 
         initServices()
         counter.executeAction {  singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(MessageBuilder.buildLimitOrder(price = 122.52, volume = 11.0)))}
@@ -191,15 +191,15 @@ class SingleLimitOrderPerformanceTest: AbstractPerformanceTest()  {
 
     fun testAddAndMatchWithLimitOrder(): Double {
         val counter = ActionTimeCounter()
-        testBalanceHolderWrapper.updateBalance("Client4", "BTC", 2000.0)
-        testBalanceHolderWrapper.updateBalance("Client4", "USD", 406.24)
-        testBalanceHolderWrapper.updateReservedBalance("Client4", "USD", 263.33)
-        testBalanceHolderWrapper.updateBalance("Client1", "BTC", 2000.0)
-        testBalanceHolderWrapper.updateBalance("Client1", "USD", 2000.0)
+        testBalanceHolderWrapper.updateBalance(4, "BTC", 2000.0)
+        testBalanceHolderWrapper.updateBalance(4, "USD", 406.24)
+        testBalanceHolderWrapper.updateReservedBalance(4, "USD", 263.33)
+        testBalanceHolderWrapper.updateBalance(1, "BTC", 2000.0)
+        testBalanceHolderWrapper.updateBalance(1, "USD", 2000.0)
 
         initServices()
         counter.executeAction {  singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(MessageBuilder.buildLimitOrder(assetId = "BTCUSD", price = 4421.0, volume = -0.00045239)))}
-        counter.executeAction {  singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(MessageBuilder.buildLimitOrder(walletId = "Client4", assetId = "BTCUSD", price = 4425.0, volume = 0.032)))}
+        counter.executeAction {  singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(MessageBuilder.buildLimitOrder(walletId = 4, assetId = "BTCUSD", price = 4425.0, volume = 0.032)))}
         return counter.getAverageTime()
     }
 
@@ -207,26 +207,26 @@ class SingleLimitOrderPerformanceTest: AbstractPerformanceTest()  {
     fun testMatchWithOwnLimitOrder(): Double {
         val counter = ActionTimeCounter()
         primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(price = 1.0, volume = -10.0))
-        testBalanceHolderWrapper.updateBalance("Client1", "EUR", 10.00)
-        testBalanceHolderWrapper.updateBalance("Client1", "USD", 10.00)
-        testBalanceHolderWrapper.updateBalance("Client2", "USD", 10.00)
+        testBalanceHolderWrapper.updateBalance(1, "EUR", 10.00)
+        testBalanceHolderWrapper.updateBalance(1, "USD", 10.00)
+        testBalanceHolderWrapper.updateBalance(2, "USD", 10.00)
 
         initServices()
         counter.executeAction {  singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(MessageBuilder.buildLimitOrder(price = 1.0, volume = 10.0)))}
-        counter.executeAction {  singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(MessageBuilder.buildLimitOrder(price = 1.0, volume = 10.0, walletId = "Client2")))}
+        counter.executeAction {  singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(MessageBuilder.buildLimitOrder(price = 1.0, volume = 10.0, walletId = 2)))}
         return counter.getAverageTime()
     }
 
     fun testMatchWithLimitOrderForAllFunds(): Double {
         val counter = ActionTimeCounter()
-        testBalanceHolderWrapper.updateBalance("Client1", "USD", 700.04)
-        testBalanceHolderWrapper.updateReservedBalance("Client1", "USD",  700.04)
-        testBalanceHolderWrapper.updateBalance("Client2", "BTC", 2.0)
+        testBalanceHolderWrapper.updateBalance(1, "USD", 700.04)
+        testBalanceHolderWrapper.updateReservedBalance(1, "USD",  700.04)
+        testBalanceHolderWrapper.updateBalance(2, "BTC", 2.0)
 
-        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(walletId = "Client1", assetId = "BTCUSD", price = 4722.0, volume = 0.14825226))
+        primaryOrdersDatabaseAccessor.addLimitOrder(MessageBuilder.buildLimitOrder(walletId = 1, assetId = "BTCUSD", price = 4722.0, volume = 0.14825226))
         initServices()
 
-        counter.executeAction {  singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(MessageBuilder.buildLimitOrder(assetId = "BTCUSD", walletId = "Client2", price = 4721.403, volume = -0.4435)))}
+        counter.executeAction {  singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(MessageBuilder.buildLimitOrder(assetId = "BTCUSD", walletId = 2, price = 4721.403, volume = -0.4435)))}
         return counter.getAverageTime()
     }
 
@@ -235,13 +235,13 @@ class SingleLimitOrderPerformanceTest: AbstractPerformanceTest()  {
 
         testDictionariesDatabaseAccessor.addAsset(DictionariesInit.createAsset("PKT", 12))
         testDictionariesDatabaseAccessor.addAssetPair(DictionariesInit.createAssetPair("PKTETH", "PKT", "ETH", 5))
-        testBalanceHolderWrapper.updateBalance("Client1", "ETH", 1.0)
-        testBalanceHolderWrapper.updateBalance("Client2", "PKT", 3.0)
+        testBalanceHolderWrapper.updateBalance(1, "ETH", 1.0)
+        testBalanceHolderWrapper.updateBalance(2, "PKT", 3.0)
 
         initServices()
 
-        counter.executeAction {  singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(MessageBuilder.buildLimitOrder(walletId = "Client2", assetId = "PKTETH", price = 0.0001, volume = -2.689999999998)))}
-        counter.executeAction {  singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(MessageBuilder.buildLimitOrder(walletId = "Client1", assetId = "PKTETH", price = 0.0001, volume = 100.0)))}
+        counter.executeAction {  singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(MessageBuilder.buildLimitOrder(walletId = 2, assetId = "PKTETH", price = 0.0001, volume = -2.689999999998)))}
+        counter.executeAction {  singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(MessageBuilder.buildLimitOrder(walletId = 1, assetId = "PKTETH", price = 0.0001, volume = 100.0)))}
         return counter.getAverageTime()
     }
 }

@@ -16,6 +16,7 @@ class OrderUtils {
                     newOrderExternalId,
                     order.assetPairId,
                     order.brokerId,
+                    order.accountId,
                     order.walletId,
                     order.volume,
                     order.price,

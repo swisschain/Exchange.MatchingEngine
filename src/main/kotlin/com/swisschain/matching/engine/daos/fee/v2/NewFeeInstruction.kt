@@ -9,8 +9,8 @@ import java.math.BigDecimal
 open class NewFeeInstruction(type: FeeType,
                              takerSizeType: FeeSizeType?,
                              takerSize: BigDecimal?,
-                             sourceWalletId: String?,
-                             targetWalletId: String?,
+                             sourceWalletId: Long?,
+                             targetWalletId: Long?,
                              val assetIds: List<String>) : FeeInstruction(type, takerSizeType, takerSize, sourceWalletId, targetWalletId) {
 
     companion object {
@@ -40,8 +40,8 @@ open class NewFeeInstruction(type: FeeType,
                 (if (sizeType != null) ", sizeType=$sizeType" else "") +
                 (if (size != null) ", size=${size.toPlainString()}" else "") +
                 (if (assetIds.isNotEmpty()) ", assetIds=$assetIds" else "") +
-                (if (sourceWalletId?.isNotEmpty() == true) ", sourceWalletId=$sourceWalletId" else "") +
-                "${if (targetWalletId?.isNotEmpty() == true) ", targetWalletId=$targetWalletId" else ""})"
+                (if (sourceWalletId != null) ", sourceWalletId=$sourceWalletId" else "") +
+                "${if (targetWalletId != null) ", targetWalletId=$targetWalletId" else ""})"
     }
 
     override fun toNewFormat() = this

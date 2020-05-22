@@ -45,7 +45,7 @@ class ClientOrdersController {
             ApiResponse(code = 500, message = "Internal server error occurred")
     )
     fun getOrders(@PathVariable("brokerId") brokerId: String,
-                  @PathVariable("walletId") walletId: String,
+                  @PathVariable("walletId") walletId: Long,
                   @RequestParam(required = false) assetPairId: String?,
                   @RequestParam(required = false) isBuy: Boolean?): ResponseEntity<ClientOrdersDto> {
 

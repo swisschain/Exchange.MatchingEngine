@@ -36,8 +36,8 @@ import kotlin.test.assertEquals
 class CashTransferOperationInputValidatorTest {
 
     companion object {
-        val CLIENT_NAME1 = "Client1"
-        val CLIENT_NAME2 = "Client2"
+        val CLIENT_NAME1 = 1L
+        val CLIENT_NAME2 = 2L
         val ASSET_ID = "USD"
     }
 

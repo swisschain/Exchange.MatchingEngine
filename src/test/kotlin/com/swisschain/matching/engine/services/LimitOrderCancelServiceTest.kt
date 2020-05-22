@@ -55,9 +55,9 @@ class LimitOrderCancelServiceTest : AbstractTest() {
         testDictionariesDatabaseAccessor.addAssetPair(DictionariesInit.createAssetPair("EURUSD", "EUR", "USD", 5))
         testDictionariesDatabaseAccessor.addAssetPair(DictionariesInit.createAssetPair("EURCHF", "EUR", "CHF", 5))
 
-        testBalanceHolderWrapper.updateBalance("Client1", "EUR", 1000.0)
-        testBalanceHolderWrapper.updateReservedBalance("Client1", "EUR",  1.0)
-        testBalanceHolderWrapper.updateBalance("Client2", "USD", 1000.0)
+        testBalanceHolderWrapper.updateBalance(1, "EUR", 1000.0)
+        testBalanceHolderWrapper.updateReservedBalance(1, "EUR",  1.0)
+        testBalanceHolderWrapper.updateBalance(2, "USD", 1000.0)
         initServices()
     }
 
@@ -67,20 +67,20 @@ class LimitOrderCancelServiceTest : AbstractTest() {
 
         assertEquals(1, outgoingOrderBookQueue.size)
 
-        assertEquals(BigDecimal.ZERO, balancesHolder.getReservedBalance(DEFAULT_BROKER, "Client1", "EUR"))
+        assertEquals(BigDecimal.ZERO, balancesHolder.getReservedBalance(DEFAULT_BROKER, 1, "EUR"))
 
         val order = testOrderDatabaseAccessor.loadLimitOrders().find { it.id == "3" }
         assertNull(order)
         assertEquals(4, testOrderDatabaseAccessor.loadLimitOrders().size)
 
-        val previousOrders = genericLimitOrderService.searchOrders(DEFAULT_BROKER, "Client1", "EURUSD", true)
+        val previousOrders = genericLimitOrderService.searchOrders(DEFAULT_BROKER, 1, "EURUSD", true)
         assertEquals(4, previousOrders.size)
         assertFalse(previousOrders.any { it.externalId == "3" })
 
         assertEquals(1, clientsEventsQueue.size)
         val executionEvent = clientsEventsQueue.poll() as ExecutionEvent
         assertEquals(1, executionEvent.balanceUpdates?.size)
-        assertEventBalanceUpdate("Client1", "EUR", "1000", "1000", "1", "0", executionEvent.balanceUpdates!!)
+        assertEventBalanceUpdate(1, "EUR", "1000", "1000", "1", "0", executionEvent.balanceUpdates!!)
         assertEquals(1, executionEvent.orders.size)
         assertEquals(OutgoingOrderStatus.CANCELLED, executionEvent.orders.first().status)
     }
@@ -89,21 +89,21 @@ class LimitOrderCancelServiceTest : AbstractTest() {
     fun testMultiCancel() {
         testDictionariesDatabaseAccessor.addAsset(DictionariesInit.createAsset("BTC", 8))
         testDictionariesDatabaseAccessor.addAssetPair(DictionariesInit.createAssetPair("BTCUSD", "BTC", "USD", 5))
-        testBalanceHolderWrapper.updateBalance("Client2", "BTC", 1.0)
+        testBalanceHolderWrapper.updateBalance(2, "BTC", 1.0)
         initServices()
 
-        singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(buildLimitOrder(uid = "10", walletId = "Client2", assetId = "BTCUSD", price = 9000.0, volume = -0.5)))
-        singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(buildLimitOrder(uid = "11", walletId = "Client2", assetId = "BTCUSD", price = 9100.0, volume = -0.3)))
-        singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(buildLimitOrder(uid = "12", walletId = "Client2", assetId = "BTCUSD", price = 9200.0, volume = -0.2)))
-        singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(buildLimitOrder(uid = "13", walletId = "Client2", assetId = "BTCUSD", price = 8000.0, volume = 0.1)))
+        singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(buildLimitOrder(uid = "10", walletId = 2, assetId = "BTCUSD", price = 9000.0, volume = -0.5)))
+        singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(buildLimitOrder(uid = "11", walletId = 2, assetId = "BTCUSD", price = 9100.0, volume = -0.3)))
+        singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(buildLimitOrder(uid = "12", walletId = 2, assetId = "BTCUSD", price = 9200.0, volume = -0.2)))
+        singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(buildLimitOrder(uid = "13", walletId = 2, assetId = "BTCUSD", price = 8000.0, volume = 0.1)))
         clearMessageQueues()
 
         limitOrderCancelService.processMessage(messageBuilder.buildLimitOrderCancelWrapper(listOf("10", "11", "13")))
         assertOrderBookSize("BTCUSD", false, 1)
         assertOrderBookSize("BTCUSD", true, 0)
 
-        assertBalance("Client2", "BTC", 1.0, 0.2)
-        assertBalance("Client2", "USD", 1000.0, 0.0)
+        assertBalance(2, "BTC", 1.0, 0.2)
+        assertBalance(2, "USD", 1000.0, 0.0)
 
         assertEquals(2, outgoingOrderBookQueue.size)
 
@@ -116,8 +116,8 @@ class LimitOrderCancelServiceTest : AbstractTest() {
 
         assertEquals(2, executionEvent.balanceUpdates?.size)
 
-        assertEventBalanceUpdate("Client2", "BTC", "1", "1", "1", "0.2", executionEvent.balanceUpdates!!)
-        assertEventBalanceUpdate("Client2", "USD", "1000", "1000", "800", "0", executionEvent.balanceUpdates!!)
+        assertEventBalanceUpdate(2, "BTC", "1", "1", "1", "0.2", executionEvent.balanceUpdates!!)
+        assertEventBalanceUpdate(2, "USD", "1000", "1000", "800", "0", executionEvent.balanceUpdates!!)
 
         assertEquals(3, executionEvent.orders.size)
         assertEquals(OutgoingOrderStatus.CANCELLED, executionEvent.orders[0].status)

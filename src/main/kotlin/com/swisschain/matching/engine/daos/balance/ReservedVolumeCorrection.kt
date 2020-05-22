@@ -5,7 +5,7 @@ import java.math.BigDecimal
 import java.util.Date
 
 data class ReservedVolumeCorrection(val timestamp: Date,
-                                    val walletId: String,
+                                    val walletId: Long,
                                     val assetId: String,
                                     val orderIds: String?,
                                     val oldReserved: BigDecimal,

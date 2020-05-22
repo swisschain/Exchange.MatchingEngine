@@ -22,21 +22,21 @@ class MatchingEngineFeeTest : MatchingEngineTest() {
 
     @Test
     fun testSellLimitOrderFee() {
-        testBalanceHolderWrapper.updateBalance("Client2", "USD", 1000.0)
-        testBalanceHolderWrapper.updateReservedBalance("Client2", "USD", 121.12)
-        testOrderBookWrapper.addLimitOrder(buildLimitOrder(walletId = "Client1", price = 1.21111, volume = 100.0,
+        testBalanceHolderWrapper.updateBalance(2, "USD", 1000.0)
+        testBalanceHolderWrapper.updateReservedBalance(2, "USD", 121.12)
+        testOrderBookWrapper.addLimitOrder(buildLimitOrder(walletId = 1, price = 1.21111, volume = 100.0,
                 fees = buildLimitOrderFeeInstructions(
                         type = FeeType.CLIENT_FEE,
                         makerSize = 0.0211111,
-                        targetWalletId = "Client4"
+                        targetWalletId = 4
                 )
         ))
 
-        val limitOrder = buildLimitOrder(walletId = "Client2", price = 1.2, volume = -200.0,
+        val limitOrder = buildLimitOrder(walletId = 2, price = 1.2, volume = -200.0,
                 fees = buildLimitOrderFeeInstructions(
                         type = FeeType.CLIENT_FEE,
                         takerSize = 0.01,
-                        targetWalletId = "Client3"
+                        targetWalletId = 3
                 )
         )
 
@@ -44,18 +44,18 @@ class MatchingEngineFeeTest : MatchingEngineTest() {
 
         assertCashMovementsEquals(
                 listOf(
-                        WalletOperation(DEFAULT_BROKER, "Client2", "EUR", BigDecimal.valueOf(-100.0), BigDecimal.ZERO),
-                        WalletOperation(DEFAULT_BROKER, "Client2", "USD", BigDecimal.valueOf(119.89), BigDecimal.ZERO),
-                        WalletOperation(DEFAULT_BROKER, "Client3", "USD", BigDecimal.valueOf(1.22), BigDecimal.ZERO)
+                        WalletOperation(DEFAULT_BROKER, 2, "EUR", BigDecimal.valueOf(-100.0), BigDecimal.ZERO),
+                        WalletOperation(DEFAULT_BROKER, 2, "USD", BigDecimal.valueOf(119.89), BigDecimal.ZERO),
+                        WalletOperation(DEFAULT_BROKER, 3, "USD", BigDecimal.valueOf(1.22), BigDecimal.ZERO)
                 ),
                 matchingResult.ownCashMovements
         )
 
         assertCashMovementsEquals(
                 listOf(
-                        WalletOperation(DEFAULT_BROKER,  "Client1", "EUR", BigDecimal.valueOf(97.8888), BigDecimal.ZERO),
-                        WalletOperation(DEFAULT_BROKER,  "Client1", "USD", BigDecimal.valueOf(-121.11), BigDecimal.valueOf(-121.11)),
-                        WalletOperation(DEFAULT_BROKER,  "Client4", "EUR", BigDecimal.valueOf(2.1112), BigDecimal.ZERO)
+                        WalletOperation(DEFAULT_BROKER,  1, "EUR", BigDecimal.valueOf(97.8888), BigDecimal.ZERO),
+                        WalletOperation(DEFAULT_BROKER,  1, "USD", BigDecimal.valueOf(-121.11), BigDecimal.valueOf(-121.11)),
+                        WalletOperation(DEFAULT_BROKER,  4, "EUR", BigDecimal.valueOf(2.1112), BigDecimal.ZERO)
                 ),
                 matchingResult.oppositeCashMovements
         )
@@ -63,21 +63,21 @@ class MatchingEngineFeeTest : MatchingEngineTest() {
 
     @Test
     fun testBuyLimitOrderFee() {
-        testBalanceHolderWrapper.updateBalance("Client2", "EUR", 1000.0)
-        testBalanceHolderWrapper.updateReservedBalance("Client2", "EUR", 100.0)
-        testOrderBookWrapper.addLimitOrder(buildLimitOrder(walletId = "Client2", price = 1.2, volume = -100.0,
+        testBalanceHolderWrapper.updateBalance(2, "EUR", 1000.0)
+        testBalanceHolderWrapper.updateReservedBalance(2, "EUR", 100.0)
+        testOrderBookWrapper.addLimitOrder(buildLimitOrder(walletId = 2, price = 1.2, volume = -100.0,
                 fees = buildLimitOrderFeeInstructions(
                         type = FeeType.CLIENT_FEE,
                         makerSize = 0.02,
-                        targetWalletId = "Client4"
+                        targetWalletId = 4
                 )
         ))
 
-        val limitOrder = buildLimitOrder(walletId = "Client1", price = 1.2, volume = 200.0,
+        val limitOrder = buildLimitOrder(walletId = 1, price = 1.2, volume = 200.0,
                 fees = buildLimitOrderFeeInstructions(
                         type = FeeType.CLIENT_FEE,
                         takerSize = 0.01,
-                        targetWalletId = "Client3"
+                        targetWalletId = 3
                 )
         )
 
@@ -85,18 +85,18 @@ class MatchingEngineFeeTest : MatchingEngineTest() {
 
         assertCashMovementsEquals(
                 listOf(
-                        WalletOperation(DEFAULT_BROKER,  "Client1", "EUR", BigDecimal.valueOf(99.0), BigDecimal.ZERO),
-                        WalletOperation(DEFAULT_BROKER,  "Client1", "USD", BigDecimal.valueOf(-120.0), BigDecimal.ZERO),
-                        WalletOperation(DEFAULT_BROKER,  "Client3", "EUR", BigDecimal.valueOf(1.0), BigDecimal.ZERO)
+                        WalletOperation(DEFAULT_BROKER,  1, "EUR", BigDecimal.valueOf(99.0), BigDecimal.ZERO),
+                        WalletOperation(DEFAULT_BROKER,  1, "USD", BigDecimal.valueOf(-120.0), BigDecimal.ZERO),
+                        WalletOperation(DEFAULT_BROKER,  3, "EUR", BigDecimal.valueOf(1.0), BigDecimal.ZERO)
                 ),
                 matchingResult.ownCashMovements
         )
 
         assertCashMovementsEquals(
                 listOf(
-                        WalletOperation(DEFAULT_BROKER,  "Client2", "EUR", BigDecimal.valueOf(-100.0), BigDecimal.valueOf(-100.0)),
-                        WalletOperation(DEFAULT_BROKER,  "Client2", "USD", BigDecimal.valueOf(117.6), BigDecimal.ZERO),
-                        WalletOperation(DEFAULT_BROKER,  "Client4", "USD", BigDecimal.valueOf(2.4), BigDecimal.ZERO)
+                        WalletOperation(DEFAULT_BROKER,  2, "EUR", BigDecimal.valueOf(-100.0), BigDecimal.valueOf(-100.0)),
+                        WalletOperation(DEFAULT_BROKER,  2, "USD", BigDecimal.valueOf(117.6), BigDecimal.ZERO),
+                        WalletOperation(DEFAULT_BROKER,  4, "USD", BigDecimal.valueOf(2.4), BigDecimal.ZERO)
                 ),
                 matchingResult.oppositeCashMovements
         )
@@ -104,21 +104,21 @@ class MatchingEngineFeeTest : MatchingEngineTest() {
 
     @Test
     fun testSellMarketOrderFee() {
-        testBalanceHolderWrapper.updateBalance("Client1", "USD", 1000.0)
-        testBalanceHolderWrapper.updateReservedBalance("Client1", "USD", 120.0)
-        testOrderBookWrapper.addLimitOrder(buildLimitOrder(walletId = "Client1", price = 1.2, volume = 100.0,
+        testBalanceHolderWrapper.updateBalance(1, "USD", 1000.0)
+        testBalanceHolderWrapper.updateReservedBalance(1, "USD", 120.0)
+        testOrderBookWrapper.addLimitOrder(buildLimitOrder(walletId = 1, price = 1.2, volume = 100.0,
                 fees = buildLimitOrderFeeInstructions(
                         type = FeeType.CLIENT_FEE,
                         makerSize = 0.02,
-                        targetWalletId = "Client4"
+                        targetWalletId = 4
                 )
         ))
 
-        val limitOrder = buildMarketOrder(walletId = "Client2", volume = -100.0,
+        val limitOrder = buildMarketOrder(walletId = 2, volume = -100.0,
                 fees = buildFeeInstructions(
                         type = FeeType.CLIENT_FEE,
                         size = 0.01,
-                        targetWalletId = "Client3"
+                        targetWalletId = 3
                 )
         )
 
@@ -126,18 +126,18 @@ class MatchingEngineFeeTest : MatchingEngineTest() {
 
         assertCashMovementsEquals(
                 listOf(
-                        WalletOperation(DEFAULT_BROKER,  "Client2", "EUR", BigDecimal.valueOf(-100.0), BigDecimal.ZERO),
-                        WalletOperation(DEFAULT_BROKER,  "Client2", "USD", BigDecimal.valueOf(118.8), BigDecimal.ZERO),
-                        WalletOperation(DEFAULT_BROKER,  "Client3", "USD", BigDecimal.valueOf(1.2), BigDecimal.ZERO)
+                        WalletOperation(DEFAULT_BROKER,  2, "EUR", BigDecimal.valueOf(-100.0), BigDecimal.ZERO),
+                        WalletOperation(DEFAULT_BROKER,  2, "USD", BigDecimal.valueOf(118.8), BigDecimal.ZERO),
+                        WalletOperation(DEFAULT_BROKER,  3, "USD", BigDecimal.valueOf(1.2), BigDecimal.ZERO)
                 ),
                 matchingResult.ownCashMovements
         )
 
         assertCashMovementsEquals(
                 listOf(
-                        WalletOperation(DEFAULT_BROKER,  "Client1", "EUR", BigDecimal.valueOf(98.0), BigDecimal.ZERO),
-                        WalletOperation(DEFAULT_BROKER,  "Client1", "USD", BigDecimal.valueOf(-120.0), BigDecimal.valueOf(-120.0)),
-                        WalletOperation(DEFAULT_BROKER,  "Client4", "EUR", BigDecimal.valueOf(2.0), BigDecimal.ZERO)
+                        WalletOperation(DEFAULT_BROKER,  1, "EUR", BigDecimal.valueOf(98.0), BigDecimal.ZERO),
+                        WalletOperation(DEFAULT_BROKER,  1, "USD", BigDecimal.valueOf(-120.0), BigDecimal.valueOf(-120.0)),
+                        WalletOperation(DEFAULT_BROKER,  4, "EUR", BigDecimal.valueOf(2.0), BigDecimal.ZERO)
                 ),
                 matchingResult.oppositeCashMovements
         )
@@ -145,21 +145,21 @@ class MatchingEngineFeeTest : MatchingEngineTest() {
 
     @Test
     fun testBuyMarketOrderFee() {
-        testBalanceHolderWrapper.updateBalance("Client2", "EUR", 1000.0)
-        testBalanceHolderWrapper.updateReservedBalance("Client2", "EUR", 100.0)
-        testOrderBookWrapper.addLimitOrder(buildLimitOrder(walletId = "Client2", price = 1.2, volume = -100.0,
+        testBalanceHolderWrapper.updateBalance(2, "EUR", 1000.0)
+        testBalanceHolderWrapper.updateReservedBalance(2, "EUR", 100.0)
+        testOrderBookWrapper.addLimitOrder(buildLimitOrder(walletId = 2, price = 1.2, volume = -100.0,
                 fees = buildLimitOrderFeeInstructions(
                         type = FeeType.CLIENT_FEE,
                         makerSize = 0.02,
-                        targetWalletId = "Client4"
+                        targetWalletId = 4
                 )
         ))
 
-        val limitOrder = buildMarketOrder(walletId = "Client1", volume = 100.0,
+        val limitOrder = buildMarketOrder(walletId = 1, volume = 100.0,
                 fees = buildFeeInstructions(
                         type = FeeType.CLIENT_FEE,
                         size = 0.01,
-                        targetWalletId = "Client3"
+                        targetWalletId = 3
                 )
         )
 
@@ -167,18 +167,18 @@ class MatchingEngineFeeTest : MatchingEngineTest() {
 
         assertCashMovementsEquals(
                 listOf(
-                        WalletOperation(DEFAULT_BROKER,  "Client1", "EUR", BigDecimal.valueOf(99.0), BigDecimal.ZERO),
-                        WalletOperation(DEFAULT_BROKER,  "Client1", "USD", BigDecimal.valueOf(-120.0), BigDecimal.ZERO),
-                        WalletOperation(DEFAULT_BROKER,  "Client3", "EUR", BigDecimal.valueOf(1.0), BigDecimal.ZERO)
+                        WalletOperation(DEFAULT_BROKER,  1, "EUR", BigDecimal.valueOf(99.0), BigDecimal.ZERO),
+                        WalletOperation(DEFAULT_BROKER,  1, "USD", BigDecimal.valueOf(-120.0), BigDecimal.ZERO),
+                        WalletOperation(DEFAULT_BROKER,  3, "EUR", BigDecimal.valueOf(1.0), BigDecimal.ZERO)
                 ),
                 matchingResult.ownCashMovements
         )
 
         assertCashMovementsEquals(
                 listOf(
-                        WalletOperation(DEFAULT_BROKER,  "Client2", "EUR", BigDecimal.valueOf(-100.0), BigDecimal.valueOf(-100.0)),
-                        WalletOperation(DEFAULT_BROKER,  "Client2", "USD", BigDecimal.valueOf(117.6), BigDecimal.ZERO),
-                        WalletOperation(DEFAULT_BROKER,  "Client4", "USD", BigDecimal.valueOf(2.4), BigDecimal.ZERO)
+                        WalletOperation(DEFAULT_BROKER,  2, "EUR", BigDecimal.valueOf(-100.0), BigDecimal.valueOf(-100.0)),
+                        WalletOperation(DEFAULT_BROKER,  2, "USD", BigDecimal.valueOf(117.6), BigDecimal.ZERO),
+                        WalletOperation(DEFAULT_BROKER,  4, "USD", BigDecimal.valueOf(2.4), BigDecimal.ZERO)
                 ),
                 matchingResult.oppositeCashMovements
         )

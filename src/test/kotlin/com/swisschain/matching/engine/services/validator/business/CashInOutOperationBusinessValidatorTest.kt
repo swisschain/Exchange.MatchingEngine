@@ -34,7 +34,7 @@ import kotlin.test.assertEquals
 class CashInOutOperationBusinessValidatorTest {
 
     companion object {
-        val CLIENT_NAME = "Client1"
+        val CLIENT_NAME = 1L
         val ASSET_ID = "USD"
     }
 

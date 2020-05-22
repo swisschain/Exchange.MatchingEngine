@@ -10,8 +10,8 @@ class LimitOrderFeeInstruction(
         takerSize: BigDecimal?,
         val makerSizeType: FeeSizeType?,
         val makerSize: BigDecimal?,
-        sourceWalletId: String?,
-        targetWalletId: String?
+        sourceWalletId: Long?,
+        targetWalletId: Long?
 ) : FeeInstruction(type, takerSizeType, takerSize, sourceWalletId, targetWalletId) {
 
     companion object {
@@ -47,8 +47,8 @@ class LimitOrderFeeInstruction(
                 (if (size != null) ", takerSize=$size" else "") +
                 (if (makerSizeType != null) ", makerSizeType=$makerSizeType" else "") +
                 (if (makerSize != null) ", makerSize=$makerSize" else "") +
-                (if (sourceWalletId?.isNotEmpty() == true) ", sourceWalletId=$sourceWalletId" else "") +
-                "${if (targetWalletId?.isNotEmpty() == true) ", targetWalletId=$targetWalletId" else ""})"
+                (if (sourceWalletId != null) ", sourceWalletId=$sourceWalletId" else "") +
+                "${if (targetWalletId != null) ", targetWalletId=$targetWalletId" else ""})"
     }
 
     override fun toNewFormat() = NewLimitOrderFeeInstruction(type, sizeType, size, makerSizeType, makerSize, sourceWalletId, targetWalletId , emptyList(), null)

@@ -11,7 +11,7 @@ data class BalanceUpdate( val id: String,
 
 data class ClientBalanceUpdate(
         val brokerId: String,
-        val walletId: String,
+        val walletId: Long,
         val asset: String,
         val oldBalance: BigDecimal,
         var newBalance: BigDecimal,

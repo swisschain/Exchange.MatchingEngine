@@ -37,7 +37,7 @@ class FeeProcessor(private val assetsHolder: AssetsHolder,
                         operations: MutableList<WalletOperation>,
                         relativeSpread: BigDecimal? = null,
                         convertPrices: Map<String, BigDecimal> = emptyMap(),
-                        balances: MutableMap<String, MutableMap<String, BigDecimal>>? = null,
+                        balances: MutableMap<Long, MutableMap<String, BigDecimal>>? = null,
                         balancesGetter: BalancesGetter) =
             processFees(brokerId,
                     feeInstructions,
@@ -54,7 +54,7 @@ class FeeProcessor(private val assetsHolder: AssetsHolder,
                    receiptOperation: WalletOperation,
                    operations: MutableList<WalletOperation>,
                    convertPrices: Map<String, BigDecimal> = emptyMap(),
-                   balances: MutableMap<String, MutableMap<String, BigDecimal>>? = null,
+                   balances: MutableMap<Long, MutableMap<String, BigDecimal>>? = null,
                    balancesGetter: BalancesGetter) =
             processFees(brokerId,
                     feeInstructions,
@@ -73,13 +73,13 @@ class FeeProcessor(private val assetsHolder: AssetsHolder,
                             feeCoefCalculator: FeeCoefCalculator,
                             convertPrices: Map<String, BigDecimal>,
                             isMakerFee: Boolean,
-                            externalBalances: MutableMap<String, MutableMap<String, BigDecimal>>? = null,
+                            externalBalances: MutableMap<Long, MutableMap<String, BigDecimal>>? = null,
                             balancesGetter: BalancesGetter): List<Fee> {
         if (feeInstructions?.isNotEmpty() != true) {
             return listOf()
         }
         val receiptOperationWrapper = ReceiptOperationWrapper(receiptOperation)
-        val balances = HashMap<String, MutableMap<String, BigDecimal>>() // walletId -> assetId -> balance
+        val balances = HashMap<Long, MutableMap<String, BigDecimal>>() // walletId -> assetId -> balance
         externalBalances?.let { clientBalances ->
             balances.putAll(clientBalances.mapValues { HashMap<String, BigDecimal>(it.value) })
         }
@@ -137,7 +137,7 @@ class FeeProcessor(private val assetsHolder: AssetsHolder,
                            feeSizeType: FeeSizeType?,
                            feeSize: BigDecimal?,
                            feeCoef: BigDecimal?,
-                           balances: MutableMap<String, MutableMap<String, BigDecimal>>,
+                           balances: MutableMap<Long, MutableMap<String, BigDecimal>>,
                            balancesGetter: BalancesGetter,
                            convertPrices: Map<String, BigDecimal>): FeeTransfer? {
         if (feeInstruction.type == FeeType.NO_FEE || feeSize == null) {
@@ -176,7 +176,7 @@ class FeeProcessor(private val assetsHolder: AssetsHolder,
                                    absFeeAmount: BigDecimal,
                                    feeAsset: Asset,
                                    feeCoef: BigDecimal?,
-                                   balances: MutableMap<String, MutableMap<String, BigDecimal>>,
+                                   balances: MutableMap<Long, MutableMap<String, BigDecimal>>,
                                    balancesGetter: BalancesGetter): FeeTransfer? {
         if (feeInstruction.sourceWalletId == null) {
             throw FeeException("Source client is null for external fee")
@@ -201,7 +201,7 @@ class FeeProcessor(private val assetsHolder: AssetsHolder,
                                  feeAsset: Asset,
                                  isAnotherAsset: Boolean,
                                  feeCoef: BigDecimal?,
-                                 balances: MutableMap<String, MutableMap<String, BigDecimal>>,
+                                 balances: MutableMap<Long, MutableMap<String, BigDecimal>>,
                                  balancesGetter: BalancesGetter): FeeTransfer? {
         val receiptOperation = receiptOperationWrapper.currentReceiptOperation
         val clientBalances = balances.getOrPut(receiptOperation.walletId) { HashMap() }

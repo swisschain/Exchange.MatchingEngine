@@ -22,8 +22,8 @@ class RedisWalletDatabaseAccessor(private val redisConnection: RedisConnection, 
 
     private val conf = FSTConfiguration.createDefaultConfiguration()
 
-    override fun loadWallets(): MutableMap<String, MutableMap<String, Wallet>> {
-        val result = HashMap<String, MutableMap<String, Wallet>>()
+    override fun loadWallets(): MutableMap<String, MutableMap<Long, Wallet>> {
+        val result = HashMap<String, MutableMap<Long, Wallet>>()
         redisConnection.resource { jedis ->
             var balancesCount = 0
 
@@ -41,7 +41,7 @@ class RedisWalletDatabaseAccessor(private val redisConnection: RedisConnection, 
                         throw Exception("Balance is not exist, key: $key")
                     }
                     val balance = deserializeClientAssetBalance(value)
-                    if (!key.removePrefix(KEY_PREFIX_BALANCE).startsWith(balance.walletId)) {
+                    if (!key.removePrefix(KEY_PREFIX_BALANCE).startsWith(balance.walletId.toString())) {
                         throw Exception("Invalid walletId: ${balance.walletId}, balance key: $key")
                     }
                     if (key.removePrefix("$KEY_PREFIX_BALANCE${balance.walletId}$KEY_SEPARATOR") != balance.asset) {

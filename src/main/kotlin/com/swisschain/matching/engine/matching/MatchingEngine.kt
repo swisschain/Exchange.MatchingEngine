@@ -66,8 +66,8 @@ class MatchingEngine(private val genericLimitOrderService: GenericLimitOrderServ
         val cancelledLimitOrders = HashSet<CopyWrapper<LimitOrder>>()
         var totalLimitPrice = BigDecimal.ZERO
         var totalVolume = BigDecimal.ZERO
-        val limitReservedBalances = HashMap<String, BigDecimal>() // limit reserved balances for trades funds control
-        val availableBalances = HashMap<String, MutableMap<String, BigDecimal>>() // walletId -> assetId -> balance; available balances for market balance control and fee funds control
+        val limitReservedBalances = HashMap<Long, BigDecimal>() // limit reserved balances for trades funds control
+        val availableBalances = HashMap<Long, MutableMap<String, BigDecimal>>() // walletId -> assetId -> balance; available balances for market balance control and fee funds control
         val isBuy = order.isBuySide()
         val completedLimitOrders = LinkedList<CopyWrapper<LimitOrder>>()
         var matchedUncompletedLimitOrderWrapper: CopyWrapper<LimitOrder>? = null
@@ -407,11 +407,11 @@ class MatchingEngine(private val genericLimitOrderService: GenericLimitOrderServ
         return balancesGetter.getAvailableBalance(order.brokerId, order.walletId, asset)
     }
 
-    private fun getMarketBalance(availableBalances: MutableMap<String, MutableMap<String, BigDecimal>>, order: Order, asset: Asset): BigDecimal {
+    private fun getMarketBalance(availableBalances: MutableMap<Long, MutableMap<String, BigDecimal>>, order: Order, asset: Asset): BigDecimal {
         return availableBalances.getOrPut(order.walletId) { HashMap() }[asset.symbol]!!
     }
 
-    private fun setMarketBalance(availableBalances: MutableMap<String, MutableMap<String, BigDecimal>>, order: Order, asset: Asset, value: BigDecimal) {
+    private fun setMarketBalance(availableBalances: MutableMap<Long, MutableMap<String, BigDecimal>>, order: Order, asset: Asset, value: BigDecimal) {
         availableBalances.getOrPut(order.walletId) { HashMap() }[asset.symbol] = value
     }
 
@@ -466,7 +466,7 @@ class MatchingEngine(private val genericLimitOrderService: GenericLimitOrderServ
 
     private fun checkAndReduceBalance(order: LimitOrder,
                                       volume: BigDecimal,
-                                      limitBalances: MutableMap<String, BigDecimal>,
+                                      limitBalances: MutableMap<Long, BigDecimal>,
                                       executionContext: ExecutionContext): Boolean {
         val balancesGetter = executionContext.walletOperationsProcessor
         val assetPair = executionContext.assetPairsById[order.assetPairId]!!

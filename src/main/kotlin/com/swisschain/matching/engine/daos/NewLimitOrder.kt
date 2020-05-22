@@ -9,7 +9,7 @@ import java.util.Date
 class NewLimitOrder(id: String,
                     externalId: String,
                     assetPairId: String,
-                    walletId: String,
+                    walletId: Long,
                     volume: Double,
                     var price: Double,
                     status: String,

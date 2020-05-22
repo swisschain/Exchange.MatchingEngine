@@ -94,24 +94,24 @@ class ApplicationSettingsServiceTest : AbstractTest() {
     @Test
     fun createOrUpdateSettingTest() {
         //given
-        applicationSettingsCache.createOrUpdateSettingValue(AvailableSettingGroup.TRUSTED_CLIENTS, "settingName", "testClient", true)
+        applicationSettingsCache.createOrUpdateSettingValue(AvailableSettingGroup.TRUSTED_CLIENTS, "settingName", "101", true)
 
         //when
-        applicationSettingsService.createOrUpdateSetting(AvailableSettingGroup.TRUSTED_CLIENTS, SettingDto("settingName", "test", true, "testComment", "testUser"))
+        applicationSettingsService.createOrUpdateSetting(AvailableSettingGroup.TRUSTED_CLIENTS, SettingDto("settingName", "101", true, "testComment", "testUser"))
 
         //then
         val dbSetting = testSettingsDatabaseAccessor.getSetting(AvailableSettingGroup.TRUSTED_CLIENTS, "settingName")
         assertNotNull(dbSetting)
-        assertEquals("test", dbSetting.value)
+        assertEquals("101", dbSetting.value)
 
-        assertTrue(applicationSettingsHolder.isTrustedClient("test"))
+        assertTrue(applicationSettingsHolder.isTrustedClient(101))
         assertEquals(1, settingsListener.getSettingChangeSize())
 
         argumentCaptor<SettingHistoryRecord>().apply {
             verify(settingsHistoryDatabaseAccessor).save(capture())
             assertEquals(AvailableSettingGroup.TRUSTED_CLIENTS.settingGroupName, firstValue.settingGroupName)
             assertEquals("settingName", firstValue.name)
-            assertEquals("test", firstValue.value)
+            assertEquals("101", firstValue.value)
             assertEquals("testUser", firstValue.user)
             assertEquals("[UPDATE] testComment", firstValue.comment)
         }
@@ -131,7 +131,7 @@ class ApplicationSettingsServiceTest : AbstractTest() {
         assertNull(dbSetting)
         assertEquals(1, settingsListener.getDeleteGroupSize())
 
-        assertFalse(applicationSettingsHolder.isTrustedClient("testClient"))
+        assertFalse(applicationSettingsHolder.isTrustedClient(100))
 
         argumentCaptor<SettingHistoryRecord>().apply {
             verify(settingsHistoryDatabaseAccessor, times(2)).save(capture())
@@ -161,7 +161,7 @@ class ApplicationSettingsServiceTest : AbstractTest() {
         assertNull(dbSetting)
         assertEquals(1, settingsListener.getDeleteSize())
 
-        assertFalse(applicationSettingsHolder.isTrustedClient("testClient"))
+        assertFalse(applicationSettingsHolder.isTrustedClient(100))
 
         argumentCaptor<SettingHistoryRecord>().apply {
             verify(settingsHistoryDatabaseAccessor).save(capture())

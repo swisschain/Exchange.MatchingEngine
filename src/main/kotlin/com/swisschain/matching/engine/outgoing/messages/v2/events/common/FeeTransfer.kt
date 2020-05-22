@@ -3,8 +3,8 @@ package com.swisschain.matching.engine.outgoing.messages.v2.events.common
 import com.swisschain.matching.engine.messages.outgoing.OutgoingMessages
 
 class FeeTransfer(val volume: String,
-                  val sourceWalletId: String,
-                  val targetWalletId: String,
+                  val sourceWalletId: Long,
+                  val targetWalletId: Long,
                   val assetId: String,
                   val feeCoef: String?,
                   val index: Int) : EventPart<OutgoingMessages.FeeTransfer.Builder> {

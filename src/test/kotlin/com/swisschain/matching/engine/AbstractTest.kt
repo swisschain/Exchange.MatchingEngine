@@ -159,7 +159,7 @@ abstract class AbstractTest {
         assertEquals(size, allWalletIds.sumBy { genericStopLimitOrderService.searchOrders(DEFAULT_BROKER, it, assetPairId, isBuySide).size })
     }
 
-    protected fun assertBalance(walletId: String, assetId: String, balance: Double? = null, reserved: Double? = null) {
+    protected fun assertBalance(walletId: Long, assetId: String, balance: Double? = null, reserved: Double? = null) {
         if (balance != null) {
             assertEquals(BigDecimal.valueOf(balance), balancesHolder.getBalance(DEFAULT_BROKER, walletId, assetId))
             assertEquals(BigDecimal.valueOf(balance), testWalletDatabaseAccessor.getBalance(walletId, assetId))
@@ -231,7 +231,7 @@ abstract class AbstractTest {
         checkBalances(primaryDbWallets, cacheWallets)
     }
 
-    private fun checkBalances(wallets1: Map<String, Wallet>, wallets2: Map<String, Wallet>) {
+    private fun checkBalances(wallets1: Map<Long, Wallet>, wallets2: Map<Long, Wallet>) {
         val balances1ByClientAndAsset = balancesByClientAndAsset(wallets1)
         val balances2ByClientAndAsset = balancesByClientAndAsset(wallets2)
 
@@ -242,13 +242,13 @@ abstract class AbstractTest {
         }
     }
 
-    private fun balancesByClientAndAsset(wallets: Map<String, Wallet>): Map<String, AssetBalance> {
+    private fun balancesByClientAndAsset(wallets: Map<Long, Wallet>): Map<String, AssetBalance> {
         return wallets.values.flatMap { wallet ->
             wallet.balances.values.filter { assetBalance ->
                 NumberUtils.equalsIgnoreScale(assetBalance.balance, BigDecimal.ZERO)
             }
         }.groupBy { assetBalance ->
-            assetBalance.walletId + ";" + assetBalance.asset
+            assetBalance.walletId.toString() + ";" + assetBalance.asset
         }.mapValues { it.value.single() }
     }
 
@@ -259,7 +259,7 @@ abstract class AbstractTest {
         assertEquals(balance1.reserved.toDouble(), balance2.reserved.toDouble())
     }
 
-    protected fun assertEventBalanceUpdate(walletId: String,
+    protected fun assertEventBalanceUpdate(walletId: Long,
                                            assetId: String,
                                            oldBalance: String?,
                                            newBalance: String?,

@@ -16,6 +16,7 @@ class CashInEventBuilder : EventBuilder<CashInEventData, CashInEvent>() {
     override fun setEventData(eventData: CashInEventData): EventBuilder<CashInEventData, CashInEvent> {
         balanceUpdates = convertBalanceUpdates(eventData.clientBalanceUpdates)
         cashIn = CashIn(eventData.cashInOperation.brokerId,
+                eventData.cashInOperation.accountId!!,
                 eventData.cashInOperation.walletId,
                 eventData.cashInOperation.assetId,
                 bigDecimalToString(eventData.cashInOperation.amount)!!,

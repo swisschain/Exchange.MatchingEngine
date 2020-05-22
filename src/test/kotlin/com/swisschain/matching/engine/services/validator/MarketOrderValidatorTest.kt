@@ -38,7 +38,7 @@ import kotlin.test.assertEquals
 class MarketOrderValidatorTest {
 
     companion object {
-        const val CLIENT_NAME = "Client"
+        const val CLIENT_NAME = 0L
         const val OPERATION_ID = "test"
         const val ASSET_PAIR_ID = "EURUSD"
         const val BASE_ASSET_ID = "EUR"
@@ -197,7 +197,7 @@ class MarketOrderValidatorTest {
 
     private fun toMarketOrder(message: IncomingMessages.MarketOrder): MarketOrder {
         val now = Date()
-        return MarketOrder(UUID.randomUUID().toString(), message.uid, message.assetPairId, DEFAULT_BROKER, message.walletId, BigDecimal(message.volume), null,
+        return MarketOrder(UUID.randomUUID().toString(), message.id, message.assetPairId, DEFAULT_BROKER, message.walletId, message.walletId, BigDecimal(message.volume), null,
                 OrderStatus.Processing.name, now, Date(message.timestamp.seconds), now, null, true,
                 null, listOf(NewFeeInstruction.create(message.feesList.first())))
     }
@@ -206,7 +206,7 @@ class MarketOrderValidatorTest {
         val assetOrderBook = AssetOrderBook(DEFAULT_BROKER, ASSET_PAIR_ID)
         val now = Date()
         assetOrderBook.addOrder(LimitOrder("test", "test",
-                ASSET_PAIR_ID, DEFAULT_BROKER, CLIENT_NAME, BigDecimal.valueOf(1.0), BigDecimal.valueOf(1.0),
+                ASSET_PAIR_ID, DEFAULT_BROKER, CLIENT_NAME, CLIENT_NAME, BigDecimal.valueOf(1.0), BigDecimal.valueOf(1.0),
                 OrderStatus.InOrderBook.name, now, now, now, BigDecimal.valueOf(1.0), now, BigDecimal.valueOf(1.0),
                 null, null, null, null, null, null, null, null,
                 null, null, null))
@@ -216,7 +216,7 @@ class MarketOrderValidatorTest {
 
     private fun getDefaultMarketOrderBuilder(): IncomingMessages.MarketOrder.Builder {
         return IncomingMessages.MarketOrder.newBuilder()
-                .setUid(OPERATION_ID)
+                .setId(OPERATION_ID)
                 .setAssetPairId("EURUSD")
                 .setTimestamp(Date().createProtobufTimestampBuilder())
                 .setWalletId(CLIENT_NAME)

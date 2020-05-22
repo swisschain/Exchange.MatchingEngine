@@ -10,7 +10,7 @@ abstract class NewOrder(
         val id: String,
         val externalId: String,
         val assetPairId: String,
-        val walletId: String,
+        val walletId: Long,
         val volume: Double,
         status: String,
         val createdAt: Date,

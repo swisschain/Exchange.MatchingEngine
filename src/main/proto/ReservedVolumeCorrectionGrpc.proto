@@ -18,7 +18,7 @@ message ReservedVolumeCorrectionRequest {
 
 message ReservedVolumeCorrection {
     google.protobuf.Timestamp timestamp = 1;
-    string walletId = 2;
+    uint64 walletId = 2;
     string assetId = 3;
     string orderIds = 4;
     string oldReserved = 5;

@@ -16,9 +16,9 @@ class ReservedBalanceUpdateEventTest {
     @Test
     fun buildGeneratedMessage() {
         val header = Header(MessageType.RESERVED_BALANCE_UPDATE, 1L, "messageUID", "requestUID", "version", Date(), "EVENT_TYPE")
-        val balanceUpdates = listOf(BalanceUpdate(DEFAULT_BROKER,"Wallet1", "Asset1", "1", "2", "3", "4"),
-                BalanceUpdate(DEFAULT_BROKER,"Wallet2", "Asset2", "21", "22", "23", "24"))
-        val reservedBalanceUpdate = ReservedBalanceUpdate(DEFAULT_BROKER,"Wallet3", "Asset3", "-7")
+        val balanceUpdates = listOf(BalanceUpdate(DEFAULT_BROKER,1, "Asset1", "1", "2", "3", "4"),
+                BalanceUpdate(DEFAULT_BROKER,2, "Asset2", "21", "22", "23", "24"))
+        val reservedBalanceUpdate = ReservedBalanceUpdate(DEFAULT_BROKER,3, "Asset3", "-7")
         val serializedEvent = ReservedBalanceUpdateEvent(header, balanceUpdates, reservedBalanceUpdate).buildGeneratedMessage()
 
         val event = serializedEvent.message.unpack(OutgoingMessages.ReservedBalanceUpdateEvent::class.java)
@@ -26,9 +26,9 @@ class ReservedBalanceUpdateEventTest {
         assertEquals(event.header.requestId, "requestUID")
         assertEquals(event.header.eventType, "EVENT_TYPE")
         assertEquals(event.balanceUpdatesCount, 2)
-        assertBalanceUpdate("Wallet1", "Asset1", "1", "2", "3", "4", event.balanceUpdatesList)
-        assertBalanceUpdate("Wallet2", "Asset2", "21", "22", "23", "24", event.balanceUpdatesList)
-        assertEquals("Wallet3", event.reservedBalanceUpdate.walletId)
+        assertBalanceUpdate(1, "Asset1", "1", "2", "3", "4", event.balanceUpdatesList)
+        assertBalanceUpdate(2, "Asset2", "21", "22", "23", "24", event.balanceUpdatesList)
+        assertEquals(3, event.reservedBalanceUpdate.walletId)
         assertEquals("Asset3", event.reservedBalanceUpdate.assetId)
         assertEquals("-7", event.reservedBalanceUpdate.volume)
     }

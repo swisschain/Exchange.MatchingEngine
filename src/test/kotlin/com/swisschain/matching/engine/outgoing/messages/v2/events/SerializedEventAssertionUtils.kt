@@ -3,7 +3,7 @@ package com.swisschain.matching.engine.outgoing.messages.v2.events
 import com.swisschain.matching.engine.messages.outgoing.OutgoingMessages
 import kotlin.test.assertEquals
 
-fun assertBalanceUpdate(walletId: String,
+fun assertBalanceUpdate(walletId: Long,
                         assetId: String,
                         oldBalance: String,
                         newBalance: String,

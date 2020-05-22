@@ -29,7 +29,7 @@ class PreviousLimitOrdersProcessor(private val genericLimitOrderService: Generic
     }
 
     fun cancelAndReplaceOrders(brokerId: String,
-                               walletId: String,
+                               walletId: Long,
                                assetPairId: String,
                                cancelAllPreviousLimitOrders: Boolean,
                                cancelBuySide: Boolean,

@@ -49,9 +49,9 @@ class OrderBook {
         }
     }
 
-    private fun addVolumePrice(id: String, walletId: String, volume: BigDecimal, price: BigDecimal) {
+    private fun addVolumePrice(id: String, walletId: Long, volume: BigDecimal, price: BigDecimal) {
         prices.add(Order(id, walletId, volume, price))
     }
 }
 
-data class Order(val id: String, val walletId: String, val volume: BigDecimal, val price: BigDecimal)
+data class Order(val id: String, val walletId: Long, val volume: BigDecimal, val price: BigDecimal)

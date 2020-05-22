@@ -86,15 +86,16 @@ class MarketOrderService @Autowired constructor(
 
         feeInstructions = NewFeeInstruction.create(parsedMessage.feesList)
         LOGGER.debug("Got market order messageId: ${messageWrapper.messageId}, " +
-                "id: ${parsedMessage.uid}, client: ${parsedMessage.walletId}, " +
+                "id: ${parsedMessage.id}, client: ${parsedMessage.walletId}, " +
                 "asset: ${parsedMessage.assetPairId}, volume: ${parsedMessage.volume}, " +
                 "fees: $feeInstructions")
 
         val order = MarketOrder(
                 uuidHolder.getNextValue(),
-                parsedMessage.uid,
+                parsedMessage.id,
                 parsedMessage.assetPairId,
                 parsedMessage.brokerId,
+                parsedMessage.accountId,
                 parsedMessage.walletId,
                 BigDecimal(parsedMessage.volume),
                 null,
@@ -261,9 +262,9 @@ class MarketOrderService @Autowired constructor(
 
     fun parseMessage(messageWrapper: MessageWrapper) {
         val message = messageWrapper.parsedMessage!! as IncomingMessages.MarketOrder
-        messageWrapper.messageId = if (message.hasMessageId()) message.messageId.value else message.uid
+        messageWrapper.messageId = if (message.hasMessageId()) message.messageId.value else message.id
         messageWrapper.timestamp = message.timestamp.toDate().time
-        messageWrapper.id = message.uid
+        messageWrapper.id = message.id
         messageWrapper.processedMessage = ProcessedMessage(messageWrapper.type, messageWrapper.timestamp!!, messageWrapper.messageId!!)
     }
 

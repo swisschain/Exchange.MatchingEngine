@@ -9,7 +9,7 @@ import java.util.Date
 
 class LimitTradeInfo(
         val tradeId: String,
-        val walletId: String,
+        val walletId: Long,
         val asset: String,
         val volume: String,
         val price: BigDecimal,
@@ -18,7 +18,7 @@ class LimitTradeInfo(
         val oppositeOrderId: String,
         val oppositeOrderExternalId: String,
         val oppositeAsset: String,
-        val oppositeWalletId: String,
+        val oppositeWalletId: Long,
         val oppositeVolume: String,
         val index: Long,
         val feeInstruction: FeeInstruction?,

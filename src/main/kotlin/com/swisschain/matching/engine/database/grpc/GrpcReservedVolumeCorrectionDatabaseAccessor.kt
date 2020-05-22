@@ -17,7 +17,7 @@ class GrpcReservedVolumeCorrectionDatabaseAccessor(private val grpcConnectionStr
 
     override fun addCorrectionsInfo(corrections: List<ReservedVolumeCorrection>) {
         try {
-            grpcStub.saveReservedVolumeCorrection(convertToReservedVolumeCsorrections(corrections))
+            grpcStub.saveReservedVolumeCorrection(convertToReservedVolumeCorrections(corrections))
         } catch (e: Exception) {
             LOGGER.error("Unable to add correction infos $corrections", e)
             channel.shutdown()
@@ -25,7 +25,7 @@ class GrpcReservedVolumeCorrectionDatabaseAccessor(private val grpcConnectionStr
         }
     }
 
-    private fun convertToReservedVolumeCsorrections(corrections: List<ReservedVolumeCorrection>): GrpcReservedVolumeCorrection.ReservedVolumeCorrectionRequest {
+    private fun convertToReservedVolumeCorrections(corrections: List<ReservedVolumeCorrection>): GrpcReservedVolumeCorrection.ReservedVolumeCorrectionRequest {
         val builder = GrpcReservedVolumeCorrection.ReservedVolumeCorrectionRequest.newBuilder()
         corrections.forEach { correction ->
             with (correction) {

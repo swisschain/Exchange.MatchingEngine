@@ -45,13 +45,14 @@ message Header {
 }
 
 message BalanceUpdate {
-    string walletId = 1;
-    string assetId = 2;
-    string oldBalance = 3;
-    string newBalance = 4;
-    string oldReserved = 5;
-    string newReserved = 6;
-    string brokerId = 7;
+    string brokerId = 1;
+    uint64 accountId = 2;
+    uint64 walletId = 3;
+    string assetId = 4;
+    string oldBalance = 5;
+    string newBalance = 6;
+    string oldReserved = 7;
+    string newReserved = 8;
 }
 
 message Fee {
@@ -78,8 +79,8 @@ message FeeInstruction {
 
     string makerSize = 4;
     int32 makerSizeType = 5;
-    string sourceWalletId = 6;
-    string targetWalletId = 7;
+    uint64 sourceWalletId = 6;
+    uint64 targetWalletId = 7;
     repeated string assetsIds = 8;
     string makerFeeModificator = 9;
     int32 index = 10;
@@ -87,8 +88,8 @@ message FeeInstruction {
 
 message FeeTransfer {
     string volume = 1;
-    string sourceWalletId = 2;
-    string targetWalletId = 3;
+    uint64 sourceWalletId = 2;
+    uint64 targetWalletId = 3;
     string assetId = 4;
     string feeCoef = 5;
     int32 index = 6;
@@ -96,12 +97,13 @@ message FeeTransfer {
 
 message CashInEvent {
     message CashIn {
-        string walletId = 1;
-        string assetId = 2;
-        string volume = 3;
-        repeated Fee fees = 4;
-        string brokerId = 5;
-        string description = 6;
+        string brokerId = 1;
+        uint64 accountId = 2;
+        uint64 walletId = 3;
+        string assetId = 4;
+        string volume = 5;
+        repeated Fee fees = 6;
+        string description = 7;
     }
     Header header = 1;
     repeated BalanceUpdate balanceUpdates = 2;
@@ -110,12 +112,13 @@ message CashInEvent {
 
 message CashOutEvent {
     message CashOut {
-        string walletId = 1;
-        string assetId = 2;
-        string volume = 3;
-        repeated Fee fees = 4;
-        string brokerId = 5;
-        string description = 6;
+        string brokerId = 1;
+        uint64 accountId = 2;
+        uint64 walletId = 3;
+        string assetId = 4;
+        string volume = 5;
+        repeated Fee fees = 6;
+        string description = 7;
     }
     Header header = 1;
     repeated BalanceUpdate balanceUpdates = 2;
@@ -124,14 +127,15 @@ message CashOutEvent {
 
 message CashTransferEvent {
     message CashTransfer {
-        string fromWalletId = 1;
-        string toWalletId = 2;
-        string volume = 3;
-        string overdraftLimit = 4;
-        string assetId = 5;
-        repeated Fee fees = 6;
-        string brokerId = 7;
-        string description = 8;
+        string brokerId = 1;
+        uint64 accountId = 2;
+        uint64 fromWalletId = 3;
+        uint64 toWalletId = 4;
+        string volume = 5;
+        string overdraftLimit = 6;
+        string assetId = 7;
+        repeated Fee fees = 8;
+        string description = 9;
     }
     Header header = 1;
     repeated BalanceUpdate balanceUpdates = 2;
@@ -148,7 +152,7 @@ message ExecutionEvent {
             google.protobuf.Timestamp timestamp = 5;
             string oppositeOrderId = 6;
             string oppositeExternalOrderId = 7;
-            string oppositeWalletId = 8;
+            uint64 oppositeWalletId = 8;
             string quotingAssetId = 9;
             string quotingVolume = 10;
             int32 index = 11;
@@ -177,7 +181,7 @@ message ExecutionEvent {
         string id = 2;
         string externalId = 3;
         string assetPairId = 4;
-        string walletId = 5;
+        uint64 walletId = 5;
 
         enum OrderSide {
             UNKNOWN_ORDER_SIDE = 0;
@@ -228,6 +232,7 @@ message ExecutionEvent {
         string parentExternalId = 25;
         string childExternalId = 26;
         string brokerId = 27;
+        uint64 accountId = 28;
     }
     Header header = 1;
     repeated BalanceUpdate balanceUpdates = 2;
@@ -250,11 +255,12 @@ message TradeResponse {
 
 message ReservedBalanceUpdateEvent {
     message ReservedBalanceUpdate {
-        string walletId = 1;
-        string assetId = 2;
-        string volume = 3;
-        string brokerId = 4;
-        string description = 5;
+        string brokerId = 1;
+        uint64 accountId = 2;
+        uint64 walletId = 3;
+        string assetId = 4;
+        string volume = 5;
+        string description = 6;
     }
     Header header = 1;
     repeated BalanceUpdate balanceUpdates = 2;
@@ -278,7 +284,7 @@ message OrderBookSnapshot {
     message OrderBookLevel {
         string price = 1;
         string volume = 2;
-        string walletId = 3;
+        uint64 walletId = 3;
         string orderId = 4;
     }
 

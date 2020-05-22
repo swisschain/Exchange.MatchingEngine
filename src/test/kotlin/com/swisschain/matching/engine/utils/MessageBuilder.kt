@@ -3,6 +3,7 @@ package com.swisschain.matching.engine.utils
 import com.google.protobuf.BoolValue
 import com.google.protobuf.Int32Value
 import com.google.protobuf.StringValue
+import com.google.protobuf.UInt64Value
 import com.swisschain.matching.engine.AbstractTest.Companion.DEFAULT_BROKER
 import com.swisschain.matching.engine.daos.FeeSizeType
 import com.swisschain.matching.engine.daos.FeeType
@@ -47,7 +48,7 @@ class MessageBuilder(private var singleLimitOrderContextParser: SingleLimitOrder
 companion object {
         fun buildLimitOrder(uid: String = UUID.randomUUID().toString(),
                             assetId: String = "EURUSD",
-                            walletId: String = "Client1",
+                            walletId: Long = 1,
                             price: Double = 100.0,
                             registered: Date = Date(),
                             status: String = OrderStatus.InOrderBook.name,
@@ -62,7 +63,7 @@ companion object {
                             previousExternalId: String? = null,
                             timeInForce: OrderTimeInForce? = null,
                             expiryTime: Date? = null): LimitOrder =
-                LimitOrder(uid, uid, assetId, DEFAULT_BROKER, walletId, BigDecimal.valueOf(volume), BigDecimal.valueOf(price), status, registered, registered, registered, BigDecimal.valueOf(volume), null,
+                LimitOrder(uid, uid, assetId, DEFAULT_BROKER, walletId, walletId, BigDecimal.valueOf(volume), BigDecimal.valueOf(price), status, registered, registered, registered, BigDecimal.valueOf(volume), null,
                         reservedVolume?.toBigDecimal(), fees,
                         type, lowerLimitPrice?.toBigDecimal(), lowerPrice?.toBigDecimal(),
                         upperLimitPrice?.toBigDecimal(), upperPrice?.toBigDecimal(),
@@ -75,7 +76,7 @@ companion object {
         fun buildMarketOrderWrapper(order: MarketOrder): MarketOrderMessageWrapper {
             val id = UUID.randomUUID().toString()
             val builder = IncomingMessages.MarketOrder.newBuilder()
-                    .setUid(id)
+                    .setId(id)
                     .setBrokerId(DEFAULT_BROKER)
                     .setTimestamp(order.createdAt.createProtobufTimestampBuilder())
                     .setWalletId(order.walletId)
@@ -93,10 +94,10 @@ companion object {
                 builder.size = StringValue.of(it.toPlainString())
             }
             fee.sourceWalletId?.let {
-                builder.setSourceWalletId(StringValue.of(it))
+                builder.setSourceWalletId(UInt64Value.of(it))
             }
             fee.targetWalletId?.let {
-                builder.setTargetWalletId(StringValue.of(it))
+                builder.setTargetWalletId(UInt64Value.of(it))
             }
             fee.sizeType?.let {
                 builder.setSizeType(Int32Value.of(it.externalId))
@@ -122,10 +123,10 @@ companion object {
                 builder.makerSizeType = Int32Value.of(it.externalId)
             }
             fee.sourceWalletId?.let {
-                builder.setSourceWalletId(StringValue.of(it))
+                builder.setSourceWalletId(UInt64Value.of(it))
             }
             fee.targetWalletId?.let {
-                builder.setTargetWalletId(StringValue.of(it))
+                builder.setTargetWalletId(UInt64Value.of(it))
             }
             builder.addAllAssetId(fee.assetIds)
             return builder.build()
@@ -133,20 +134,20 @@ companion object {
 
         fun buildMarketOrder(rowKey: String = UUID.randomUUID().toString(),
                              assetId: String = "EURUSD",
-                             walletId: String = "Client1",
+                             walletId: Long = 1,
                              registered: Date = Date(),
                              status: String = OrderStatus.InOrderBook.name,
                              straight: Boolean = true,
                              volume: Double = 1000.0,
                              reservedVolume: Double? = null,
                              fees: List<NewFeeInstruction> = listOf()): MarketOrder =
-                MarketOrder(rowKey, rowKey, assetId, DEFAULT_BROKER, walletId,
+                MarketOrder(rowKey, rowKey, assetId, DEFAULT_BROKER, walletId, walletId,
                         BigDecimal.valueOf(volume), null, status, registered, registered, Date(),
                         null, straight,
                         reservedVolume?.toBigDecimal(),fees = fees)
 
         fun buildMultiLimitOrderWrapper(pair: String,
-                                        walletId: String,
+                                        walletId: Long,
                                         orders: List<IncomingLimitOrder>,
                                         cancel: Boolean = true,
                                         cancelMode: OrderCancelMode? = null
@@ -159,40 +160,35 @@ companion object {
         }
 
         private fun buildMultiLimitOrder(assetPairId: String,
-                                         walletId: String,
+                                         walletId: Long,
                                          orders: List<IncomingLimitOrder>,
                                          cancel: Boolean,
                                          cancelMode: OrderCancelMode?): IncomingMessages.MultiLimitOrder {
             val multiOrderBuilder = IncomingMessages.MultiLimitOrder.newBuilder()
-                    .setUid(UUID.randomUUID().toString())
+                    .setId(UUID.randomUUID().toString())
                     .setBrokerId(DEFAULT_BROKER)
                     .setTimestamp(Date().createProtobufTimestampBuilder())
                     .setWalletId(walletId)
                     .setAssetPairId(assetPairId)
                     .setCancelAllPreviousLimitOrders(BoolValue.of(cancel))
-            cancelMode?.let { multiOrderBuilder.cancelMode = Int32Value.of(it.externalId) }
+            cancelMode?.let { multiOrderBuilder.cancelMode = IncomingMessages.MultiLimitOrder.CancelMode.forNumber(it.externalId) }
             orders.forEach { order ->
                 val orderBuilder = IncomingMessages.MultiLimitOrder.Order.newBuilder()
                         .setVolume(order.volume.toString())
-                order.price?.let { orderBuilder.price = StringValue.of(it.toString()) }
+                order.price?.let { orderBuilder.price = it.toString() }
                 order.feeInstructions.forEach { orderBuilder.addFees(buildNewLimitOrderFee(it)) }
-                orderBuilder.uid = order.uid
-                order.oldUid?.let { orderBuilder.oldUid = StringValue.of(order.oldUid) }
-                order.timeInForce?.let { orderBuilder.timeInForce = Int32Value.of(it.externalId) }
+                orderBuilder.id = order.id
+                order.oldUid?.let { orderBuilder.oldId = StringValue.of(order.oldUid) }
+                order.timeInForce?.let { orderBuilder.timeInForce = IncomingMessages.OrderTimeInForce.forNumber(it.externalId) }
                 order.expiryTime?.let { orderBuilder.expiryTime = it.createProtobufTimestampBuilder().build() }
-                order.type?.let { orderBuilder.type = Int32Value.of(it.externalId) }
-                order.lowerLimitPrice?.let { orderBuilder.lowerLimitPrice = StringValue.of(it.toString()) }
-                order.lowerPrice?.let { orderBuilder.lowerPrice = StringValue.of(it.toString()) }
-                order.upperLimitPrice?.let { orderBuilder.upperLimitPrice = StringValue.of(it.toString()) }
-                order.upperPrice?.let { orderBuilder.upperPrice = StringValue.of(it.toString()) }
                 multiOrderBuilder.addOrders(orderBuilder.build())
             }
             return multiOrderBuilder.build()
         }
 
-        fun buildMultiLimitOrderCancelWrapper(walletId: String, assetPairId: String, isBuy: Boolean): GenericMessageWrapper =
+        fun buildMultiLimitOrderCancelWrapper(walletId: Long, assetPairId: String, isBuy: Boolean): GenericMessageWrapper =
                 GenericMessageWrapper(MessageType.LIMIT_ORDER_MASS_CANCEL.type, IncomingMessages.MultiLimitOrderCancel.newBuilder()
-                .setUid(UUID.randomUUID().toString())
+                .setId(UUID.randomUUID().toString())
                 .setTimestamp(Date().createProtobufTimestampBuilder())
                 .setWalletId(walletId)
                 .setAssetPairId(assetPairId)
@@ -201,8 +197,8 @@ companion object {
         fun buildFeeInstructions(type: FeeType? = null,
                                  sizeType: FeeSizeType? = FeeSizeType.PERCENTAGE,
                                  size: Double? = null,
-                                 sourceWalletId: String? = null,
-                                 targetWalletId: String? = null,
+                                 sourceWalletId: Long? = null,
+                                 targetWalletId: Long? = null,
                                  assetIds: List<String> = emptyList()): List<NewFeeInstruction> {
             return if (type == null) listOf()
             else return listOf(NewFeeInstruction(type, sizeType,
@@ -213,8 +209,8 @@ companion object {
         fun buildFeeInstruction(type: FeeType? = null,
                                 sizeType: FeeSizeType? = FeeSizeType.PERCENTAGE,
                                 size: Double? = null,
-                                sourceWalletId: String? = null,
-                                targetWalletId: String? = null,
+                                sourceWalletId: Long? = null,
+                                targetWalletId: Long? = null,
                                 assetIds: List<String> = emptyList()): NewFeeInstruction? {
             return if (type == null) null
             else return NewFeeInstruction(type, sizeType,
@@ -227,8 +223,8 @@ companion object {
                                           takerSize: Double? = null,
                                           makerSizeType: FeeSizeType? = FeeSizeType.PERCENTAGE,
                                           makerSize: Double? = null,
-                                          sourceWalletId: String? = null,
-                                          targetWalletId: String? = null): LimitOrderFeeInstruction? {
+                                          sourceWalletId: Long? = null,
+                                          targetWalletId: Long? = null): LimitOrderFeeInstruction? {
             return if (type == null) null
             else return LimitOrderFeeInstruction(type, takerSizeType,
                     if (takerSize != null) BigDecimal.valueOf(takerSize) else null,
@@ -243,8 +239,8 @@ companion object {
                                            takerSize: Double? = null,
                                            makerSizeType: FeeSizeType? = FeeSizeType.PERCENTAGE,
                                            makerSize: Double? = null,
-                                           sourceWalletId: String? = null,
-                                           targetWalletId: String? = null,
+                                           sourceWalletId: Long? = null,
+                                           targetWalletId: Long? = null,
                                            assetIds: List<String> = emptyList(),
                                            makerFeeModificator: Double? = null): List<NewLimitOrderFeeInstruction> {
             return if (type == null) listOf()
@@ -257,8 +253,8 @@ companion object {
         }
     }
 
-    fun buildTransferWrapper(fromWalletId: String,
-                             toWalletId: String,
+    fun buildTransferWrapper(fromWalletId: Long,
+                             toWalletId: Long,
                              assetId: String,
                              amount: Double,
                              overdraftLimit: Double,
@@ -275,7 +271,7 @@ companion object {
                 .setTimestamp(Date().createProtobufTimestampBuilder()).build(), null, false)).messageWrapper
     }
 
-    fun buildCashInOutWrapper(walletId: String, assetId: String, amount: Double, businessId: String = UUID.randomUUID().toString(),
+    fun buildCashInOutWrapper(walletId: Long, assetId: String, amount: Double, businessId: String = UUID.randomUUID().toString(),
                               fees: List<NewFeeInstruction> = listOf()): MessageWrapper {
         val builder = IncomingMessages.CashInOutOperation.newBuilder()
                 .setId(businessId)
@@ -297,20 +293,20 @@ companion object {
     fun buildLimitOrderCancelWrapper(uids: List<String>): MessageWrapper {
         val parsedData = limitOrderCancelOperationContextParser.parse(GenericMessageWrapper(
                 MessageType.LIMIT_ORDER_CANCEL.type,
-                IncomingMessages.LimitOrderCancel.newBuilder().setBrokerId(DEFAULT_BROKER).setUid(UUID.randomUUID().toString()).addAllLimitOrderId(uids).build(),
+                IncomingMessages.LimitOrderCancel.newBuilder().setBrokerId(DEFAULT_BROKER).setId(UUID.randomUUID().toString()).addAllLimitOrderId(uids).build(),
                 null,
                 false
         ))
         return parsedData.messageWrapper
     }
 
-    fun buildLimitOrderMassCancelWrapper(walletId: String? = null,
+    fun buildLimitOrderMassCancelWrapper(walletId: Long? = null,
                                          assetPairId: String? = null,
                                          isBuy: Boolean? = null): MessageWrapper {
         val builder = IncomingMessages.LimitOrderMassCancel.newBuilder()
-                .setBrokerId(DEFAULT_BROKER).setUid(UUID.randomUUID().toString())
+                .setBrokerId(DEFAULT_BROKER).setId(UUID.randomUUID().toString())
         walletId?.let {
-            builder.setWalletId(StringValue.of(it))
+            builder.setWalletId(UInt64Value.of(it))
         }
         assetPairId?.let {
             builder.setAssetPairId(StringValue.of(it))
@@ -326,7 +322,7 @@ companion object {
     fun buildLimitOrderWrapper(order: LimitOrder,
                                cancel: Boolean = false): GenericMessageWrapper {
         val builder = IncomingMessages.LimitOrder.newBuilder()
-                .setUid(order.externalId)
+                .setId(order.externalId)
                 .setBrokerId(DEFAULT_BROKER)
                 .setTimestamp(order.createdAt.createProtobufTimestampBuilder())
                 .setWalletId(order.walletId)
@@ -345,7 +341,7 @@ companion object {
         order.upperLimitPrice?.let { builder.setUpperLimitPrice(StringValue.of(it.toPlainString())) }
         order.upperPrice?.let { builder.setUpperPrice(StringValue.of(it.toPlainString())) }
         order.expiryTime?.let { builder.setExpiryTime(it.createProtobufTimestampBuilder()) }
-        order.timeInForce?.let { builder.setTimeInForce(IncomingMessages.LimitOrder.OrderTimeInForce.forNumber(it.externalId)) }
+        order.timeInForce?.let { builder.setTimeInForce(IncomingMessages.OrderTimeInForce.forNumber(it.externalId)) }
         val messageWrapper = singleLimitOrderContextParser
                 .parse(GenericMessageWrapper(MessageType.LIMIT_ORDER.type, builder.build(), TestStreamObserver(), false))
                 .messageWrapper as GenericMessageWrapper

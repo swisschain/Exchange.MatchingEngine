@@ -22,7 +22,7 @@ class BalancesController {
     @GetMapping("/balances", produces = [MediaType.APPLICATION_JSON_VALUE])
     @ApiOperation("Returns balance information for supplied client and assetId")
     fun getBalances(@RequestParam("brokerId") brokerId: String,
-                    @RequestParam("walletId") walletId: String,
+                    @RequestParam("walletId") walletId: Long,
                     @RequestParam(name = "assetId", required = false, defaultValue = "") assetId: String): ResponseEntity<*> {
 
         val balances = balancesHolder.getBalances(brokerId, walletId)

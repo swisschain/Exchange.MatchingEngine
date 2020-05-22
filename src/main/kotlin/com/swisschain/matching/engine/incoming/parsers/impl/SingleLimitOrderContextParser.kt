@@ -68,7 +68,7 @@ class SingleLimitOrderContextParser(private val assetsPairsHolder: AssetsPairsHo
         return assetsHolder.getAssetAllowNulls(order.brokerId, if (order.isBuySide()) assetPair.quotingAssetId else assetPair.baseAssetId)
     }
 
-    private fun getTrustedClient(walletId: String): Boolean {
+    private fun getTrustedClient(walletId: Long): Boolean {
         return applicationSettingsHolder.isTrustedClient(walletId)
     }
 
@@ -86,14 +86,14 @@ class SingleLimitOrderContextParser(private val assetsPairsHolder: AssetsPairsHo
 
     private fun parseMessage(messageWrapper: MessageWrapper): SingleLimitOrderContext {
         val message = messageWrapper.parsedMessage as IncomingMessages.LimitOrder
-        val messageId = if (message.hasMessageId()) message.messageId.value else message.uid
+        val messageId = if (message.hasMessageId()) message.messageId.value else message.id
 
         val limitOrder = createOrder(message)
 
         val singleLimitOrderContext = getContext(messageId, limitOrder, message.cancelAllPreviousLimitOrders.value,
                 ProcessedMessage(messageWrapper.type, message.timestamp.seconds, messageId))
 
-        logger.info("Got limit order  messageId: $messageId, id: ${message.uid}, client ${message.walletId}")
+        logger.info("Got limit order  messageId: $messageId, id: ${message.id}, client ${message.walletId}")
 
         return singleLimitOrderContext
     }
@@ -106,9 +106,10 @@ class SingleLimitOrderContextParser(private val assetsPairsHolder: AssetsPairsHo
         val feeInstructions = NewLimitOrderFeeInstruction.create(message.feesList)
         return LimitOrder(
                 uuidHolder.getNextValue(),
-                message.uid,
+                message.id,
                 message.assetPairId,
                 message.brokerId,
+                message.accountId,
                 message.walletId,
                 BigDecimal(message.volume),
                 if (message.hasPrice()) BigDecimal(message.price.value) else BigDecimal.ZERO,

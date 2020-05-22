@@ -19,14 +19,14 @@ class LimitOrderCancelOperationContextParser: ContextParser<LimitOrderCancelOper
 
     private fun parseContext(messageWrapper: MessageWrapper): LimitOrderCancelOperationContext {
         val message = messageWrapper.parsedMessage as IncomingMessages.LimitOrderCancel
-        messageWrapper.messageId = if (message.hasMessageId()) message.messageId.value else message.uid.toString()
+        messageWrapper.messageId = if (message.hasMessageId()) message.messageId.value else message.id.toString()
         messageWrapper.timestamp = Date().time
-        messageWrapper.id = message.uid
+        messageWrapper.id = message.id
         messageWrapper.processedMessage = ProcessedMessage(messageWrapper.type, messageWrapper.timestamp!!, messageWrapper.messageId!!)
 
         return LimitOrderCancelOperationContext(
                 message.brokerId,
-                message.uid,
+                message.id,
                 messageWrapper.messageId!!,
                 messageWrapper.processedMessage!!,
                 message.limitOrderIdList.toSet(),

@@ -4,7 +4,7 @@ import com.swisschain.matching.engine.daos.LimitOrder
 import com.swisschain.matching.engine.order.transaction.ExecutionContext
 
 class PreviousLimitOrdersContext(val brokerId: String,
-                                 val walletId: String,
+                                 val walletId: Long,
                                  val assetPairId: String,
                                  val cancelAllPreviousLimitOrders: Boolean,
                                  val cancelBuySide: Boolean,

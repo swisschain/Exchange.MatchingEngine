@@ -16,11 +16,12 @@ class CashTransferEventBuilder : EventBuilder<CashTransferEventData, CashTransfe
     override fun setEventData(eventData: CashTransferEventData): EventBuilder<CashTransferEventData, CashTransferEvent> {
         balanceUpdates = convertBalanceUpdates(eventData.clientBalanceUpdates)
         cashTransfer = CashTransfer(eventData.transferOperation.brokerId,
+                eventData.transferOperation.accountId,
                 eventData.transferOperation.fromWalletId,
                 eventData.transferOperation.toWalletId,
                 bigDecimalToString(eventData.transferOperation.volume)!!,
                 bigDecimalToString(eventData.transferOperation.overdraftLimit),
-                eventData.transferOperation.asset!!.symbol,
+                eventData.transferOperation.asset.symbol,
                 eventData.transferOperation.description,
                 convertFees(eventData.internalFees))
         return this

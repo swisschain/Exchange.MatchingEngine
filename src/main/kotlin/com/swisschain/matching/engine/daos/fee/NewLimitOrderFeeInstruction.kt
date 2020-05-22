@@ -12,8 +12,8 @@ class NewLimitOrderFeeInstruction(
         takerSize: BigDecimal?,
         val makerSizeType: FeeSizeType?,
         val makerSize: BigDecimal?,
-        sourceWalletId: String?,
-        targetWalletId: String?,
+        sourceWalletId: Long?,
+        targetWalletId: Long?,
         assetIds: List<String>,
         @Version(1)
         val makerFeeModificator: BigDecimal?
@@ -56,9 +56,9 @@ class NewLimitOrderFeeInstruction(
                 (if (makerSizeType != null) ", makerSizeType=$makerSizeType" else "") +
                 (if (makerSize != null) ", makerSize=${makerSize.toPlainString()}" else "") +
                 (if (makerFeeModificator != null) ", makerFeeModificator=${makerFeeModificator.toPlainString()}" else "") +
-                (if (assetIds.isNotEmpty() == true) ", assetIds=$assetIds" else "") +
-                (if (sourceWalletId?.isNotEmpty() == true) ", sourceWalletId=$sourceWalletId" else "") +
-                "${if (targetWalletId?.isNotEmpty() == true) ", targetWalletId=$targetWalletId" else ""})"
+                (if (assetIds.isNotEmpty()) ", assetIds=$assetIds" else "") +
+                (if (sourceWalletId != null) ", sourceWalletId=$sourceWalletId" else "") +
+                "${if (targetWalletId != null) ", targetWalletId=$targetWalletId" else ""})"
     }
 
 }

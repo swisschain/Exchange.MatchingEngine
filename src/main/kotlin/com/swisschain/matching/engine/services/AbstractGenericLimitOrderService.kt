@@ -12,7 +12,7 @@ abstract class AbstractGenericLimitOrderService<T : AbstractAssetOrderBook> {
     abstract fun removeOrdersFromMapsAndSetStatus(orders: Collection<LimitOrder>, status: OrderStatus? = null, date: Date? = null)
     abstract fun addOrders(orders: Collection<LimitOrder>)
 
-    fun searchOrders(brokerId: String, walletId: String?, assetPairId: String?, isBuy: Boolean?): List<LimitOrder> {
+    fun searchOrders(brokerId: String, walletId: Long?, assetPairId: String?, isBuy: Boolean?): List<LimitOrder> {
         return when {
             walletId != null -> searchClientOrders(brokerId, walletId, assetPairId, isBuy)
             assetPairId != null -> searchAssetPairOrders(brokerId, assetPairId, isBuy)
@@ -20,7 +20,7 @@ abstract class AbstractGenericLimitOrderService<T : AbstractAssetOrderBook> {
         }
     }
 
-    private fun searchClientOrders(brokerId: String, walletId: String, assetPairId: String?, isBuy: Boolean?): List<LimitOrder> {
+    private fun searchClientOrders(brokerId: String, walletId: Long, assetPairId: String?, isBuy: Boolean?): List<LimitOrder> {
         val result = mutableListOf<LimitOrder>()
         getLimitOrdersByWalletIdMap(brokerId)[walletId]?.forEach { limitOrder ->
             if ((assetPairId == null || limitOrder.assetPairId == assetPairId) && (isBuy == null || limitOrder.isBuySide() == isBuy)) {
@@ -42,7 +42,7 @@ abstract class AbstractGenericLimitOrderService<T : AbstractAssetOrderBook> {
         return result
     }
 
-    protected abstract fun getLimitOrdersByWalletIdMap(brokerId: String): Map<String, Collection<LimitOrder>>
+    protected abstract fun getLimitOrdersByWalletIdMap(brokerId: String): Map<Long, Collection<LimitOrder>>
     protected abstract fun getOrderBooksByAssetPairIdMap(brokerId: String): Map<String, T>
     abstract fun getTotalSize(brokerId: String?): Int
 }

@@ -5,15 +5,15 @@ import java.util.HashMap
 
 class Wallet {
     val brokerId: String
-    val walletId: String
+    val walletId: Long
     val balances: MutableMap<String, AssetBalance> = HashMap()
 
-    constructor(brokerId: String, walletId: String) {
+    constructor(brokerId: String, walletId: Long) {
         this.brokerId = brokerId
         this.walletId = walletId
     }
 
-    constructor(brokerId: String, walletId: String, balances: List<AssetBalance>) {
+    constructor(brokerId: String, walletId: Long, balances: List<AssetBalance>) {
         this.brokerId = brokerId
         this.walletId = walletId
         balances.forEach {

@@ -51,8 +51,8 @@ class MultiLimitOrderService(private val executionContextFactory: ExecutionConte
 
     override fun processMessage(messageWrapper: MessageWrapper) {
         val message = messageWrapper.parsedMessage!! as IncomingMessages.MultiLimitOrder
-        messageWrapper.messageId = if (message.hasMessageId()) message.messageId.value else message.uid
-        messageWrapper.id = message.uid
+        messageWrapper.messageId = if (message.hasMessageId()) message.messageId.value else message.id
+        messageWrapper.id = message.id
 
         val assetPair = assetsPairsHolder.getAssetPairAllowNulls(message.brokerId, message.assetPairId)
         if (assetPair == null) {
@@ -128,19 +128,19 @@ class MultiLimitOrderService(private val executionContextFactory: ExecutionConte
                                     message: IncomingMessages.MultiLimitOrder,
                                     isTrustedClient: Boolean,
                                     assetPair: AssetPair): MultiLimitOrder {
-        LOGGER.debug("Got ${if (!isTrustedClient) "client " else ""}multi limit order id: ${message.uid}, " +
-                (if (messageId != message.uid) "messageId: $messageId, " else "") +
+        LOGGER.debug("Got ${if (!isTrustedClient) "client " else ""}multi limit order id: ${message.id}, " +
+                (if (messageId != message.id) "messageId: $messageId, " else "") +
                 "client ${message.walletId}, " +
                 "assetPair: ${message.assetPairId}, " +
                 "ordersCount: ${message.ordersCount}, " +
                 (if (message.hasCancelAllPreviousLimitOrders()) "cancelPrevious: ${message.cancelAllPreviousLimitOrders}, " else "") +
-                (if (message.hasCancelMode()) "cancelMode: ${message.cancelMode}" else ""))
+                "cancelMode: ${message.cancelMode}")
 
         val walletId = message.walletId
-        val messageUid = message.uid
+        val messageUid = message.id
         val assetPairId = message.assetPairId
         val cancelAllPreviousLimitOrders = message.cancelAllPreviousLimitOrders
-        val cancelMode = if (message.hasCancelMode()) OrderCancelMode.getByExternalId(message.cancelMode.value) else OrderCancelMode.NOT_EMPTY_SIDE
+        val cancelMode = OrderCancelMode.getByExternalId(message.cancelModeValue)
         val now = Date()
         var cancelBuySide = cancelMode == OrderCancelMode.BUY_SIDE || cancelMode == OrderCancelMode.BOTH_SIDES
         var cancelSellSide = cancelMode == OrderCancelMode.SELL_SIDE || cancelMode == OrderCancelMode.BOTH_SIDES
@@ -163,23 +163,17 @@ class MultiLimitOrderService(private val executionContextFactory: ExecutionConte
             if (!isTrustedClient) {
                 LOGGER.debug("Incoming limit order (message id: $messageId): ${getIncomingOrderInfo(currentOrder)}")
             }
-            val type = if (currentOrder.hasType()) LimitOrderType.getByExternalId(currentOrder.type.value) else LimitOrderType.LIMIT
-            val status = when(type) {
-                LimitOrderType.LIMIT -> OrderStatus.InOrderBook
-                LimitOrderType.STOP_LIMIT -> OrderStatus.Pending
-            }
-            val price = if (currentOrder.hasPrice()) BigDecimal(currentOrder.price.value) else BigDecimal.ZERO
-            val lowerLimitPrice = if (currentOrder.hasLowerLimitPrice()) BigDecimal(currentOrder.lowerLimitPrice.value) else null
-            val lowerPrice = if (currentOrder.hasLowerPrice()) BigDecimal(currentOrder.lowerPrice.value) else null
-            val upperLimitPrice = if (currentOrder.hasUpperLimitPrice()) BigDecimal(currentOrder.upperLimitPrice.value) else null
-            val upperPrice = if (currentOrder.hasUpperPrice()) BigDecimal(currentOrder.upperPrice.value) else null
+            val type = LimitOrderType.LIMIT
+            val status= OrderStatus.InOrderBook
+            val price = BigDecimal(currentOrder.price)
             val feeInstructions = NewLimitOrderFeeInstruction.create(currentOrder.feesList)
-            val previousExternalId = if (currentOrder.hasOldUid()) currentOrder.oldUid.value else null
+            val previousExternalId = if (currentOrder.hasOldId()) currentOrder.oldId.value else null
 
             val order = LimitOrder(uuidHolder.getNextValue(),
-                    currentOrder.uid,
+                    currentOrder.id,
                     message.assetPairId,
                     message.brokerId,
+                    message.accountId,
                     message.walletId,
                     BigDecimal(currentOrder.volume),
                     price,
@@ -191,12 +185,12 @@ class MultiLimitOrderService(private val executionContextFactory: ExecutionConte
                     null,
                     fees = feeInstructions,
                     type = type,
-                    lowerLimitPrice = lowerLimitPrice,
-                    lowerPrice = lowerPrice,
-                    upperLimitPrice = upperLimitPrice,
-                    upperPrice = upperPrice,
+                    lowerLimitPrice = null,
+                    lowerPrice = null,
+                    upperLimitPrice = null,
+                    upperPrice = null,
                     previousExternalId = previousExternalId,
-                    timeInForce = if (currentOrder.hasTimeInForce()) OrderTimeInForce.getByExternalId(currentOrder.timeInForce.value) else null,
+                    timeInForce = OrderTimeInForce.getByExternalId(currentOrder.timeInForceValue),
                     expiryTime = if (currentOrder.hasExpiryTime()) currentOrder.expiryTime.toDate() else null,
                     parentOrderExternalId = null,
                     childOrderExternalId = null)
@@ -229,16 +223,11 @@ class MultiLimitOrderService(private val executionContextFactory: ExecutionConte
     }
 
     private fun getIncomingOrderInfo(incomingOrder: IncomingMessages.MultiLimitOrder.Order): String {
-        return "id: ${incomingOrder.uid}" +
-                (if (incomingOrder.hasType()) ", type: ${incomingOrder.type}" else "") +
+        return "id: ${incomingOrder.id}" +
                 ", volume: ${incomingOrder.volume}" +
-                (if (incomingOrder.hasPrice()) ", price: ${incomingOrder.price.value}" else "") +
-                (if (incomingOrder.hasLowerLimitPrice()) ", lowerLimitPrice: ${incomingOrder.lowerLimitPrice.value}" else "") +
-                (if (incomingOrder.hasLowerPrice()) ", lowerPrice: ${incomingOrder.lowerPrice.value}" else "") +
-                (if (incomingOrder.hasUpperLimitPrice()) ", upperLimitPrice: ${incomingOrder.upperLimitPrice.value}" else "") +
-                (if (incomingOrder.hasUpperPrice()) ", upperPrice: ${incomingOrder.upperPrice.value}" else "") +
-                (if (incomingOrder.hasOldUid()) ", oldUid: ${incomingOrder.oldUid}" else "") +
-                (if (incomingOrder.hasTimeInForce()) ", timeInForce: ${incomingOrder.timeInForce}" else "") +
+                ", price: ${incomingOrder.price}" +
+                (if (incomingOrder.hasOldId()) ", oldUid: ${incomingOrder.oldId}" else "") +
+                ", timeInForce: ${incomingOrder.timeInForce}" +
                 (if (incomingOrder.hasExpiryTime()) ", expiryTime: ${incomingOrder.expiryTime}" else "") +
                 (if (incomingOrder.feesCount > 0) ", fees: ${incomingOrder.feesList.asSequence().joinToString(", ")}" else "")
     }

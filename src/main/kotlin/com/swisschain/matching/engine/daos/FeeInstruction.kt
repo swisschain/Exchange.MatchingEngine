@@ -9,8 +9,8 @@ open class FeeInstruction(
         val type: FeeType,
         val sizeType: FeeSizeType?,
         val size: BigDecimal?,
-        val sourceWalletId: String?,
-        val targetWalletId: String?
+        val sourceWalletId: Long?,
+        val targetWalletId: Long?
 ) : Serializable {
 
     companion object {
@@ -37,8 +37,8 @@ open class FeeInstruction(
         return "FeeInstruction(type=$type" +
                 (if (sizeType != null) ", sizeType=$sizeType" else "") +
                 (if (size != null) ", size=${size.toPlainString()}" else "") +
-                (if (sourceWalletId?.isNotEmpty() == true) ", sourceWalletId=$sourceWalletId" else "") +
-                "${if (targetWalletId?.isNotEmpty() == true) ", targetWalletId=$targetWalletId" else ""})"
+                (if (sourceWalletId != null) ", sourceWalletId=$sourceWalletId" else "") +
+                "${if (targetWalletId != null) ", targetWalletId=$targetWalletId" else ""})"
     }
 
     open fun toNewFormat(): NewFeeInstruction = NewFeeInstruction(type, sizeType, size, sourceWalletId, targetWalletId, emptyList())

@@ -20,9 +20,9 @@ class LimitOrderMassCancelOperationContextParser: ContextParser<LimitOrderMassCa
     private fun parseMessage(messageWrapper: MessageWrapper): LimitOrderMassCancelOperationContext {
         val message = messageWrapper.parsedMessage as IncomingMessages.LimitOrderMassCancel
 
-        val messageId = if (message.hasMessageId()) message.messageId.value else message.uid
+        val messageId = if (message.hasMessageId()) message.messageId.value else message.id
         messageWrapper.messageId = messageId
-        messageWrapper.id = message.uid
+        messageWrapper.id = message.id
         messageWrapper.timestamp = Date().time
         messageWrapper.processedMessage = ProcessedMessage(messageWrapper.type, messageWrapper.timestamp!!, messageWrapper.messageId!!)
 
@@ -34,7 +34,7 @@ class LimitOrderMassCancelOperationContextParser: ContextParser<LimitOrderMassCa
 
         return LimitOrderMassCancelOperationContext(
                 message.brokerId,
-                message.uid,
+                message.id,
                 messageId,
                 walletId,
                 messageWrapper.processedMessage!!,

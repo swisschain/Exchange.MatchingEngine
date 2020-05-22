@@ -8,9 +8,10 @@ import java.util.Date
 data class TransferOperation(
         val matchingEngineOperationId: String,
         val brokerId: String,
+        val accountId: Long,
+        val fromWalletId: Long,
+        val toWalletId: Long,
         val externalId: String,
-        val fromWalletId: String,
-        val toWalletId: String,
         val asset: Asset,
         val dateTime: Date,
         val volume: BigDecimal,
@@ -27,6 +28,7 @@ data class TransferOperation(
         if (matchingEngineOperationId != other.matchingEngineOperationId) return false
         if (externalId != other.externalId) return false
         if (brokerId != other.brokerId) return false
+        if (accountId != other.accountId) return false
         if (fromWalletId != other.fromWalletId) return false
         if (toWalletId != other.toWalletId) return false
         if (asset != other.asset) return false
@@ -43,6 +45,7 @@ data class TransferOperation(
         var result = matchingEngineOperationId.hashCode()
         result = 31 * result + externalId.hashCode()
         result = 31 * result + brokerId.hashCode()
+        result = 31 * result + accountId.hashCode()
         result = 31 * result + fromWalletId.hashCode()
         result = 31 * result + toWalletId.hashCode()
         result = 31 * result + asset.hashCode()

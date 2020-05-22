@@ -61,8 +61,8 @@ abstract class MatchingEngineTest {
     private lateinit var executionContext: ExecutionContext
     @Before
     fun setUp() {
-        testBalanceHolderWrapper.updateBalance("Client1", "USD", 1000.0)
-        testBalanceHolderWrapper.updateBalance("Client2", "EUR", 1000.0)
+        testBalanceHolderWrapper.updateBalance(1, "USD", 1000.0)
+        testBalanceHolderWrapper.updateBalance(2, "EUR", 1000.0)
 
         testDictionariesDatabaseAccessor.addAsset(DictionariesInit.createAsset("USD", 2))
         testDictionariesDatabaseAccessor.addAsset(DictionariesInit.createAsset("EUR", 4))

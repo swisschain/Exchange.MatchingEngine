@@ -20,7 +20,7 @@ class BalancesHolder(private val walletDatabaseAccessor: WalletDatabaseAccessor,
                      private val assetsHolder: AssetsHolder,
                      private val applicationSettingsHolder: ApplicationSettingsHolder): BalancesGetter {
 
-    lateinit var wallets: MutableMap<String, MutableMap<String, Wallet>>
+    lateinit var wallets: MutableMap<String, MutableMap<Long, Wallet>>
     var initialClientsCount = 0
     var initialBalancesCount = 0
 
@@ -34,23 +34,23 @@ class BalancesHolder(private val walletDatabaseAccessor: WalletDatabaseAccessor,
         initialBalancesCount = wallets.values.sumBy { it.values.sumBy { it.balances.size } }
     }
 
-    fun clientExists(brokerId:String, walletId: String): Boolean {
+    fun clientExists(brokerId:String, walletId: Long): Boolean {
         return wallets.containsKey(brokerId) && wallets[brokerId]!!.containsKey(walletId)
     }
 
-    fun getBalances(brokerId:String, walletId: String): Map<String, AssetBalance> {
+    fun getBalances(brokerId:String, walletId: Long): Map<String, AssetBalance> {
         return wallets[brokerId]?.get(walletId)?.balances ?: emptyMap()
     }
 
-    fun getBalance(brokerId:String, walletId: String, assetId: String): BigDecimal {
+    fun getBalance(brokerId:String, walletId: Long, assetId: String): BigDecimal {
         return getBalances(brokerId, walletId)[assetId]?.balance ?: BigDecimal.ZERO
     }
 
-    override fun getReservedBalance(brokerId:String, walletId: String, assetId: String): BigDecimal {
+    override fun getReservedBalance(brokerId:String, walletId: Long, assetId: String): BigDecimal {
         return getBalances(brokerId, walletId)[assetId]?.reserved ?: BigDecimal.ZERO
     }
 
-    override fun getAvailableBalance(brokerId:String, walletId: String, assetId: String): BigDecimal {
+    override fun getAvailableBalance(brokerId:String, walletId: Long, assetId: String): BigDecimal {
         val wallet = wallets[brokerId]?.get(walletId)
         if (wallet != null) {
             val balance = wallet.balances[assetId]
@@ -64,7 +64,7 @@ class BalancesHolder(private val walletDatabaseAccessor: WalletDatabaseAccessor,
         return BigDecimal.ZERO
     }
 
-    override fun getAvailableReservedBalance(brokerId:String, walletId: String, assetId: String): BigDecimal {
+    override fun getAvailableReservedBalance(brokerId:String, walletId: Long, assetId: String): BigDecimal {
         val wallet = wallets[brokerId]?.get(walletId)
         if (wallet != null) {
             val balance = wallet.balances[assetId]
@@ -80,7 +80,7 @@ class BalancesHolder(private val walletDatabaseAccessor: WalletDatabaseAccessor,
     fun updateBalance(processedMessage: ProcessedMessage?,
                       messageSequenceNumber: Long?,
                       brokerId:String,
-                      walletId: String,
+                      walletId: Long,
                       assetId: String,
                       balance: BigDecimal): Boolean {
         val currentTransactionBalancesHolder = createCurrentTransactionBalancesHolder()
@@ -97,7 +97,7 @@ class BalancesHolder(private val walletDatabaseAccessor: WalletDatabaseAccessor,
     fun updateReservedBalance(processedMessage: ProcessedMessage?,
                               messageSequenceNumber: Long?,
                               brokerId:String,
-                              walletId: String,
+                              walletId: Long,
                               assetId: String,
                               balance: BigDecimal,
                               skipForTrustedClient: Boolean = true): Boolean {
@@ -118,7 +118,7 @@ class BalancesHolder(private val walletDatabaseAccessor: WalletDatabaseAccessor,
         update()
     }
 
-    fun isTrustedClient(walletId: String) = applicationSettingsHolder.isTrustedClient(walletId)
+    fun isTrustedClient(walletId: Long) = applicationSettingsHolder.isTrustedClient(walletId)
 
     fun createWalletProcessor(logger: Logger?): WalletOperationsProcessor {
         return WalletOperationsProcessor(this,

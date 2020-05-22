@@ -319,7 +319,7 @@ class LimitOrderInputValidatorTest {
 
     fun getStopOrder(lowerLimitPrice: BigDecimal? = null, lowerPrice: BigDecimal? = null,
                      upperLimitPrice: BigDecimal? = null, upperPrice: BigDecimal? = null): LimitOrder {
-        return LimitOrder("test", "test", "BTCUSD", DEFAULT_BROKER, "test", BigDecimal.ONE,
+        return LimitOrder("test", "test", "BTCUSD", DEFAULT_BROKER, 999, 999, BigDecimal.ONE,
                 BigDecimal.ONE, OrderStatus.InOrderBook.name, Date(), Date(), Date(), BigDecimal.ONE, null,
                 fees = listOf(getNewLimitFee()), type = LimitOrderType.STOP_LIMIT,
                 lowerLimitPrice = lowerLimitPrice, lowerPrice = lowerPrice,
@@ -339,7 +339,7 @@ class LimitOrderInputValidatorTest {
                       lowerPrice: BigDecimal? = null,
                       upperLimitPrice: BigDecimal? = null,
                       upperPrice: BigDecimal? = null): LimitOrder {
-        return LimitOrder("test", "test", assetPair, DEFAULT_BROKER, "test", volume,
+        return LimitOrder("test", "test", assetPair, DEFAULT_BROKER, 999, 999, volume,
                 price, OrderStatus.InOrderBook.name, Date(), Date(), Date(), BigDecimal.valueOf(1.0), null,
                 type = type, fees = fees, lowerLimitPrice = lowerLimitPrice, lowerPrice = lowerPrice, upperLimitPrice = upperLimitPrice, upperPrice = upperPrice, previousExternalId = null,
                 timeInForce = null,

@@ -12,7 +12,8 @@ class LimitOrder(id: String,
                  externalId: String,
                  assetPairId: String,
                  brokerId: String,
-                 walletId: String,
+                 accountId: Long,
+                 walletId: Long,
                  volume: BigDecimal,
                  var price: BigDecimal,
                  status: String,
@@ -38,7 +39,7 @@ class LimitOrder(id: String,
                  val parentOrderExternalId: String?,
                  @Version(2)
                  var childOrderExternalId: String?)
-    : Order(id, externalId, assetPairId, brokerId, walletId, volume, status, createdAt, registered, reservedLimitVolume, fees, statusDate), Serializable {
+    : Order(id, externalId, assetPairId, brokerId, accountId, walletId, volume, status, createdAt, registered, reservedLimitVolume, fees, statusDate), Serializable {
 
     fun getAbsRemainingVolume(): BigDecimal {
         return remainingVolume.abs()
@@ -77,7 +78,7 @@ class LimitOrder(id: String,
     }
 
     override fun copy(): LimitOrder {
-        return LimitOrder(id, externalId, assetPairId, brokerId, walletId, volume, price, status, statusDate, createdAt,
+        return LimitOrder(id, externalId, assetPairId, brokerId, accountId, walletId, volume, price, status, statusDate, createdAt,
                 registered, remainingVolume, lastMatchTime, reservedLimitVolume, 
                 fees?.map { it as NewLimitOrderFeeInstruction }, type, lowerLimitPrice, lowerPrice, upperLimitPrice,
                 upperPrice, previousExternalId,

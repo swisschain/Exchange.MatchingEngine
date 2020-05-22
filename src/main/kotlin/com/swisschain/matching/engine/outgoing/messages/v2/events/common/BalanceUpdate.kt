@@ -3,7 +3,7 @@ package com.swisschain.matching.engine.outgoing.messages.v2.events.common
 import com.swisschain.matching.engine.messages.outgoing.OutgoingMessages
 
 class BalanceUpdate(val brokerId: String,
-                    val walletId: String,
+                    val walletId: Long,
                     val assetId: String,
                     val oldBalance: String,
                     val newBalance: String,

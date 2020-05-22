@@ -29,7 +29,7 @@ import kotlin.test.assertEquals
 class ReservedCashInOutOperationValidatorTest {
 
     companion object {
-        val CLIENT_NAME = "Client"
+        val CLIENT_NAME = 0L
         val ASSET_ID = "USD"
     }
 

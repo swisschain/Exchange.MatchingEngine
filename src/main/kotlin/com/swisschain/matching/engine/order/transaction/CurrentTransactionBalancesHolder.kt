@@ -11,12 +11,12 @@ class CurrentTransactionBalancesHolder(private val balancesHolder: BalancesHolde
     private val changedBalancesByWalletIdAndAssetId = mutableMapOf<String, MutableMap<String, AssetBalance>>()
     private val changedWalletsByWalletId = mutableMapOf<String, Wallet>()
 
-    fun updateBalance(brokerId: String, walletId: String, assetId: String, balance: BigDecimal) {
+    fun updateBalance(brokerId: String, walletId: Long, assetId: String, balance: BigDecimal) {
         val walletAssetBalance = getWalletAssetBalance(brokerId, walletId, assetId)
         walletAssetBalance.assetBalance.balance = balance
     }
 
-    fun updateReservedBalance(brokerId: String, walletId: String, assetId: String, balance: BigDecimal) {
+    fun updateReservedBalance(brokerId: String, walletId: Long, assetId: String, balance: BigDecimal) {
         val walletAssetBalance = getWalletAssetBalance(brokerId, walletId, assetId)
         walletAssetBalance.assetBalance.reserved = balance
     }
@@ -29,7 +29,7 @@ class CurrentTransactionBalancesHolder(private val balancesHolder: BalancesHolde
         balancesHolder.setWallets(changedWalletsByWalletId.values)
     }
 
-    fun getWalletAssetBalance(brokerId: String, walletId: String, assetId: String): WalletAssetBalance {
+    fun getWalletAssetBalance(brokerId: String, walletId: Long, assetId: String): WalletAssetBalance {
         val wallet = changedWalletsByWalletId.getOrPut("$brokerId-$walletId") {
             copyWallet(balancesHolder.wallets[brokerId]?.get(walletId)) ?: Wallet(brokerId, walletId)
         }
@@ -43,7 +43,7 @@ class CurrentTransactionBalancesHolder(private val balancesHolder: BalancesHolde
         return WalletAssetBalance(wallet, assetBalance)
     }
 
-    fun getChangedCopyOrOriginalAssetBalance(brokerId:String, walletId: String, assetId: String): AssetBalance {
+    fun getChangedCopyOrOriginalAssetBalance(brokerId:String, walletId: Long, assetId: String): AssetBalance {
         return (changedWalletsByWalletId["$brokerId-$walletId"] ?: balancesHolder.wallets[brokerId]?.get(walletId) ?: Wallet(brokerId, walletId)).balances[assetId]
                 ?: AssetBalance(brokerId, walletId, assetId)
     }

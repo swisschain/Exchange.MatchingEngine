@@ -8,10 +8,10 @@ import java.util.Date
 
 class TradeInfo(
         val tradeId: String,
-        val marketWalletId: String,
+        val marketWalletId: Long,
         val marketVolume: String,
         val marketAsset: String,
-        val limitWalletId: String,
+        val limitWalletId: Long,
         val limitVolume: String,
         val limitAsset: String,
         val price: BigDecimal,

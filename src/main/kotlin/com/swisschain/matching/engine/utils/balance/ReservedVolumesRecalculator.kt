@@ -72,7 +72,7 @@ class ReservedVolumesRecalculator @Autowired constructor(private val orderBookDa
         val orders = orderBookDatabaseAccessorHolder.primaryAccessor.loadLimitOrders()
         val stopOrders = stopOrdersDatabaseAccessorsHolder.primaryAccessor.loadStopLimitOrders()
 
-        val reservedBalances = HashMap<String, MutableMap<String, ClientOrdersReservedVolume>>()
+        val reservedBalances = HashMap<Long, MutableMap<String, ClientOrdersReservedVolume>>()
         var count = 1
         val now = Date()
 

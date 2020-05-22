@@ -9,7 +9,8 @@ class MarketOrder(id: String,
                   uid: String,
                   assetPairId: String,
                   brokerId: String,
-                  walletId: String,
+                  accountId: Long,
+                  walletId: Long,
                   volume: BigDecimal,
                   var price: BigDecimal?,
                   status: String,
@@ -20,7 +21,7 @@ class MarketOrder(id: String,
                   val straight: Boolean,
                   reservedLimitVolume: BigDecimal? = null,
                   fees: List<NewFeeInstruction>? = null)
-    : Order(id, uid, assetPairId, brokerId, walletId, volume, status, createdAt, registered, reservedLimitVolume, fees, statusDate) {
+    : Order(id, uid, assetPairId, brokerId, accountId, walletId, volume, status, createdAt, registered, reservedLimitVolume, fees, statusDate) {
 
     override fun isOrigBuySide(): Boolean {
         return super.isBuySide()
@@ -55,7 +56,7 @@ class MarketOrder(id: String,
     }
 
     override fun copy(): MarketOrder {
-        return MarketOrder(id, externalId, assetPairId, brokerId, walletId, volume, price, status, statusDate!!,
+        return MarketOrder(id, externalId, assetPairId, brokerId, accountId, walletId, volume, price, status, statusDate!!,
                 createdAt, registered, matchedAt, straight, reservedLimitVolume, fees)
     }
 

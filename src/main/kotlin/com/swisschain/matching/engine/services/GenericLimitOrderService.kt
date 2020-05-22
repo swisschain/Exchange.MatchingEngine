@@ -20,7 +20,7 @@ class GenericLimitOrderService @Autowired constructor(private val orderBookDatab
     //broker -> asset -> orderBook
     private val limitOrdersQueues = ConcurrentHashMap<String, ConcurrentHashMap<String, AssetOrderBook>>()
     private val limitOrdersMap = HashMap<String, MutableMap<String, LimitOrder>>()
-    private val clientLimitOrdersMap = HashMap<String, MutableMap<String, MutableList<LimitOrder>>>()
+    private val clientLimitOrdersMap = HashMap<String, MutableMap<Long, MutableList<LimitOrder>>>()
     var initialOrdersCount = 0
 
     init {
@@ -72,7 +72,7 @@ class GenericLimitOrderService @Autowired constructor(private val orderBookDatab
         limitOrdersQueues.getOrPut(brokerId) { ConcurrentHashMap() } [assetPairId] = assetOrderBook
     }
 
-    override fun getLimitOrdersByWalletIdMap(brokerId: String): Map<String, MutableList<LimitOrder>> = clientLimitOrdersMap.getOrElse(brokerId) { HashMap() }
+    override fun getLimitOrdersByWalletIdMap(brokerId: String): Map<Long, MutableList<LimitOrder>> = clientLimitOrdersMap.getOrElse(brokerId) { HashMap() }
 
     override fun getOrderBooksByAssetPairIdMap(brokerId: String): Map<String, AssetOrderBook> = limitOrdersQueues.getOrElse(brokerId) { HashMap() }
 

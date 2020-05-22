@@ -43,8 +43,8 @@ class ApplicationSettingsHolder(val applicationSettingsCache: ApplicationSetting
         loPriceDeviationThresholds = getSettingValueByName(allSettingGroups, AvailableSettingGroup.LO_PRICE_DEVIATION_THRESHOLD)
     }
 
-    fun isTrustedClient(client: String): Boolean {
-        return trustedClients.values.contains(client)
+    fun isTrustedClient(client: Long): Boolean {
+        return trustedClients.values.contains(client.toString())
     }
 
     fun isAssetDisabled(asset: String): Boolean {

@@ -52,7 +52,7 @@ class LimitOrderMassCancelServiceTest : AbstractTest() {
         @Primary
         fun testConfig(): TestSettingsDatabaseAccessor {
             val testSettingsDatabaseAccessor = TestSettingsDatabaseAccessor()
-            testSettingsDatabaseAccessor.createOrUpdateSetting(AvailableSettingGroup.TRUSTED_CLIENTS, getSetting("TrustedClient"))
+            testSettingsDatabaseAccessor.createOrUpdateSetting(AvailableSettingGroup.TRUSTED_CLIENTS, getSetting("100"))
             return testSettingsDatabaseAccessor
         }
     }
@@ -66,35 +66,35 @@ class LimitOrderMassCancelServiceTest : AbstractTest() {
         testDictionariesDatabaseAccessor.addAssetPair(DictionariesInit.createAssetPair("BTCUSD", "BTC", "USD", 5))
         testDictionariesDatabaseAccessor.addAssetPair(DictionariesInit.createAssetPair("EURUSD", "EUR", "USD", 2))
 
-        testBalanceHolderWrapper.updateBalance("Client1", "BTC", 1.0)
-        testBalanceHolderWrapper.updateBalance("Client1", "USD", 100.0)
-        testBalanceHolderWrapper.updateBalance("TrustedClient", "EUR", 10.0)
-        testBalanceHolderWrapper.updateBalance("TrustedClient", "USD", 10.0)
-        testBalanceHolderWrapper.updateBalance("TrustedClient", "BTC", 1.0)
+        testBalanceHolderWrapper.updateBalance(1, "BTC", 1.0)
+        testBalanceHolderWrapper.updateBalance(1, "USD", 100.0)
+        testBalanceHolderWrapper.updateBalance(100, "EUR", 10.0)
+        testBalanceHolderWrapper.updateBalance(100, "USD", 10.0)
+        testBalanceHolderWrapper.updateBalance(100, "BTC", 1.0)
 
         initServices()
     }
 
     private fun setOrders() {
-        singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(buildLimitOrder(uid = "1", walletId = "Client1", assetId = "BTCUSD", volume = -0.5, price = 9000.0)))
-        singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(buildLimitOrder(uid = "2", walletId = "Client1", assetId = "BTCUSD", volume = -0.1, price = 9000.0)))
-        singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(buildLimitOrder(uid = "3", walletId = "Client1", assetId = "BTCUSD", volume = 0.01, price = 7000.0)))
+        singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(buildLimitOrder(uid = "1", walletId = 1, assetId = "BTCUSD", volume = -0.5, price = 9000.0)))
+        singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(buildLimitOrder(uid = "2", walletId = 1, assetId = "BTCUSD", volume = -0.1, price = 9000.0)))
+        singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(buildLimitOrder(uid = "3", walletId = 1, assetId = "BTCUSD", volume = 0.01, price = 7000.0)))
 
-        singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(buildLimitOrder(uid = "4", walletId = "Client1", assetId = "EURUSD", volume = 10.0, price = 1.1)))
+        singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(buildLimitOrder(uid = "4", walletId = 1, assetId = "EURUSD", volume = 10.0, price = 1.1)))
         singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(buildLimitOrder(uid = "5",
-                walletId = "Client1",
+                walletId = 1,
                 assetId = "BTCUSD",
                 type = LimitOrderType.STOP_LIMIT,
                 volume = 0.1,
                 lowerLimitPrice = 101.0,
                 lowerPrice = 100.0)))
 
-        multiLimitOrderService.processMessage(buildMultiLimitOrderWrapper("EURUSD", "TrustedClient", listOf(
+        multiLimitOrderService.processMessage(buildMultiLimitOrderWrapper("EURUSD", 100, listOf(
                 IncomingLimitOrder(-5.0, 1.3, "m1"),
                 IncomingLimitOrder(5.0, 1.1, "m2")
         )))
 
-        multiLimitOrderService.processMessage(buildMultiLimitOrderWrapper("BTCUSD", "TrustedClient", listOf(
+        multiLimitOrderService.processMessage(buildMultiLimitOrderWrapper("BTCUSD", 100, listOf(
                 IncomingLimitOrder(-1.0, 8500.0, "m3")
         )))
 
@@ -111,7 +111,7 @@ class LimitOrderMassCancelServiceTest : AbstractTest() {
     fun testCancelOrdersOneSide() {
         setOrders()
 
-        limitOrderMassCancelService.processMessage(messageBuilder.buildLimitOrderMassCancelWrapper("Client1", "BTCUSD", false))
+        limitOrderMassCancelService.processMessage(messageBuilder.buildLimitOrderMassCancelWrapper(1, "BTCUSD", false))
 
         assertOrderBookSize("BTCUSD", false, 1)
         assertOrderBookSize("BTCUSD", true, 1)
@@ -120,8 +120,8 @@ class LimitOrderMassCancelServiceTest : AbstractTest() {
         assertStopOrderBookSize("BTCUSD", true, 1)
         assertStopOrderBookSize("BTCUSD", false, 0)
 
-        assertBalance("Client1", "BTC", 1.0, 0.0)
-        assertBalance("Client1", "USD", 100.0, 91.0)
+        assertBalance(1, "BTC", 1.0, 0.0)
+        assertBalance(1, "USD", 100.0, 91.0)
 
         assertEquals(1, outgoingOrderBookQueue.size)
 
@@ -132,14 +132,14 @@ class LimitOrderMassCancelServiceTest : AbstractTest() {
         assertEquals(OutgoingOrderStatus.CANCELLED, event.orders.single { it.externalId == "1" }.status)
         assertEquals(OutgoingOrderStatus.CANCELLED, event.orders.single { it.externalId == "2" }.status)
         assertEquals(1, event.balanceUpdates?.size)
-        assertEventBalanceUpdate("Client1", "BTC", "1", "1", "0.6", "0", event.balanceUpdates!!)
+        assertEventBalanceUpdate(1, "BTC", "1", "1", "0.6", "0", event.balanceUpdates!!)
     }
 
     @Test
     fun cancelAllClientOrders() {
         setOrders()
 
-        limitOrderMassCancelService.processMessage(messageBuilder.buildLimitOrderMassCancelWrapper("Client1"))
+        limitOrderMassCancelService.processMessage(messageBuilder.buildLimitOrderMassCancelWrapper(1))
 
         assertOrderBookSize("BTCUSD", false, 1)
         assertOrderBookSize("BTCUSD", true, 0)
@@ -148,8 +148,8 @@ class LimitOrderMassCancelServiceTest : AbstractTest() {
         assertStopOrderBookSize("BTCUSD", true, 0)
         assertStopOrderBookSize("BTCUSD", false, 0)
 
-        assertBalance("Client1", "BTC", 1.0, 0.0)
-        assertBalance("Client1", "USD", 100.0, 0.0)
+        assertBalance(1, "BTC", 1.0, 0.0)
+        assertBalance(1, "USD", 100.0, 0.0)
         assertEquals(3, outgoingOrderBookQueue.size)
 
         assertEquals(1, clientsEventsQueue.size)
@@ -162,15 +162,15 @@ class LimitOrderMassCancelServiceTest : AbstractTest() {
         assertEquals(OutgoingOrderStatus.CANCELLED, event.orders.single { it.externalId == "4" }.status)
         assertEquals(OutgoingOrderStatus.CANCELLED, event.orders.single { it.externalId == "5" }.status)
         assertEquals(2, event.balanceUpdates?.size)
-        assertEventBalanceUpdate("Client1", "BTC", "1", "1", "0.6", "0", event.balanceUpdates!!)
-        assertEventBalanceUpdate("Client1", "USD", "100", "100", "91", "0", event.balanceUpdates!!)
+        assertEventBalanceUpdate(1, "BTC", "1", "1", "0.6", "0", event.balanceUpdates!!)
+        assertEventBalanceUpdate(1, "USD", "100", "100", "91", "0", event.balanceUpdates!!)
     }
 
     @Test
     fun testCancelTrustedClientOrders() {
         setOrders()
 
-        limitOrderMassCancelService.processMessage(messageBuilder.buildLimitOrderMassCancelWrapper("TrustedClient", "EURUSD"))
+        limitOrderMassCancelService.processMessage(messageBuilder.buildLimitOrderMassCancelWrapper(100, "EURUSD"))
 
         assertOrderBookSize("BTCUSD", false, 3)
         assertOrderBookSize("BTCUSD", true, 1)
@@ -211,7 +211,7 @@ class LimitOrderMassCancelServiceTest : AbstractTest() {
         assertEquals(OutgoingOrderStatus.CANCELLED, event.orders.single { it.externalId == "3" }.status)
         assertEquals(OutgoingOrderStatus.CANCELLED, event.orders.single { it.externalId == "5" }.status)
         assertEquals(1, event.balanceUpdates?.size)
-        assertEventBalanceUpdate("Client1", "USD", "100", "100", "91", "11", event.balanceUpdates!!)
+        assertEventBalanceUpdate(1, "USD", "100", "100", "91", "11", event.balanceUpdates!!)
 
 
         assertEquals(0, trustedClientsEventsQueue.size)
@@ -239,7 +239,7 @@ class LimitOrderMassCancelServiceTest : AbstractTest() {
         assertEquals(OutgoingOrderStatus.CANCELLED, event.orders.single { it.externalId == "1" }.status)
         assertEquals(OutgoingOrderStatus.CANCELLED, event.orders.single { it.externalId == "2" }.status)
         assertEquals(1, event.balanceUpdates?.size)
-        assertEventBalanceUpdate("Client1", "BTC", "1", "1", "0.6", "0", event.balanceUpdates!!)
+        assertEventBalanceUpdate(1, "BTC", "1", "1", "0.6", "0", event.balanceUpdates!!)
 
         assertEquals(1, trustedClientsEventsQueue.size)
         event = trustedClientsEventsQueue.poll() as ExecutionEvent
@@ -273,8 +273,8 @@ class LimitOrderMassCancelServiceTest : AbstractTest() {
         assertEquals(OutgoingOrderStatus.CANCELLED, event.orders.single { it.externalId == "3" }.status)
         assertEquals(OutgoingOrderStatus.CANCELLED, event.orders.single { it.externalId == "5" }.status)
         assertEquals(2, event.balanceUpdates?.size)
-        assertEventBalanceUpdate("Client1", "BTC", "1", "1", "0.6", "0", event.balanceUpdates!!)
-        assertEventBalanceUpdate("Client1", "USD", "100", "100", "91", "11", event.balanceUpdates!!)
+        assertEventBalanceUpdate(1, "BTC", "1", "1", "0.6", "0", event.balanceUpdates!!)
+        assertEventBalanceUpdate(1, "USD", "100", "100", "91", "11", event.balanceUpdates!!)
 
 
         assertEquals(1, trustedClientsEventsQueue.size)
@@ -308,7 +308,7 @@ class LimitOrderMassCancelServiceTest : AbstractTest() {
         assertEquals(OutgoingOrderStatus.CANCELLED, event.orders.single { it.externalId == "4" }.status)
         assertEquals(OutgoingOrderStatus.CANCELLED, event.orders.single { it.externalId == "5" }.status)
         assertEquals(1, event.balanceUpdates?.size)
-        assertEventBalanceUpdate("Client1", "USD", "100", "100", "91", "0", event.balanceUpdates!!)
+        assertEventBalanceUpdate(1, "USD", "100", "100", "91", "0", event.balanceUpdates!!)
 
 
         assertEquals(1, trustedClientsEventsQueue.size)
@@ -341,7 +341,7 @@ class LimitOrderMassCancelServiceTest : AbstractTest() {
         assertEquals(OutgoingOrderStatus.CANCELLED, event.orders.single { it.externalId == "1" }.status)
         assertEquals(OutgoingOrderStatus.CANCELLED, event.orders.single { it.externalId == "2" }.status)
         assertEquals(1, event.balanceUpdates?.size)
-        assertEventBalanceUpdate("Client1", "BTC", "1", "1", "0.6", "0", event.balanceUpdates!!)
+        assertEventBalanceUpdate(1, "BTC", "1", "1", "0.6", "0", event.balanceUpdates!!)
 
         assertEquals(1, trustedClientsEventsQueue.size)
         event = trustedClientsEventsQueue.poll() as ExecutionEvent
@@ -377,8 +377,8 @@ class LimitOrderMassCancelServiceTest : AbstractTest() {
         assertEquals(OutgoingOrderStatus.CANCELLED, event.orders.single { it.externalId == "4" }.status)
         assertEquals(OutgoingOrderStatus.CANCELLED, event.orders.single { it.externalId == "5" }.status)
         assertEquals(2, event.balanceUpdates?.size)
-        assertEventBalanceUpdate("Client1", "BTC", "1", "1", "0.6", "0", event.balanceUpdates!!)
-        assertEventBalanceUpdate("Client1", "USD", "100", "100", "91", "0", event.balanceUpdates!!)
+        assertEventBalanceUpdate(1, "BTC", "1", "1", "0.6", "0", event.balanceUpdates!!)
+        assertEventBalanceUpdate(1, "USD", "100", "100", "91", "0", event.balanceUpdates!!)
 
 
         assertEquals(1, trustedClientsEventsQueue.size)

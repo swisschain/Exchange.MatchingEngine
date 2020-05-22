@@ -9,7 +9,8 @@ data class CashInOutOperation(
         val matchingEngineOperationId: String,
         val externalId: String?,
         val brokerId: String,
-        val walletId: String,
+        val accountId: Long,
+        val walletId: Long,
         val asset: Asset?,
         val dateTime: Date,
         val amount: BigDecimal,
@@ -23,8 +24,9 @@ data class CashInOutOperation(
 
         if (matchingEngineOperationId != other.matchingEngineOperationId) return false
         if (externalId != other.externalId) return false
-        if (walletId != other.walletId) return false
         if (brokerId != other.brokerId) return false
+        if (accountId != other.accountId) return false
+        if (walletId != other.walletId) return false
         if (asset != other.asset) return false
         if (dateTime != other.dateTime) return false
         if (!NumberUtils.equalsIgnoreScale(amount, other.amount)) return false
@@ -36,8 +38,9 @@ data class CashInOutOperation(
     override fun hashCode(): Int {
         var result = matchingEngineOperationId.hashCode()
         result = 31 * result + (externalId?.hashCode() ?: 0)
-        result = 31 * result + walletId.hashCode()
         result = 31 * result + brokerId.hashCode()
+        result = 31 * result + accountId.hashCode()
+        result = 31 * result + walletId.hashCode()
         result = 31 * result + (asset?.hashCode() ?: 0)
         result = 31 * result + dateTime.hashCode()
         result = 31 * result + amount.stripTrailingZeros().hashCode()

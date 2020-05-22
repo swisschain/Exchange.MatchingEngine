@@ -14,7 +14,8 @@ class Order(val orderType: OrderType,
             val externalId: String,
             val assetPairId: String,
             val brokerId: String,
-            val walletId: String,
+            val accountId: Long,
+            val walletId: Long,
             val side: OrderSide,
             val volume: String,
             val remainingVolume: String?,
@@ -44,6 +45,7 @@ class Order(val orderType: OrderType,
                 .setExternalId(externalId)
                 .setAssetPairId(assetPairId)
                 .setBrokerId(brokerId)
+                .setAccountId(accountId)
                 .setWalletId(walletId)
                 .setSide(side.id)
                 .volume = volume

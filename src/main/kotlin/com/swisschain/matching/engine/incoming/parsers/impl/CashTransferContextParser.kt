@@ -28,9 +28,10 @@ class CashTransferContextParser(private val assetsHolder: AssetsHolder,
         val transferOperation = TransferOperation(
                 uuidHolder.getNextValue(),
                 message.brokerId,
-                message.id,
+                message.accountId,
                 message.fromWalletId,
                 message.toWalletId,
+                message.id,
                 assetsHolder.getAsset(
                         message.brokerId,
                         message.assetId

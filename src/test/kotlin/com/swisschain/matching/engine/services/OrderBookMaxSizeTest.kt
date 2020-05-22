@@ -62,26 +62,26 @@ class OrderBookMaxSizeTest : AbstractTest() {
         testDictionariesDatabaseAccessor.addAssetPair(DictionariesInit.createAssetPair("EURUSD", "EUR", "USD", 5))
         testDictionariesDatabaseAccessor.addAssetPair(DictionariesInit.createAssetPair("BTCUSD", "BTC", "USD", 8))
 
-        testBalanceHolderWrapper.updateBalance(walletId = "Client1", assetId = "BTC", balance = 1.0)
-        testBalanceHolderWrapper.updateBalance(walletId = "Client1", assetId = "EUR", balance = 2000.0)
-        testBalanceHolderWrapper.updateBalance(walletId = "Client1", assetId = "USD", balance = 2000.0)
+        testBalanceHolderWrapper.updateBalance(walletId = 1, assetId = "BTC", balance = 1.0)
+        testBalanceHolderWrapper.updateBalance(walletId = 1, assetId = "EUR", balance = 2000.0)
+        testBalanceHolderWrapper.updateBalance(walletId = 1, assetId = "USD", balance = 2000.0)
     }
 
     private fun setMaxSizeOrderBook() {
         singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(
-                buildLimitOrder(walletId = "Client1", assetId = "BTCUSD", volume = -0.1, price = 5000.0)
+                buildLimitOrder(walletId = 1, assetId = "BTCUSD", volume = -0.1, price = 5000.0)
         ))
         singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(
-                buildLimitOrder(walletId = "Client1", assetId = "BTCUSD", volume = 0.1,
+                buildLimitOrder(walletId = 1, assetId = "BTCUSD", volume = 0.1,
                         type = LimitOrderType.STOP_LIMIT,
                         lowerLimitPrice = 1000.0, lowerPrice = 1000.0)
         ))
         singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(
-                buildLimitOrder(walletId = "Client1", assetId = "EURUSD", volume = -100.0, price = 2.0)
+                buildLimitOrder(walletId = 1, assetId = "EURUSD", volume = -100.0, price = 2.0)
         ))
 
-        assertEquals(2, genericLimitOrderService.searchOrders(DEFAULT_BROKER, "Client1", null, null).size)
-        assertEquals(1, genericStopLimitOrderService.searchOrders(DEFAULT_BROKER, "Client1", null, null).size)
+        assertEquals(2, genericLimitOrderService.searchOrders(DEFAULT_BROKER, 1, null, null).size)
+        assertEquals(1, genericStopLimitOrderService.searchOrders(DEFAULT_BROKER, 1, null, null).size)
         clearMessageQueues()
     }
 
@@ -90,7 +90,7 @@ class OrderBookMaxSizeTest : AbstractTest() {
         setMaxSizeOrderBook()
 
         val messageWrapper = messageBuilder.buildLimitOrderWrapper(
-                buildLimitOrder(walletId = "Client1", assetId = "BTCUSD", volume = -0.1, price = 5000.0)
+                buildLimitOrder(walletId = 1, assetId = "BTCUSD", volume = -0.1, price = 5000.0)
         )
         singleLimitOrderService.processMessage(messageWrapper)
 
@@ -112,7 +112,7 @@ class OrderBookMaxSizeTest : AbstractTest() {
         setMaxSizeOrderBook()
 
         val messageWrapper = messageBuilder.buildLimitOrderWrapper(
-                buildLimitOrder(walletId = "Client1", assetId = "BTCUSD", volume = 0.1,
+                buildLimitOrder(walletId = 1, assetId = "BTCUSD", volume = 0.1,
                         type = LimitOrderType.STOP_LIMIT,
                         lowerLimitPrice = 1000.0, lowerPrice = 1000.0)
         )
@@ -136,8 +136,8 @@ class OrderBookMaxSizeTest : AbstractTest() {
         setMaxSizeOrderBook()
 
         val messageWrapper = buildMultiLimitOrderWrapper(
-                "EURUSD", "Client1", listOf(IncomingLimitOrder(-200.0, 3.0, "order1"),
-                IncomingLimitOrder(-200.0, 3.1, uid = "order2")))
+                "EURUSD", 1, listOf(IncomingLimitOrder(-200.0, 3.0, "order1"),
+                IncomingLimitOrder(-200.0, 3.1, id = "order2")))
         multiLimitOrderService.processMessage(messageWrapper)
 
 
@@ -162,7 +162,7 @@ class OrderBookMaxSizeTest : AbstractTest() {
         setMaxSizeOrderBook()
 
         val messageWrapper = buildMarketOrderWrapper(
-                buildMarketOrder(walletId = "Client1", assetId = "BTCUSD", volume = 0.1)
+                buildMarketOrder(walletId = 1, assetId = "BTCUSD", volume = 0.1)
         )
         marketOrderService.processMessage(messageWrapper)
 

@@ -4,7 +4,8 @@ import com.swisschain.matching.engine.utils.NumberUtils
 import java.math.BigDecimal
 
 data class WalletOperation(val brokerId: String,
-                           val walletId: String,
+                           val accountId: Long?,
+                           val walletId: Long,
                            val assetId: String,
                            val amount: BigDecimal,
                            val reservedAmount: BigDecimal = BigDecimal.ZERO,

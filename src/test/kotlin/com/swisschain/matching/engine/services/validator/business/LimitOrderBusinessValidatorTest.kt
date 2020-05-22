@@ -105,7 +105,7 @@ class LimitOrderBusinessValidatorTest {
                               price: BigDecimal = BigDecimal.valueOf(1.0),
                               volume: BigDecimal = BigDecimal.valueOf(1.0),
                               status: String = OrderStatus.InOrderBook.name): LimitOrder {
-        return LimitOrder("test", "test", assetPair, DEFAULT_BROKER, "test", volume,
+        return LimitOrder("test", "test", assetPair, DEFAULT_BROKER, 999, 999, volume,
                 price, status, Date(), Date(), Date(), BigDecimal.valueOf(1.0), null,
                 expiryTime = null, timeInForce = null,
                 type = LimitOrderType.LIMIT, fees = fees, lowerLimitPrice = null, lowerPrice = null, upperLimitPrice = null, upperPrice = null, previousExternalId = null,

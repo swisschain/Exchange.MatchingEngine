@@ -53,8 +53,8 @@ class NegativePriceTest : AbstractTest() {
 
     @Before
     fun setUp() {
-        testBalanceHolderWrapper.updateBalance("Client", "USD", 1.0)
-        testBalanceHolderWrapper.updateReservedBalance("Client", "USD", 0.0)
+        testBalanceHolderWrapper.updateBalance(0, "USD", 1.0)
+        testBalanceHolderWrapper.updateReservedBalance(0, "USD", 0.0)
 
         testDictionariesDatabaseAccessor.addAssetPair(DictionariesInit.createAssetPair("EURUSD", "EUR", "USD", 5))
 
@@ -63,7 +63,7 @@ class NegativePriceTest : AbstractTest() {
 
     @Test
     fun testLimitOrder() {
-        singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(buildLimitOrder(walletId = "Client", assetId = "EURUSD", price = -1.0, volume = 1.0)))
+        singleLimitOrderService.processMessage(messageBuilder.buildLimitOrderWrapper(buildLimitOrder(walletId = 0, assetId = "EURUSD", price = -1.0, volume = 1.0)))
 
         assertEquals(1, clientsEventsQueue.size)
         val result = clientsEventsQueue.poll() as ExecutionEvent
@@ -74,15 +74,15 @@ class NegativePriceTest : AbstractTest() {
 
     @Test
     fun testTrustedClientMultiLimitOrder() {
-        testSettingsDatabaseAccessor.createOrUpdateSetting(AvailableSettingGroup.TRUSTED_CLIENTS, getSetting("Client"))
+        testSettingsDatabaseAccessor.createOrUpdateSetting(AvailableSettingGroup.TRUSTED_CLIENTS, getSetting("0"))
 
         initServices()
 
         multiLimitOrderService.processMessage(buildMultiLimitOrderWrapper("EURUSD",
-                "Client",
+                0,
                 listOf(
-                        IncomingLimitOrder(1.0, 1.0, uid = "order1"),
-                        IncomingLimitOrder(1.0, -1.0, uid = "order2")
+                        IncomingLimitOrder(1.0, 1.0, id = "order1"),
+                        IncomingLimitOrder(1.0, -1.0, id = "order2")
                 )))
 
         assertEquals(1, trustedClientsEventsQueue.size)
