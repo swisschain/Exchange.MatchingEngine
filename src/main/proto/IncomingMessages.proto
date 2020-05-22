@@ -241,20 +241,24 @@ enum FeeSizeType {
 message Fee {
     int32 type = 1;
     google.protobuf.StringValue size = 2;
-    google.protobuf.UInt64Value sourceWalletId = 3;
-    google.protobuf.UInt64Value targetWalletId = 4;
-    google.protobuf.Int32Value sizeType = 5;
-    repeated string assetId = 6;
+    google.protobuf.UInt64Value sourceAccountId = 3;
+    google.protobuf.UInt64Value sourceWalletId = 4;
+    google.protobuf.UInt64Value targetAccountId = 5;
+    google.protobuf.UInt64Value targetWalletId = 6;
+    google.protobuf.Int32Value sizeType = 7;
+    repeated string assetId = 8;
 }
 
 message LimitOrderFee {
     int32 type = 1;
     google.protobuf.StringValue makerSize = 2;
     google.protobuf.StringValue takerSize = 3;
-    google.protobuf.UInt64Value sourceWalletId = 4;
-    google.protobuf.UInt64Value targetWalletId = 5;
-    google.protobuf.Int32Value makerSizeType = 6;
-    google.protobuf.Int32Value takerSizeType = 7;
-    repeated string assetId = 8;
-    google.protobuf.StringValue makerFeeModificator = 9;
+    google.protobuf.UInt64Value sourceAccountId = 4;
+    google.protobuf.UInt64Value sourceWalletId = 5;
+    google.protobuf.UInt64Value targetAccountId = 6;
+    google.protobuf.UInt64Value targetWalletId = 7;
+    google.protobuf.Int32Value makerSizeType = 8;
+    google.protobuf.Int32Value takerSizeType = 9;
+    repeated string assetId = 10;
+    google.protobuf.StringValue makerFeeModificator = 11;
 }
