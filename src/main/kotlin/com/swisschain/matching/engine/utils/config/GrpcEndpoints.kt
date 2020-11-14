@@ -5,6 +5,7 @@ data class GrpcEndpoints(
         val tradingApiServicePort: Int,
         val orderBooksServicePort: Int,
         val balancesServicePort: Int,
+
         val messageLogServiceConnection: String,
         val cashOperationsConnection: String,
         val reservedVolumesConnection: String,

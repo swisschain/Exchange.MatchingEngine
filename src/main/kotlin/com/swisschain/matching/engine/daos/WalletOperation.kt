@@ -17,6 +17,7 @@ data class WalletOperation(val brokerId: String,
         other as WalletOperation
 
         if (brokerId != other.brokerId) return false
+        if (accountId != other.accountId) return false
         if (walletId != other.walletId) return false
         if (assetId != other.assetId) return false
         if (!NumberUtils.equalsIgnoreScale(amount, other.amount)) return false
@@ -27,6 +28,7 @@ data class WalletOperation(val brokerId: String,
 
     override fun hashCode(): Int {
         var result = brokerId.hashCode()
+        result = 31 * result + accountId.hashCode()
         result = 31 * result + walletId.hashCode()
         result = 31 * result + assetId.hashCode()
         result = 31 * result + amount.stripTrailingZeros().hashCode()
