@@ -10,14 +10,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Set up AdoptOpenJDK 1.8
-        uses: joschi/setup-jdk@v2.56
+        uses: joschi/setup-jdk@v2.3.0
         with:
           java-version: 8
           architecture: x64
       - name: Build
         uses: eskatos/gradle-command-action@v1
         with:
-          gradle-version: 6.3
+          gradle-version: 6.6.1
           arguments: clean generateProto build printProperties
       - name: Check dir
         run: ls build/distributions
