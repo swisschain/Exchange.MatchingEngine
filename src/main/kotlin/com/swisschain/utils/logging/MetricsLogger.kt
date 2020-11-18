@@ -4,7 +4,7 @@ import com.swisschain.utils.logging.config.SlackNotificationConfig
 import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.Date
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.LinkedBlockingQueue
 import kotlin.concurrent.fixedRateTimer
@@ -25,7 +25,7 @@ class MetricsLogger private constructor() {
 
         fun init(senderName: String, config: SlackNotificationConfig) {
             grpcConnectionString = config.grpcErrorLogWriterConnection
-            GrpcQueueLogger(grpcConnectionString, ERROR_QUEUE).start()
+            StubQueueLogger(ERROR_QUEUE).start()
 
             throttlingLimit = config.throttlingLimitSeconds * 1000
             sender = senderName

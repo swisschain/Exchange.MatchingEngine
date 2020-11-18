@@ -1,0 +1,17 @@
+package com.swisschain.matching.engine.outgoing.rabbit.utils
+
+class RabbitEventUtils {
+    companion object {
+        fun getClientEventConsumerQueueName(exchangeName: String, index: Int): String {
+            return "client_queue_${exchangeName}_$index"
+        }
+
+        fun getTrustedClientsEventConsumerQueueName(exchangeName: String, index: Int): String {
+            return "trusted_client_queue_${exchangeName}_$index"
+        }
+
+        fun getDatabaseLogQueueName(exchangeName: String, index: Int): String {
+            return "database_rabbit_log_${exchangeName}_$index"
+        }
+    }
+}

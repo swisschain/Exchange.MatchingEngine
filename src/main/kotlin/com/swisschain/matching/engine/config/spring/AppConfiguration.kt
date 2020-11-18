@@ -1,7 +1,7 @@
 package com.swisschain.matching.engine.config.spring
 
 import com.swisschain.matching.engine.AppInitialData
-import com.swisschain.matching.engine.database.grpc.GrpcAliveStatusDatabaseAccessor
+import com.swisschain.matching.engine.database.stub.StubAliveStatusDatabaseAccessor
 import com.swisschain.matching.engine.holders.BalancesHolder
 import com.swisschain.matching.engine.outgoing.senders.SpecializedEventSender
 import com.swisschain.matching.engine.outgoing.senders.SpecializedEventSendersHolder
@@ -16,7 +16,6 @@ import com.swisschain.utils.alivestatus.processor.AliveStatusProcessor
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import java.net.InetAddress
 import java.util.concurrent.BlockingQueue
 
 @Configuration
@@ -37,8 +36,7 @@ open class AppConfiguration {
     @Bean
     open fun grpcStatusProcessor(): Runnable {
         return AliveStatusProcessor(
-                GrpcAliveStatusDatabaseAccessor(config.me.grpcEndpoints.aliveStatusConnection,
-                        config.me.name, InetAddress.getLocalHost().hostAddress), config.me.aliveStatus)
+                StubAliveStatusDatabaseAccessor(), config.me.aliveStatus)
     }
 
     @Bean

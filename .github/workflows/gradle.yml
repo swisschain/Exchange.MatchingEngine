@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Set up AdoptOpenJDK 1.8
-        uses: joschi/setup-jdk@v1
+        uses: joschi/setup-jdk@v2.56
         with:
           java-version: 8
           architecture: x64

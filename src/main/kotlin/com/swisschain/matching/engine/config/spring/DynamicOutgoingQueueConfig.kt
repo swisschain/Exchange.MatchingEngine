@@ -2,9 +2,10 @@ package com.swisschain.matching.engine.config.spring
 
 import com.swisschain.matching.engine.config.ConfigFactory
 import com.swisschain.matching.engine.logging.MessageWrapper
-import com.swisschain.matching.engine.outgoing.grpc.utils.GrpcEventUtils
 import com.swisschain.matching.engine.outgoing.messages.v2.events.Event
 import com.swisschain.matching.engine.outgoing.messages.v2.events.ExecutionEvent
+import com.swisschain.matching.engine.outgoing.rabbit.utils.RabbitEventUtils
+import com.swisschain.matching.engine.utils.config.RabbitConfig
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
 import org.springframework.beans.factory.support.AutowireCandidateQualifier
@@ -38,23 +39,23 @@ open class DynamicOutgoingQueueConfig : BeanFactoryPostProcessor, EnvironmentAwa
     @OutgoingQueue
     private fun registerClientEventsQueue(factory: DefaultListableBeanFactory) {
         val config = ConfigFactory.getConfig(environment)
-        registerQueue(factory, config.me.grpcEndpoints.outgoingEventsConnections, "clientEvents", GrpcEventUtils.Companion::getClientEventConsumerQueueName)
+        registerQueue(factory, config.me.rabbitMqConfigs.events, "clientEvents", RabbitEventUtils.Companion::getClientEventConsumerQueueName)
     }
 
     @OutgoingQueue
     private fun registerTrustedClientsEventsQueue(factory: DefaultListableBeanFactory) {
         val config = ConfigFactory.getConfig(environment)
-        registerQueue(factory, config.me.grpcEndpoints.outgoingTrustedClientsEventsConnections, "trustedEvents", GrpcEventUtils.Companion::getTrustedClientsEventConsumerQueueName)
+        registerQueue(factory, config.me.rabbitMqConfigs.trustedClientsEvents, "trustedEvents", RabbitEventUtils.Companion::getTrustedClientsEventConsumerQueueName)
     }
 
     @DataQueue
     private fun registerClientDatabaseLogQueues(factory: DefaultListableBeanFactory) {
         val config = ConfigFactory.getConfig(environment)
-        registerQueue(factory, config.me.grpcEndpoints.outgoingEventsConnections, "databaseLogQueue", GrpcEventUtils.Companion::getDatabaseLogQueueName)
+        registerQueue(factory, config.me.rabbitMqConfigs.events, "databaseLogQueue", RabbitEventUtils.Companion::getDatabaseLogQueueName)
     }
 
     private fun registerQueue(factory: DefaultListableBeanFactory,
-                              grpcConnections: Set<String>,
+                              rabbitConfigs: Set<RabbitConfig>,
                               typeFieldName: String,
                               queueNameStrategy: (exchangeName: String, index: Int)-> String) {
         val annotations = DynamicOutgoingQueueConfig::class.java.getDeclaredMethod(Throwable().stackTrace[1].methodName, DefaultListableBeanFactory::class.java)
@@ -68,8 +69,8 @@ open class DynamicOutgoingQueueConfig : BeanFactoryPostProcessor, EnvironmentAwa
             queueBeanDefinition.addQualifier(AutowireCandidateQualifier(it))
         }
 
-        grpcConnections.forEachIndexed { index, grpcConnection ->
-            factory.registerBeanDefinition(queueNameStrategy.invoke(grpcConnection, index), queueBeanDefinition)
+        rabbitConfigs.forEachIndexed { index, eventConfig ->
+            factory.registerBeanDefinition(queueNameStrategy.invoke(eventConfig.exchange, index), queueBeanDefinition)
         }
     }
 }

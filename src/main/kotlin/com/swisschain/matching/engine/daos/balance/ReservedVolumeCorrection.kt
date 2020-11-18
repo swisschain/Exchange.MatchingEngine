@@ -2,7 +2,7 @@ package com.swisschain.matching.engine.daos.balance
 
 import com.swisschain.matching.engine.utils.NumberUtils
 import java.math.BigDecimal
-import java.util.Date
+import java.util.*
 
 data class ReservedVolumeCorrection(val timestamp: Date,
                                     val walletId: Long,
@@ -34,5 +34,9 @@ data class ReservedVolumeCorrection(val timestamp: Date,
         result = 31 * result + oldReserved.stripTrailingZeros().hashCode()
         result = 31 * result + newReserved.stripTrailingZeros().hashCode()
         return result
+    }
+
+    override fun toString(): String {
+        return "ReservedVolumeCorrection(timestamp=$timestamp, walletId=$walletId, assetId='$assetId', orderIds=$orderIds, oldReserved=$oldReserved, newReserved=$newReserved)"
     }
 }

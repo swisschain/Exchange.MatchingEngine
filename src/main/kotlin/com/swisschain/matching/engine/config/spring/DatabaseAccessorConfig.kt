@@ -1,30 +1,22 @@
 package com.swisschain.matching.engine.config.spring
 
-import com.swisschain.matching.engine.database.CashOperationIdDatabaseAccessor
-import com.swisschain.matching.engine.database.DictionariesDatabaseAccessor
-import com.swisschain.matching.engine.database.MonitoringDatabaseAccessor
-import com.swisschain.matching.engine.database.PersistenceManager
-import com.swisschain.matching.engine.database.ReadOnlyMessageSequenceNumberDatabaseAccessor
-import com.swisschain.matching.engine.database.ReadOnlyProcessedMessagesDatabaseAccessor
-import com.swisschain.matching.engine.database.ReservedVolumesDatabaseAccessor
-import com.swisschain.matching.engine.database.SettingsDatabaseAccessor
-import com.swisschain.matching.engine.database.SettingsHistoryDatabaseAccessor
+import com.swisschain.matching.engine.database.*
 import com.swisschain.matching.engine.database.common.PersistenceManagerFactory
 import com.swisschain.matching.engine.database.grpc.GrpcDictionariesDatabaseAccessor
-import com.swisschain.matching.engine.database.grpc.GrpcMonitoringDatabaseAccessor
-import com.swisschain.matching.engine.database.grpc.GrpcReservedVolumeCorrectionDatabaseAccessor
-import com.swisschain.matching.engine.database.grpc.GrpcSettingsDatabaseAccessor
-import com.swisschain.matching.engine.database.grpc.GrpcSettingsHistoryDatabaseAccessor
 import com.swisschain.matching.engine.database.redis.accessor.impl.RedisCashOperationIdDatabaseAccessor
 import com.swisschain.matching.engine.database.redis.accessor.impl.RedisMessageSequenceNumberDatabaseAccessor
 import com.swisschain.matching.engine.database.redis.accessor.impl.RedisProcessedMessagesDatabaseAccessor
 import com.swisschain.matching.engine.database.redis.connection.RedisConnection
+import com.swisschain.matching.engine.database.stub.StubMonitoringDatabaseAccessor
+import com.swisschain.matching.engine.database.stub.StubReservedVolumeCorrectionDatabaseAccessor
+import com.swisschain.matching.engine.database.stub.StubSettingsDatabaseAccessor
+import com.swisschain.matching.engine.database.stub.StubSettingsHistoryDatabaseAccessor
 import com.swisschain.matching.engine.utils.config.Config
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Profile
-import java.util.Optional
+import java.util.*
 
 @Configuration
 open class DatabaseAccessorConfig {
@@ -79,23 +71,23 @@ open class DatabaseAccessorConfig {
 
     @Bean
     open fun grpcReservedVolumesDatabaseAccessor(): ReservedVolumesDatabaseAccessor {
-        return GrpcReservedVolumeCorrectionDatabaseAccessor(config.me.grpcEndpoints.reservedVolumesConnection)
+        return StubReservedVolumeCorrectionDatabaseAccessor()
     }
 
     @Bean
     open fun grpcSettingsDatabaseAccessor(): SettingsDatabaseAccessor {
-        return GrpcSettingsDatabaseAccessor(config.me.grpcEndpoints.settingsConnection)
+        return StubSettingsDatabaseAccessor()
     }
 
     @Bean
     open fun settingsHistoryDatabaseAccessor(): SettingsHistoryDatabaseAccessor {
-        return GrpcSettingsHistoryDatabaseAccessor(config.me.grpcEndpoints.settingsHistoryConnection )
+        return StubSettingsHistoryDatabaseAccessor()
     }
 
     @Bean
     @Profile("default")
     open fun grpcMonitoringDatabaseAccessor(): MonitoringDatabaseAccessor {
-        return GrpcMonitoringDatabaseAccessor(config.me.grpcEndpoints.monitoringConnection)
+        return StubMonitoringDatabaseAccessor()
     }
 
     @Bean

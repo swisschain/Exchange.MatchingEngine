@@ -1,14 +1,9 @@
 package com.swisschain.matching.engine.config.spring
 
-import com.swisschain.matching.engine.database.grpc.GrpcMessageLogDatabaseAccessor
+import com.swisschain.matching.engine.database.stub.StubMessageLogDatabaseAccessor
 import com.swisschain.matching.engine.logging.DatabaseLogger
 import com.swisschain.matching.engine.logging.MessageWrapper
-import com.swisschain.matching.engine.outgoing.messages.BalanceUpdate
-import com.swisschain.matching.engine.outgoing.messages.CashOperation
-import com.swisschain.matching.engine.outgoing.messages.CashTransferOperation
-import com.swisschain.matching.engine.outgoing.messages.LimitOrdersReport
-import com.swisschain.matching.engine.outgoing.messages.MarketOrderWithTrades
-import com.swisschain.matching.engine.outgoing.messages.ReservedCashOperation
+import com.swisschain.matching.engine.outgoing.messages.*
 import com.swisschain.matching.engine.utils.config.Config
 import com.swisschain.utils.AppInitializer
 import com.swisschain.utils.logging.MetricsLogger
@@ -59,32 +54,32 @@ open class LoggerConfig {
 
     @Bean
     open fun balanceUpdatesDatabaseLogger(balanceUpdatesLogQueue: BlockingQueue<MessageWrapper>): DatabaseLogger<*> {
-        return DatabaseLogger<BalanceUpdate>(GrpcMessageLogDatabaseAccessor(config.me.grpcEndpoints.messageLogServiceConnection), balanceUpdatesLogQueue)
+        return DatabaseLogger<BalanceUpdate>(StubMessageLogDatabaseAccessor(), balanceUpdatesLogQueue)
     }
 
     @Bean
     open fun cashInOutDatabaseLogger(cashInOutLogQueue: BlockingQueue<MessageWrapper>): DatabaseLogger<*> {
-        return DatabaseLogger<CashOperation>(GrpcMessageLogDatabaseAccessor(config.me.grpcEndpoints.messageLogServiceConnection), cashInOutLogQueue)
+        return DatabaseLogger<CashOperation>(StubMessageLogDatabaseAccessor(), cashInOutLogQueue)
     }
 
     @Bean
     open fun cashTransferDatabaseLogger(cashTransferLogQueue: BlockingQueue<MessageWrapper>): DatabaseLogger<*> {
-        return DatabaseLogger<CashTransferOperation>(GrpcMessageLogDatabaseAccessor(config.me.grpcEndpoints.messageLogServiceConnection), cashTransferLogQueue)
+        return DatabaseLogger<CashTransferOperation>(StubMessageLogDatabaseAccessor(), cashTransferLogQueue)
     }
 
     @Bean
     open fun clientLimitOrderDatabaseLogger(clientLimitOrdersLogQueue: BlockingQueue<MessageWrapper>): DatabaseLogger<*> {
-        return DatabaseLogger<LimitOrdersReport>(GrpcMessageLogDatabaseAccessor(config.me.grpcEndpoints.messageLogServiceConnection), clientLimitOrdersLogQueue)
+        return DatabaseLogger<LimitOrdersReport>(StubMessageLogDatabaseAccessor(), clientLimitOrdersLogQueue)
     }
 
     @Bean
     open fun marketOrderWithTradesDatabaseLogger(marketOrderWithTradesLogQueue: BlockingQueue<MessageWrapper>): DatabaseLogger<*> {
-        return DatabaseLogger<MarketOrderWithTrades>(GrpcMessageLogDatabaseAccessor(config.me.grpcEndpoints.messageLogServiceConnection), marketOrderWithTradesLogQueue)
+        return DatabaseLogger<MarketOrderWithTrades>(StubMessageLogDatabaseAccessor(), marketOrderWithTradesLogQueue)
     }
 
     @Bean
     open fun reservedCashOperationDatabaseLogger(reservedCashOperationLogQueue: BlockingQueue<MessageWrapper>): DatabaseLogger<*> {
-        return DatabaseLogger<ReservedCashOperation>(GrpcMessageLogDatabaseAccessor(config.me.grpcEndpoints.messageLogServiceConnection), reservedCashOperationLogQueue)
+        return DatabaseLogger<ReservedCashOperation>(StubMessageLogDatabaseAccessor(), reservedCashOperationLogQueue)
     }
 
     @PostConstruct

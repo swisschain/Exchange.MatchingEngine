@@ -8,11 +8,10 @@ import com.swisschain.matching.engine.utils.config.Config
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 import java.util.concurrent.BlockingDeque
 import java.util.concurrent.BlockingQueue
 
-@Configuration
+//@Configuration
 open class GrpcConfiguration {
 
     @Autowired

@@ -8,6 +8,7 @@ data class MatchingEngineConfig(
         val name: String,
         val redis: RedisConfig,
         val grpcEndpoints: GrpcEndpoints,
+        val rabbitMqConfigs: RabbitMqConfigs,
         val httpOrderBookPort: Int,
         val httpApiPort: Int,
         val correctReservedVolumes: Boolean,

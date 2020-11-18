@@ -1,6 +1,6 @@
 package com.swisschain.matching.engine.daos
 
-import java.util.Date
+import java.util.*
 
 class TypePerformanceStats(
         val timestamp: Date,

@@ -7,11 +7,10 @@ import com.swisschain.matching.engine.utils.config.Config
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationEventPublisher
-import org.springframework.stereotype.Component
 import java.util.concurrent.BlockingQueue
 import javax.annotation.PostConstruct
 
-@Component
+//@Component
 class TrustedClientsEventsListener {
     @Autowired
     private lateinit var config: Config

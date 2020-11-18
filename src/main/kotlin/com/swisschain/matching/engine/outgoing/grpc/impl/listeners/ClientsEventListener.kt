@@ -1,6 +1,6 @@
 package com.swisschain.matching.engine.outgoing.grpc.impl.listeners
 
-import com.swisschain.matching.engine.database.grpc.GrpcMessageLogDatabaseAccessor
+import com.swisschain.matching.engine.database.stub.StubMessageLogDatabaseAccessor
 import com.swisschain.matching.engine.logging.DatabaseLogger
 import com.swisschain.matching.engine.logging.MessageWrapper
 import com.swisschain.matching.engine.outgoing.grpc.impl.publishers.GrpcEventPublisher
@@ -10,11 +10,10 @@ import com.swisschain.matching.engine.utils.config.Config
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationContext
 import org.springframework.context.ApplicationEventPublisher
-import org.springframework.stereotype.Component
 import java.util.concurrent.BlockingQueue
 import javax.annotation.PostConstruct
 
-@Component
+//@Component
 class ClientsEventListener {
     @Autowired
     private lateinit var config: Config
@@ -33,7 +32,7 @@ class ClientsEventListener {
             Thread(GrpcEventPublisher("EventPublisher_$clientsEventConsumerQueueName", queue,
                     clientsEventConsumerQueueName, grpcConnectionString, applicationEventPublisher,
                     DatabaseLogger(
-                            GrpcMessageLogDatabaseAccessor(config.me.grpcEndpoints.messageLogServiceConnection),
+                            StubMessageLogDatabaseAccessor(),
                             applicationContext.getBean(GrpcEventUtils.getDatabaseLogQueueName(grpcConnectionString, index)) as BlockingQueue<MessageWrapper>))).start()
         }
     }
